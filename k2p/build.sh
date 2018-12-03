@@ -16,6 +16,9 @@ while true ; do
     esac
 done
 
+CACHE_DIR="${HOME}/.cache/openwrt"
+mkdir -p "${CACHE_DIR}"
+
 PACKAGES="-wpad-mini -dnsmasq \
 ca-bundle ca-certificates coreutils-base64 curl \
 dnsmasq-full \
@@ -30,25 +33,25 @@ ChinaDNS luci-app-chinadns dns-forwarder luci-app-dns-forwarder shadowsocks-libe
 vlmcsd \
 "
 
-BASE_URL=https://downloads.openwrt.org/releases/18.06.1/targets/ramips/mt7621/
+BASE_URL=https://downloads.openwrt.org/releases/18.06.1/targets/ramips/mt7621
 
 curl -sLO "${BASE_URL}/sha256sums"
 SHA256_VALUE=$(grep imagebuilder sha256sums | cut -d' ' -f1)
 IMAGE_BUILDER_FILENAME=$(grep imagebuilder sha256sums | cut -d'*' -f2)
-if [[ -f "${IMAGE_BUILDER_FILENAME}" ]]; then
-    if [[ $(sha256sum "${IMAGE_BUILDER_FILENAME}" | cut -d' ' -f1) != "${SHA256_VALUE}" ]]; then
-        rm -f "${IMAGE_BUILDER_FILENAME}"
+if [[ -f "${CACHE_DIR}/${IMAGE_BUILDER_FILENAME}" ]]; then
+    if [[ $(sha256sum "${CACHE_DIR}/${IMAGE_BUILDER_FILENAME}" | cut -d' ' -f1) != "${SHA256_VALUE}" ]]; then
+        rm -f "${CACHE_DIR}/${IMAGE_BUILDER_FILENAME}"
     fi
 fi
 
-if [[ ! -f "${IMAGE_BUILDER_FILENAME}" ]]; then
-    curl -sLO "${BASE_URL}/${IMAGE_BUILDER_FILENAME}"
+if [[ ! -f "${CACHE_DIR}/${IMAGE_BUILDER_FILENAME}" ]]; then
+    curl -sL "${BASE_URL}/${IMAGE_BUILDER_FILENAME}" -o "${CACHE_DIR}/${IMAGE_BUILDER_FILENAME}"
 fi
-
-tar -xf "${IMAGE_BUILDER_FILENAME}"
 #shellcheck disable=SC2046
-if [[ $CLEAN -gt 0 && -d $(basename -s .tar.xz "${IMAGE_BUILDER_FILENAME}") ]]; then rm -fr $(basename -s .tar.xz "${IMAGE_BUILDER_FILENAME}"); fi
+if [[ $CLEAN -gt 0 && -d $(basename -s .tar.xz "${CACHE_DIR}/${IMAGE_BUILDER_FILENAME}") ]]; then rm -fr $(basename -s .tar.xz "${IMAGE_BUILDER_FILENAME}"); fi
+tar -xf "${CACHE_DIR}/${IMAGE_BUILDER_FILENAME}"
 
+#shellcheck disable=SC2046
 cd $(basename -s .tar.xz "${IMAGE_BUILDER_FILENAME}")
 for repo in "src/gz reboot_openwrt_dist http://openwrt-dist.sourceforge.net/packages/base/mipsel_24kc" \
 	    "src/gz reboot_openwrt_dist_luci http://openwrt-dist.sourceforge.net/packages/luci" \

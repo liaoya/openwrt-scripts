@@ -19,6 +19,9 @@ while true ; do
     esac
 done
 
+CACHE_DIR="${HOME}/.cache/openwrt"
+mkdir -p "${CACHE_DIR}"
+
 PACKAGES="-wpad-mini -dnsmasq \
 bash \
 ca-bundle ca-certificates coreutils-base64 curl \
@@ -34,20 +37,22 @@ ChinaDNS luci-app-chinadns dns-forwarder luci-app-dns-forwarder shadowsocks-libe
 vlmcsd \
 "
 
-curl -sLO https://downloads.openwrt.org/releases/${VERSION}/targets/ar71xx/nand/sha256sums
+BASE_URL="https://downloads.openwrt.org/releases/${VERSION}/targets/ar71xx/nand"
+
+curl -sLO "${BASE_URL}/sha256sums"
 SHA256_VALUE=$(grep imagebuilder sha256sums | cut -d' ' -f1)
 IMAGE_BUILDER_FILENAME=$(grep imagebuilder sha256sums | cut -d'*' -f2)
-if [[ -f "${IMAGE_BUILDER_FILENAME}" ]]; then
-    if [[ $(sha256sum "${IMAGE_BUILDER_FILENAME}" | cut -d' ' -f1) != "${SHA256_VALUE}" ]]; then
-        rm -f "${IMAGE_BUILDER_FILENAME}"
+if [[ -f "${CACHE_DIR}/${IMAGE_BUILDER_FILENAME}" ]]; then
+    if [[ $(sha256sum "${CACHE_DIR}/${IMAGE_BUILDER_FILENAME}" | cut -d' ' -f1) != "${SHA256_VALUE}" ]]; then
+        rm -f "${CACHE_DIR}/${IMAGE_BUILDER_FILENAME}"
     fi
 fi
-if [[ ! -f "${IMAGE_BUILDER_FILENAME}" ]]; then
-    curl -sLO "https://downloads.openwrt.org/releases/${VERSION}/targets/ar71xx/nand/${IMAGE_BUILDER_FILENAME}"
+if [[ ! -f "${CACHE_DIR}/${IMAGE_BUILDER_FILENAME}" ]]; then
+    curl -sL "${BASE_URL}/${IMAGE_BUILDER_FILENAME}" -o "${CACHE_DIR}/${IMAGE_BUILDER_FILENAME}"
 fi
-tar -xf "${IMAGE_BUILDER_FILENAME}"
 #shellcheck disable=SC2046
-if [[ $CLEAN -gt 0 && -d $(basename -s .tar.xz "${IMAGE_BUILDER_FILENAME}") ]]; then rm -fr $(basename -s .tar.xz "${IMAGE_BUILDER_FILENAME}"); fi 
+if [[ $CLEAN -gt 0 && -d $(basename -s .tar.xz "${CACHE_DIR}/${IMAGE_BUILDER_FILENAME}") ]]; then rm -fr $(basename -s .tar.xz "${IMAGE_BUILDER_FILENAME}"); fi
+tar -xf "${CACHE_DIR}/${IMAGE_BUILDER_FILENAME}"
 
 #wget -O- 'http://ftp.apnic.net/apnic/stats/apnic/delegated-apnic-latest' | awk -F\| '/CN\|ipv4/ { printf("%s/%d\n", $4, 32-log($5)/log(2)) }' > custom/etc/chinadns_chnroute.txt
 
