@@ -32,5 +32,5 @@ config wifi-iface
         option mode 'ap'
         option network 'lan'
         option encryption 'none'
-        option ssid 'WNDR4300-5G'
+        option ssid 'WNDR4300'
         option wmm '0'
