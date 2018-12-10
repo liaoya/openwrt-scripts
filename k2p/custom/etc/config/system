@@ -7,7 +7,7 @@ config system
 	option timezone 'CST-8'
 	option log_proto 'udp'
 	option conloglevel '8'
-	option cronloglevel '8'
+	option cronloglevel '5'
 
 config timeserver 'ntp'
 	option enabled '1'
