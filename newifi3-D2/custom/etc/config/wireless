@@ -3,7 +3,7 @@ config wifi-device 'radio0'
         option hwmode '11g'
         option path 'pci0000:00/0000:00:01.0/0000:02:00.0'
         option htmode 'HT20'
-        option channel 'auto'
+        option channel '11'
         option legacy_rates '1'
         option country 'CN'
 

@@ -22,7 +22,7 @@ mkdir -p "${CACHE_DIR}"
 PACKAGES="-wpad-mini -dnsmasq \
 bash \
 ca-bundle ca-certificates coreutils-base64 curl \
-dnsmasq-full \
+bind-dig dnsmasq-full \
 file \
 ip-full ipset iptables-mod-tproxy \
 libpthread \
