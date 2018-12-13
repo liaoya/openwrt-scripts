@@ -21,7 +21,7 @@ mkdir -p "${CACHE_DIR}"
 
 PACKAGES="-wpad-mini -dnsmasq \
 bash \
-ca-bundle ca-certificates coreutils-base64 curl \
+ca-bundle ca-certificates coreutils-base64 curl libustream-openssl \
 bind-dig dnsmasq-full \
 file \
 ip-full ipset iptables-mod-tproxy \
@@ -34,6 +34,8 @@ ChinaDNS luci-app-chinadns dns-forwarder luci-app-dns-forwarder shadowsocks-libe
 "
 
 PACKAGES="${PACKAGES} kmod-macvlan luci-app-mwan3 luci-i18n-mwan3-zh-cn"
+# for koolproxy
+PACKAGES="${PACKAGES} openssl-util ipset dnsmasq-full diffutils iptables-mod-nat-extra wget ca-bundle ca-certificates libustream-openssl"
 # PACKAGES="${PACKAGES} luci-app-minidlna luci-i18n-minidlna-zh-cn"
 
 BASE_URL=https://downloads.openwrt.org/releases/18.06.1/targets/ramips/mt7621
