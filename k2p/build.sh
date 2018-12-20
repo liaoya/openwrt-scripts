@@ -30,7 +30,6 @@ luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-adblock-zh-cn \
 uci \
 wpad \
 ChinaDNS luci-app-chinadns dns-forwarder luci-app-dns-forwarder shadowsocks-libev luci-app-shadowsocks simple-obfs ShadowVPN luci-app-shadowvpn \
-vlmcsd \
 "
 
 BASE_URL=https://downloads.openwrt.org/releases/18.06.1/targets/ramips/mt7621
@@ -54,8 +53,7 @@ tar -xf "${CACHE_DIR}/${IMAGE_BUILDER_FILENAME}"
 #shellcheck disable=SC2046
 cd $(basename -s .tar.xz "${IMAGE_BUILDER_FILENAME}")
 for repo in "src/gz reboot_openwrt_dist http://openwrt-dist.sourceforge.net/packages/base/mipsel_24kc" \
-	    "src/gz reboot_openwrt_dist_luci http://openwrt-dist.sourceforge.net/packages/luci" \
-	    "src/gz reboot_vlmcsd http://cokebar.github.io/openwrt-vlmcsd/LEDE"; do
+	    "src/gz reboot_openwrt_dist_luci http://openwrt-dist.sourceforge.net/packages/luci"; do
     repo=$(echo "${repo}" | sed 's/\//\\\//g')
     sed -i "/telephony$/a ${repo}" repositories.conf
 done

@@ -4,11 +4,14 @@
 set -e -x
 
 CLEAN=0
+VERSION="18.06.1"
 
-TEMP=$(getopt -o c:: --long clean:: -- "$@")
+TEMP=$(getopt -o v:c:: --long version:,clean:: -- "$@")
 eval set -- "$TEMP"
 while true ; do
     case "$1" in
+        -v|--version)
+            VERSION=$2 ; shift 2 ;;
         -c|--clean)
             CLEAN=1 ; shift 2 ;;
         --) shift ; break ;;
@@ -19,26 +22,21 @@ done
 CACHE_DIR="${HOME}/.cache/openwrt"
 mkdir -p "${CACHE_DIR}"
 
-PACKAGES="-wpad-mini -dnsmasq \
-bash \
-ca-bundle ca-certificates coreutils-base64 curl libustream-openssl \
-bind-dig dnsmasq-full \
-file \
+PACKAGES=""
+PACKAGES="${PACKAGES} -wpad-mini -dnsmasq"
+PACKAGES="${PACKAGES} bash bind-dig ca-bundle ca-certificates coreutils-base64 curl dnsmasq-full file \
 ip-full ipset iptables-mod-tproxy \
-libpthread \
-luci luci-app-firewall luci-theme-bootstrap luci-app-adblock \
-luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-adblock-zh-cn \
-uci \
-wpad \
-ChinaDNS luci-app-chinadns dns-forwarder luci-app-dns-forwarder shadowsocks-libev luci-app-shadowsocks simple-obfs ShadowVPN luci-app-shadowvpn \
-"
-
-PACKAGES="${PACKAGES} kmod-macvlan luci-app-mwan3 luci-i18n-mwan3-zh-cn"
+libustream-openssl libpthread \
+luci luci-theme-bootstrap luci-i18n-base-zh-cn \
+uci wpad"
+PACKAGES="${PACKAGES} luci-i18n-firewall-zh-cn luci-i18n-adblock-zh-cn"
+PACKAGES="${PACKAGES} ChinaDNS luci-app-chinadns dns-forwarder luci-app-dns-forwarder shadowsocks-libev luci-app-shadowsocks simple-obfs ShadowVPN luci-app-shadowvpn"
+#PACKAGES="${PACKAGES} kmod-macvlan luci-app-mwan3 luci-i18n-mwan3-zh-cn"
 # for koolproxy
-PACKAGES="${PACKAGES} openssl-util ipset dnsmasq-full diffutils iptables-mod-nat-extra wget ca-bundle ca-certificates libustream-openssl"
+PACKAGES="${PACKAGES} openssl-util ipset dnsmasq-full iptables-mod-nat-extra wget ca-bundle ca-certificates libustream-openssl"
 # PACKAGES="${PACKAGES} luci-app-minidlna luci-i18n-minidlna-zh-cn"
 
-BASE_URL=https://downloads.openwrt.org/releases/18.06.1/targets/ramips/mt7621
+BASE_URL="https://downloads.openwrt.org/releases/${VERSION}/targets/ramips/mt7621"
 
 curl -sLO "${BASE_URL}/sha256sums"
 SHA256_VALUE=$(grep imagebuilder sha256sums | cut -d' ' -f1)
