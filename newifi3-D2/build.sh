@@ -23,18 +23,18 @@ CACHE_DIR="${HOME}/.cache/openwrt"
 mkdir -p "${CACHE_DIR}"
 
 PACKAGES=""
-PACKAGES="${PACKAGES} -wpad-mini -dnsmasq"
-PACKAGES="${PACKAGES} bash bind-dig ca-bundle ca-certificates coreutils-base64 curl dnsmasq-full file \
+PACKAGES="${PACKAGES:+$PACKAGES }-wpad-mini -dnsmasq"
+PACKAGES="${PACKAGES:+$PACKAGES }bash bind-dig ca-bundle ca-certificates coreutils-base64 curl dnsmasq-full file \
 ip-full ipset iptables-mod-tproxy \
 libustream-openssl libpthread \
 luci luci-theme-bootstrap luci-i18n-base-zh-cn \
 uci wpad"
-PACKAGES="${PACKAGES} luci-i18n-firewall-zh-cn luci-i18n-adblock-zh-cn"
-PACKAGES="${PACKAGES} ChinaDNS luci-app-chinadns dns-forwarder luci-app-dns-forwarder shadowsocks-libev luci-app-shadowsocks simple-obfs ShadowVPN luci-app-shadowvpn"
-#PACKAGES="${PACKAGES} kmod-macvlan luci-app-mwan3 luci-i18n-mwan3-zh-cn"
+PACKAGES="${PACKAGES:+$PACKAGES }luci-i18n-firewall-zh-cn luci-i18n-adblock-zh-cn"
+#PACKAGES="${PACKAGES:+$PACKAGES }kmod-macvlan luci-app-mwan3 luci-i18n-mwan3-zh-cn"
+PACKAGES="${PACKAGES:+$PACKAGES }ChinaDNS luci-app-chinadns dns-forwarder luci-app-dns-forwarder shadowsocks-libev luci-app-shadowsocks simple-obfs ShadowVPN luci-app-shadowvpn"
 # for koolproxy
-PACKAGES="${PACKAGES} openssl-util ipset dnsmasq-full iptables-mod-nat-extra wget ca-bundle ca-certificates libustream-openssl"
-# PACKAGES="${PACKAGES} luci-app-minidlna luci-i18n-minidlna-zh-cn"
+PACKAGES="${PACKAGES:+$PACKAGES }openssl-util ipset dnsmasq-full iptables-mod-nat-extra wget ca-bundle ca-certificates libustream-openssl"
+# PACKAGES="${PACKAGES:+$PACKAGES }luci-app-minidlna luci-i18n-minidlna-zh-cn"
 
 BASE_URL="https://downloads.openwrt.org/releases/${VERSION}/targets/ramips/mt7621"
 
