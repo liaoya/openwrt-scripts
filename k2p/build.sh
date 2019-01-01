@@ -21,7 +21,7 @@ mkdir -p "${CACHE_DIR}"
 
 PACKAGES=""
 PACKAGES="${PACKAGES:+$PACKAGES }-wpad-mini -dnsmasq"
-PACKAGES="${PACKAGES:+$PACKAGES }bash bind-dig ca-bundle ca-certificates coreutils-base64 curl dnsmasq-full file \
+PACKAGES="${PACKAGES:+$PACKAGES }bind-dig ca-bundle ca-certificates coreutils-base64 curl dnsmasq-full file \
 ip-full ipset iptables-mod-tproxy \
 libustream-openssl libpthread \
 luci luci-theme-bootstrap luci-i18n-base-zh-cn \
@@ -32,6 +32,11 @@ PACKAGES="${PACKAGES:+$PACKAGES }luci-i18n-firewall-zh-cn luci-i18n-adblock-zh-c
 PACKAGES="${PACKAGES:+$PACKAGES }ChinaDNS luci-app-chinadns dns-forwarder luci-app-dns-forwarder shadowsocks-libev luci-app-shadowsocks simple-obfs ShadowVPN luci-app-shadowvpn"
 # for koolproxy
 PACKAGES="${PACKAGES:+$PACKAGES }openssl-util ipset dnsmasq-full iptables-mod-nat-extra wget ca-bundle ca-certificates libustream-openssl"
+
+if [[ -f ~/.ssh/id_rsa.pub ]]; then
+    mkdir custom/etc/dropbear
+    cat ~/.ssh/id_rsa.pub > custom/etc/dropbear/authorized_keys
+fi
 
 BASE_URL=https://downloads.openwrt.org/releases/18.06.1/targets/ramips/mt7621
 

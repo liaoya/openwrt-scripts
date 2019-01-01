@@ -37,6 +37,11 @@ PACKAGES="${PACKAGES:+$PACKAGES }ChinaDNS luci-app-chinadns dns-forwarder luci-a
 PACKAGES="${PACKAGES:+$PACKAGES }openssl-util ipset dnsmasq-full iptables-mod-nat-extra wget ca-bundle ca-certificates libustream-openssl"
 # PACKAGES="${PACKAGES:+$PACKAGES }luci-app-minidlna luci-i18n-minidlna-zh-cn"
 
+wget -O- 'http://ftp.apnic.net/apnic/stats/apnic/delegated-apnic-latest' | awk -F\| '/CN\|ipv4/ { printf("%s/%d\n", $4, 32-log($5)/log(2)) }' > custom/etc/chinadns_chnroute.txt
+if [[ -f ~/.ssh/id_rsa.pub ]]; then
+    mkdir custom/etc/dropbear
+    cat ~/.ssh/id_rsa.pub > custom/etc/dropbear/authorized_keys
+fi
 
 BASE_URL="https://downloads.openwrt.org/releases/${VERSION}/targets/ar71xx/nand"
 
@@ -54,8 +59,6 @@ fi
 #shellcheck disable=SC2046
 if [[ $CLEAN -gt 0 && -d $(basename -s .tar.xz "${CACHE_DIR}/${IMAGE_BUILDER_FILENAME}") ]]; then rm -fr $(basename -s .tar.xz "${IMAGE_BUILDER_FILENAME}"); fi
 tar -xf "${CACHE_DIR}/${IMAGE_BUILDER_FILENAME}"
-
-#wget -O- 'http://ftp.apnic.net/apnic/stats/apnic/delegated-apnic-latest' | awk -F\| '/CN\|ipv4/ { printf("%s/%d\n", $4, 32-log($5)/log(2)) }' > custom/etc/chinadns_chnroute.txt
 
 #shellcheck disable=SC2046
 cd $(basename -s .tar.xz "${IMAGE_BUILDER_FILENAME}")
