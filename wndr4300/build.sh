@@ -3,7 +3,7 @@
 
 set -e -x
 
-VERSION="17.01.6"
+VERSION="18.06.1"
 CLEAN=0
 
 TEMP=$(getopt -o v:c:: --long version:,clean:: -- "$@")
@@ -29,12 +29,13 @@ ip-full ipset iptables-mod-tproxy \
 libustream-openssl libpthread \
 luci luci-theme-bootstrap luci-i18n-base-zh-cn \
 uci wpad"
-PACKAGES="${PACKAGES:+$PACKAGES }luci-i18n-firewall-zh-cn luci-i18n-adblock-zh-cn"
-# PACKAGES="${PACKAGES:+$PACKAGES }kmod-macvlan luci-app-mwan3 luci-i18n-mwan3-zh-cn"
-# PACKAGES="${PACKAGES:+$PACKAGES }luci-app-minidlna luci-i18n-minidlna-zh-cn"
+PACKAGES="${PACKAGES:+$PACKAGES }luci-i18n-firewall-zh-cn"
+PACKAGES="${PACKAGES:+$PACKAGES }luci-i18n-adblock-zh-cn"
+#PACKAGES="${PACKAGES:+$PACKAGES }kmod-macvlan luci-app-mwan3 luci-i18n-mwan3-zh-cn"
 PACKAGES="${PACKAGES:+$PACKAGES }ChinaDNS luci-app-chinadns dns-forwarder luci-app-dns-forwarder shadowsocks-libev luci-app-shadowsocks simple-obfs ShadowVPN luci-app-shadowvpn"
-# for koolproxy
+# for koolproxy, we can't put diffutils
 PACKAGES="${PACKAGES:+$PACKAGES }openssl-util ipset dnsmasq-full iptables-mod-nat-extra wget ca-bundle ca-certificates libustream-openssl"
+# PACKAGES="${PACKAGES:+$PACKAGES }luci-app-minidlna luci-i18n-minidlna-zh-cn"
 
 
 BASE_URL="https://downloads.openwrt.org/releases/${VERSION}/targets/ar71xx/nand"

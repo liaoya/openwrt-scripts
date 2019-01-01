@@ -59,10 +59,19 @@ uci commit
 
 ## Koolproxy
 
+- <http://koolshare.cn/thread-64086-1-1.html>
+- <https://koolproxy.io/docs/installation>
+
 - wndr4300: `opkg install --force-depends http://firmware.koolshare.cn/binary/KoolProxy/ar71xx/koolproxy_3.7.2-20180127_mips_24kc.ipk`
 - newifi3 and k2p `opkg install --force-depends http://firmware.koolshare.cn/binary/KoolProxy/ramips/koolproxy_3.7.2-20180127_mipsel_24kc.ipk`
 
 ```bash
 opkg install --force-depends http://firmware.koolshare.cn/binary/KoolProxy/luci/luci-app-koolproxy_2.0-1_all.ipk
 opkg install --force-depends http://firmware.koolshare.cn/binary/KoolProxy/luci/luci-i18n-koolproxy-zh-cn_2.0-1_all.ipk
+
+opkg install diffutils
+cd /usr/share/koolproxy
+curl -sL -O https://kprule.com/koolproxy.txt -O https://kprule.com/kp.dat -O https://kprule.com/daily.txt
 ```
+
+- newifi3 and k2p `curl -sL https://koolproxy.com/downloads/mipsel -o /usr/share/koolproxy/koolproxy; chmod 755 /usr/share/koolproxy/koolproxy`

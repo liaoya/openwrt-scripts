@@ -29,7 +29,8 @@ ip-full ipset iptables-mod-tproxy \
 libustream-openssl libpthread \
 luci luci-theme-bootstrap luci-i18n-base-zh-cn \
 uci wpad"
-PACKAGES="${PACKAGES:+$PACKAGES }luci-i18n-firewall-zh-cn luci-i18n-adblock-zh-cn"
+PACKAGES="${PACKAGES:+$PACKAGES }luci-i18n-firewall-zh-cn"
+PACKAGES="${PACKAGES:+$PACKAGES }luci-i18n-adblock-zh-cn"
 #PACKAGES="${PACKAGES:+$PACKAGES }kmod-macvlan luci-app-mwan3 luci-i18n-mwan3-zh-cn"
 PACKAGES="${PACKAGES:+$PACKAGES }ChinaDNS luci-app-chinadns dns-forwarder luci-app-dns-forwarder shadowsocks-libev luci-app-shadowsocks simple-obfs ShadowVPN luci-app-shadowvpn"
 # for koolproxy
