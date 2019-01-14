@@ -34,7 +34,7 @@ PACKAGES="${PACKAGES:+$PACKAGES }ChinaDNS luci-app-chinadns dns-forwarder luci-a
 PACKAGES="${PACKAGES:+$PACKAGES }openssl-util ipset dnsmasq-full iptables-mod-nat-extra wget ca-bundle ca-certificates libustream-openssl"
 
 if [[ -f ~/.ssh/id_rsa.pub ]]; then
-    mkdir custom/etc/dropbear
+    [[ -d custom/etc/dropbear ]] || mkdir custom/etc/dropbear
     cat ~/.ssh/id_rsa.pub > custom/etc/dropbear/authorized_keys
 fi
 
@@ -66,3 +66,5 @@ done
 
 [[ $CLEAN -gt 0 ]] && make clean
 make -j "$(nproc)" image PROFILE=k2p PACKAGES="${PACKAGES}" FILES=../custom EXTRA_IMAGE_NAME=custom
+
+rm -fr custom/etc/dropbear/authorized_keys

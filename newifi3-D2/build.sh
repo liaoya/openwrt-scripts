@@ -28,6 +28,7 @@ PACKAGES="${PACKAGES:+$PACKAGES }bash bind-dig ca-bundle ca-certificates coreuti
 ip-full ipset iptables-mod-tproxy \
 libustream-openssl libpthread \
 luci luci-theme-bootstrap luci-i18n-base-zh-cn \
+tmux \
 uci wpad"
 PACKAGES="${PACKAGES:+$PACKAGES }luci-i18n-firewall-zh-cn"
 PACKAGES="${PACKAGES:+$PACKAGES }luci-i18n-adblock-zh-cn"
@@ -39,7 +40,7 @@ PACKAGES="${PACKAGES:+$PACKAGES }openssl-util ipset dnsmasq-full iptables-mod-na
 
 wget -O- 'http://ftp.apnic.net/apnic/stats/apnic/delegated-apnic-latest' | awk -F\| '/CN\|ipv4/ { printf("%s/%d\n", $4, 32-log($5)/log(2)) }' > custom/etc/chinadns_chnroute.txt
 if [[ -f ~/.ssh/id_rsa.pub ]]; then
-    mkdir custom/etc/dropbear
+    [[ -d custom/etc/dropbear ]] || mkdir custom/etc/dropbear
     cat ~/.ssh/id_rsa.pub > custom/etc/dropbear/authorized_keys
 fi
 
@@ -61,11 +62,6 @@ fi
 if [[ $CLEAN -gt 0 && -d $(basename -s .tar.xz "${CACHE_DIR}/${IMAGE_BUILDER_FILENAME}") ]]; then rm -fr $(basename -s .tar.xz "${IMAGE_BUILDER_FILENAME}"); fi
 tar -xf "${CACHE_DIR}/${IMAGE_BUILDER_FILENAME}"
 
-if [[ -f ~/.ssh/id_rsa.pub ]]; then
-    mkdir custom/etc/dropbear
-    cat ~/.ssh/id_rsa.pub > custom/etc/dropbear/authorized_keys
-fi
-
 #shellcheck disable=SC2046
 cd $(basename -s .tar.xz "${IMAGE_BUILDER_FILENAME}")
 for repo in "src/gz reboot_openwrt_dist http://openwrt-dist.sourceforge.net/packages/base/mipsel_24kc" \
@@ -76,3 +72,6 @@ done
 
 [[ $CLEAN -gt 0 ]] && make clean
 make -j "$(nproc)" image PROFILE=d-team_newifi-d2 PACKAGES="${PACKAGES}" FILES=../custom EXTRA_IMAGE_NAME=custom
+
+[[ -f custom/etc/dropbear/authorized_keys ]] && rm -fr custom/etc/dropbear/authorized_keys
+[[ -f custom/etc/chinadns_chnroute.txt ]] && rm -fr custom/etc/chinadns_chnroute.txt

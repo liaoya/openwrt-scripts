@@ -11,8 +11,8 @@ wget -O- 'http://ftp.apnic.net/apnic/stats/apnic/delegated-apnic-latest' | awk -
 
 uci add_list shadowsocks.@access_control[0].wan_fw_ips=8.8.8.8
 uci add_list shadowsocks.@access_control[0].wan_fw_ips=8.8.4.4
-uci add_list  shadowsocks.@access_control[0].wan_bp_ips=107.182.27.19
-uci add_list  shadowsocks.@access_control[0].wan_bp_ips=185.201.227.49
+uci add_list shadowsocks.@access_control[0].wan_bp_ips=107.182.27.19
+uci add_list shadowsocks.@access_control[0].wan_bp_ips=185.201.227.49
 uci changes
 uci commit
 ```
@@ -74,4 +74,6 @@ cd /usr/share/koolproxy
 curl -sL -O https://kprule.com/koolproxy.txt -O https://kprule.com/kp.dat -O https://kprule.com/daily.txt
 ```
 
-- newifi3 and k2p `curl -sL https://koolproxy.com/downloads/mipsel -o /usr/share/koolproxy/koolproxy; chmod 755 /usr/share/koolproxy/koolproxy`
+- newifi3 and k2p `curl -sL https://koolproxy.com/downloads/mipsel -o /usr/share/koolproxy/koolproxy; chmod 755 /usr/share/koolproxy/koolproxy; /etc/init.d/koolproxy restart`
+
+## vlmcsd
