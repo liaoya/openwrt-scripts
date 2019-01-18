@@ -33,6 +33,7 @@ PACKAGES="${PACKAGES:+$PACKAGES }ChinaDNS luci-app-chinadns dns-forwarder luci-a
 # for koolproxy
 PACKAGES="${PACKAGES:+$PACKAGES }openssl-util ipset dnsmasq-full iptables-mod-nat-extra wget ca-bundle ca-certificates libustream-openssl"
 
+wget -O- 'http://ftp.apnic.net/apnic/stats/apnic/delegated-apnic-latest' | awk -F\| '/CN\|ipv4/ { printf("%s/%d\n", $4, 32-log($5)/log(2)) }' > custom/etc/chinadns_chnroute.txt
 if [[ -f ~/.ssh/id_rsa.pub ]]; then
     [[ -d custom/etc/dropbear ]] || mkdir custom/etc/dropbear
     cat ~/.ssh/id_rsa.pub > custom/etc/dropbear/authorized_keys
@@ -67,4 +68,6 @@ done
 [[ $CLEAN -gt 0 ]] && make clean
 make -j "$(nproc)" image PROFILE=k2p PACKAGES="${PACKAGES}" FILES=../custom EXTRA_IMAGE_NAME=custom
 
-rm -fr custom/etc/dropbear/authorized_keys
+[[ -f custom/etc/dropbear/authorized_keys ]] && rm -fr custom/etc/dropbear/authorized_keys
+[[ -f custom/etc/chinadns_chnroute.txt ]] && rm -fr custom/etc/chinadns_chnroute.txt
+
