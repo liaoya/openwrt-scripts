@@ -28,7 +28,7 @@ PACKAGES="${PACKAGES:+$PACKAGES }bash bind-dig ca-bundle ca-certificates coreuti
 ip-full ipset iptables-mod-tproxy \
 libustream-openssl libpthread \
 luci luci-theme-bootstrap luci-i18n-base-zh-cn \
-tmux \
+screen tmux \
 uci wpad"
 PACKAGES="${PACKAGES:+$PACKAGES }luci-i18n-firewall-zh-cn"
 PACKAGES="${PACKAGES:+$PACKAGES }luci-i18n-adblock-zh-cn"
@@ -74,5 +74,9 @@ done
 [[ $CLEAN -gt 0 ]] && make clean
 make -j "$(nproc)" image PROFILE=WNDR4300V1 PACKAGES="${PACKAGES}" FILES=../custom EXTRA_IMAGE_NAME=custom
 
-[[ -f custom/etc/dropbear/authorized_keys ]] && rm -fr custom/etc/dropbear/authorized_keys
-[[ -f custom/etc/chinadns_chnroute.txt ]] && rm -fr custom/etc/chinadns_chnroute.txt
+for item in custom/etc/chinadns_chnroute.txt \
+            custom/etc/dropbear/authorized_keys; do
+    if [[ -f "${item}" ]]; then
+        rm -f "${item}"
+    fi
+done
