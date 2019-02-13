@@ -4,7 +4,7 @@
 set -e -x
 
 CLEAN=0
-VERSION="18.06.1"
+VERSION="18.06.2"
 
 TEMP=$(getopt -o v:c:: --long version:,clean:: -- "$@")
 eval set -- "$TEMP"

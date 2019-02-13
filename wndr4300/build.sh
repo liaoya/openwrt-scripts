@@ -3,7 +3,7 @@
 
 set -e -x
 
-VERSION="18.06.1"
+VERSION="18.06.2"
 CLEAN=0
 
 TEMP=$(getopt -o v:c:: --long version:,clean:: -- "$@")
