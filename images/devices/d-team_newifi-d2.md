@@ -26,7 +26,7 @@ uci set wireless.default_radio0.key='qwertyuiop'
 
 uci set wireless.radio1.country='CN'
 uci set wireless.radio1.disabled='0'
-uci set wireless.default_radio1.ssid='NEWIFI-5G'
+uci set wireless.default_radio1.ssid='NEWIFI'
 uci set wireless.default_radio1.encryption='psk2'
 uci set wireless.default_radio1.key='qwertyuiop'
 
