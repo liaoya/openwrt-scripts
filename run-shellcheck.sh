@@ -3,7 +3,7 @@
 # Run this script to make every shell file is valid
 
 THIS_FILE=$(readlink -f "${BASH_SOURCE[0]}")
-THIS_DIR=$(dirname "${THIS_FILE}")
+ROOT_DIR=$(dirname "${THIS_FILE}")
 
 [[ $(command -v shellcheck) ]] || { echo "Cannot find shellcheck"; exit 1; }
 
@@ -17,7 +17,7 @@ run_shellcheck() {
 }
 
 if [[ $# -eq 0 ]]; then
-    run_shellcheck "${THIS_DIR}"
+    run_shellcheck "${ROOT_DIR}"
 else
     while (( "$#")); do
         target_dir=$1; shift;

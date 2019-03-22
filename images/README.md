@@ -23,7 +23,7 @@ Run the following command to install the image build requirements for Ubuntu 18.
 
 ### Can't put `diffutils` in rom
 
-koolproxy require diffutils, but we can't package it into rom. This is know issue.
+koolproxy require diffutils, but we can't package it into rom. This is a know issue.
 
 ### K2P
 

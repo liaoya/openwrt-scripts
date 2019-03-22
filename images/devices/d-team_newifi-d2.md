@@ -60,6 +60,13 @@ uci set wireless.@wifi-iface[-1].bssid='76:7D:24:93:40:0B'
 uci set wireless.@wifi-iface[-1].key='qwertyuiop'
 ```
 
+## USB Poweroff
+
+`echo 0 > /sys/class/gpio/gpio11/value`, `echo 0 > /sys/class/gpio/power_usb3/value`
+
+- <https://openwrt.org/docs/guide-user/hardware/usb.overview>
+- <https://git.telliq.com/gtu/openwrt/blob/27014da237f172fc8459df34ab46d0460e9d7129/target/linux/ramips/dts/Newifi-D2.dts>
+
 ## Config files
 
 ### /etc/config/wireless
@@ -95,5 +102,5 @@ config wifi-iface 'default_radio1'
         option network 'lan'
         option mode 'ap'
         option encryption 'none'
-        option ssid 'NEWIFI3-5G'
+        option ssid 'NEWIFI3'
 ```

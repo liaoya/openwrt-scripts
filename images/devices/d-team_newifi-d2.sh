@@ -15,12 +15,14 @@ PACKAGES="${PACKAGES:+$PACKAGES }luci-i18n-firewall-zh-cn"
 PACKAGES="${PACKAGES:+$PACKAGES }luci-i18n-adblock-zh-cn"
 #PACKAGES="${PACKAGES:+$PACKAGES }kmod-macvlan luci-app-mwan3 luci-i18n-mwan3-zh-cn"
 PACKAGES="${PACKAGES:+$PACKAGES }ChinaDNS luci-app-chinadns dns-forwarder luci-app-dns-forwarder shadowsocks-libev luci-app-shadowsocks simple-obfs ShadowVPN luci-app-shadowvpn"
+# for adbyby
+PACKAGES="${PACKAGES:+$PACKAGES }libstdcpp kmod-nls-base kmod-nls-utf8"
 # for koolproxy
 PACKAGES="${PACKAGES:+$PACKAGES }openssl-util ipset dnsmasq-full iptables-mod-nat-extra wget ca-bundle ca-certificates libustream-openssl"
 # PACKAGES="${PACKAGES:+$PACKAGES }luci-app-minidlna luci-i18n-minidlna-zh-cn"
 
 add_wireless_config() {
-    cat <<EOF > "${THIS_DIR}/custom/etc/config/wireless"
+    cat <<EOF > "${ROOT_DIR}/custom/etc/config/wireless"
 config wifi-device 'radio0'
         option type 'mac80211'
         option hwmode '11g'
@@ -62,12 +64,12 @@ pre_ops() {
         sed -i "/telephony$/a ${repo}" repositories.conf
     done
 
-    wget -O- 'http://ftp.apnic.net/apnic/stats/apnic/delegated-apnic-latest' | awk -F\| '/CN\|ipv4/ { printf("%s/%d\n", $4, 32-log($5)/log(2)) }' > "${THIS_DIR}/custom/etc/chinadns_chnroute.txt"
+    wget -O- 'http://ftp.apnic.net/apnic/stats/apnic/delegated-apnic-latest' | awk -F\| '/CN\|ipv4/ { printf("%s/%d\n", $4, 32-log($5)/log(2)) }' > "${ROOT_DIR}/custom/etc/chinadns_chnroute.txt"
 
     add_wireless_config
 
-    mkdir -p "${THIS_DIR}/custom/etc/opkg"
-    cat << EOF > "${THIS_DIR}/custom/etc/opkg/customfeeds.conf"
+    mkdir -p "${ROOT_DIR}/custom/etc/opkg"
+    cat << EOF > "${ROOT_DIR}/custom/etc/opkg/customfeeds.conf"
 src/gz openwrt_dist http://openwrt-dist.sourceforge.net/packages/base/mipsel_24kc
 src/gz openwrt_dist_luci http://openwrt-dist.sourceforge.net/packages/luci
 EOF

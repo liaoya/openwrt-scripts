@@ -1,4 +1,9 @@
 #!/bin/bash
+#shellcheck disable=SC1090
+
+THIS_DIR=$(readlink -f "${BASH_SOURCE[0]}")
+THIS_DIR=$(dirname "${THIS_DIR}")
+source "${THIS_DIR}/functions.sh"
 
 #shellcheck disable=SC2034
 BASE_URL=https://downloads.openwrt.org/releases/${VERSION}/targets/ramips/mt7620
@@ -19,10 +24,12 @@ pre_ops() {
         sed -i "/telephony$/a ${repo}" repositories.conf
     done
 
-    wget -O- 'http://ftp.apnic.net/apnic/stats/apnic/delegated-apnic-latest' | awk -F\| '/CN\|ipv4/ { printf("%s/%d\n", $4, 32-log($5)/log(2)) }' > "${THIS_DIR}/custom/etc/chinadns_chnroute.txt"
+    wget -O- 'http://ftp.apnic.net/apnic/stats/apnic/delegated-apnic-latest' | awk -F\| '/CN\|ipv4/ { printf("%s/%d\n", $4, 32-log($5)/log(2)) }' > "${ROOT_DIR}/custom/etc/chinadns_chnroute.txt"
 
-    mkdir -p "${THIS_DIR}/custom/etc/opkg"
-    cat << EOF > "${THIS_DIR}/custom/etc/opkg/customfeeds.conf"
+    add_wireless_config
+
+    mkdir -p "${ROOT_DIR}/custom/etc/opkg"
+    cat << EOF > "${ROOT_DIR}/custom/etc/opkg/customfeeds.conf"
 src/gz openwrt_dist http://openwrt-dist.sourceforge.net/packages/base/mipsel_24kc
 src/gz openwrt_dist_luci http://openwrt-dist.sourceforge.net/packages/luci
 EOF

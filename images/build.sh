@@ -3,9 +3,8 @@
 
 set -a -e -x
 
-THIS_FILE=$(readlink -f "${BASH_SOURCE[0]}")
-THIS_DIR=$(dirname "${THIS_FILE}")
-
+ROOT_DIR=$(readlink -f "${BASH_SOURCE[0]}")
+ROOT_DIR=$(dirname "${ROOT_DIR}")
 CACHE_DIR="${HOME}/.cache/openwrt"
 mkdir -p "${CACHE_DIR}"
 
@@ -43,12 +42,12 @@ if [[ -z ${DEVICE} ]]; then
     exit 1
 fi
 
-if [[ -f "${THIS_DIR}/devices/${DEVICE}.sh" ]]; then
-    source "${THIS_DIR}/devices/${DEVICE}.sh"
-elif [[ -f "${THIS_DIR}/devices/${DEVICE}/${VARIANT}.sh" ]]; then
-    source "${THIS_DIR}/devices/${DEVICE}/${VARIANT}.sh"
+if [[ -f "${ROOT_DIR}/devices/${DEVICE}.sh" ]]; then
+    source "${ROOT_DIR}/devices/${DEVICE}.sh"
+elif [[ -f "${ROOT_DIR}/devices/${DEVICE}/${VARIANT}.sh" ]]; then
+    source "${ROOT_DIR}/devices/${DEVICE}/${VARIANT}.sh"
 else
-    echo "Require customized ${THIS_DIR}/devices/${DEVICE}.sh or ${THIS_DIR}/devices/${DEVICE}/${VARIANT}.sh"
+    echo "Require customized ${ROOT_DIR}/devices/${DEVICE}.sh or ${ROOT_DIR}/devices/${DEVICE}/${VARIANT}.sh"
     exit 1
 fi
 
@@ -77,22 +76,22 @@ if [[ ! -f repositories.conf.bak ]]; then
     cp -r repositories.conf repositories.conf.bak
 fi
 if [[ -f ~/.ssh/id_rsa.pub ]]; then
-    [[ -d "${THIS_DIR}/custom/etc/dropbear" ]] || mkdir "${THIS_DIR}/custom/etc/dropbear"
-    cat ~/.ssh/id_rsa.pub > "${THIS_DIR}/custom/etc/dropbear/authorized_keys"
+    [[ -d "${ROOT_DIR}/custom/etc/dropbear" ]] || mkdir "${ROOT_DIR}/custom/etc/dropbear"
+    cat ~/.ssh/id_rsa.pub > "${ROOT_DIR}/custom/etc/dropbear/authorized_keys"
 fi
 if [[ $(command -v pre_ops) ]]; then pre_ops; fi
 
 [[ ${CLEAN} -gt 0 ]] && make clean
 if [[ -n ${VARIANT} ]]; then
-    make -j "$(nproc)" image PROFILE="${DEVICE}" PACKAGES="${PACKAGES}" FILES="${THIS_DIR}/custom" EXTRA_IMAGE_NAME="${VARIANT}"
+    make -j "$(nproc)" image PROFILE="${DEVICE}" PACKAGES="${PACKAGES}" FILES="${ROOT_DIR}/custom" EXTRA_IMAGE_NAME="${VARIANT}"
 else
-    make -j "$(nproc)" image PROFILE="${DEVICE}" PACKAGES="${PACKAGES}" FILES="${THIS_DIR}/custom" EXTRA_IMAGE_NAME=custom
+    make -j "$(nproc)" image PROFILE="${DEVICE}" PACKAGES="${PACKAGES}" FILES="${ROOT_DIR}/custom" EXTRA_IMAGE_NAME=custom
 fi
 
-for item in "${THIS_DIR}/custom/etc/chinadns_chnroute.txt" \
-            "${THIS_DIR}/custom/etc/config/wireless" \
-            "${THIS_DIR}/custom/etc/dropbear/authorized_keys" \
-            "${THIS_DIR}/custom/etc/opkg"; do
+for item in "${ROOT_DIR}/custom/etc/chinadns_chnroute.txt" \
+            "${ROOT_DIR}/custom/etc/config/wireless" \
+            "${ROOT_DIR}/custom/etc/dropbear/authorized_keys" \
+            "${ROOT_DIR}/custom/etc/opkg"; do
     if [[ -f "${item}" ]]; then
         rm -f "${item}"
     elif [[ -d "${item}" ]]; then
