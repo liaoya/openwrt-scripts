@@ -31,3 +31,8 @@ Please use [PandoraBox](https://downloads.pangubox.com/pandorabox/19.01/targets/
 
 According to <https://git.openwrt.org/?p=openwrt/openwrt.git;a=commit;h=a4c84b2d734f0cba40b3d0a2183dbf221e7356e5>, Wireless radio doesn't work due to the lack of driver.
 Another important is the firmware start `0xa0000`, <https://git.openwrt.org/?p=openwrt/openwrt.git;a=blob;f=target/linux/ramips/dts/K2P.dts;h=4089ce64f5da120bb4d1ac884be4168ea637f546;hb=a4c84b2d734f0cba40b3d0a2183dbf221e7356e5>
+
+## Reference
+
+- <https://wiki.teltonika.lt/view/UCI_command_usage>
+- <http://www.panticz.de/tplink-etc-config-wireless>
