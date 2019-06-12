@@ -12,7 +12,7 @@ PACKAGES=""
 PACKAGES="${PACKAGES:+$PACKAGES }-wpad-mini -dnsmasq"
 PACKAGES="${PACKAGES:+$PACKAGES }luci luci-theme-bootstrap luci-i18n-base-zh-cn uci wpad"
 # for koolproxy
-PACKAGES="${PACKAGES:+$PACKAGES }openssl-util ipset dnsmasq-full iptables-mod-nat-extra wget ca-bundle ca-certificates libustream-openssl"
+PACKAGES="${PACKAGES:+$PACKAGES }busybox diffutils openssl-util ipset dnsmasq-full iptables-mod-nat-extra wget ca-bundle ca-certificates libustream-openssl"
 
 pre_ops() {
     add_wireless_config

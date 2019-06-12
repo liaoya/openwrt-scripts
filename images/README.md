@@ -23,7 +23,7 @@ Run the following command to install the image build requirements for Ubuntu 18.
 
 ### Can't put `diffutils` in rom
 
-koolproxy require diffutils, but we can't package it into rom. This is a know issue.
+koolproxy require diffutils, but we can't package it into rom. This is a know issue <https://github.com/openwrt/packages/issues/6361#issuecomment-500958659>, now there's workaround.
 
 ### K2P
 
