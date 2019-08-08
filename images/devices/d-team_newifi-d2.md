@@ -7,7 +7,7 @@
 ## Configuration
 
 ```bash
-echo -e 'policies\npolicies\n' | passwd
+echo -e 'admin\nadmin\n' | passwd
 
 uci set system.@system[0].hostname=newifi3-d2
 uci set system.@system[0].conloglevel=2

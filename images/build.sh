@@ -10,7 +10,7 @@ mkdir -p "${CACHE_DIR}"
 
 DEVICE=""
 VARIANT=""
-VERSION="18.06.2"
+VERSION="18.06.4"
 CLEAN=0
 
 print_usage() {
@@ -82,10 +82,14 @@ fi
 if [[ $(command -v pre_ops) ]]; then pre_ops; fi
 
 [[ ${CLEAN} -gt 0 ]] && make clean
-if [[ -n ${VARIANT} ]]; then
-    make -j "$(nproc)" image PROFILE="${DEVICE}" PACKAGES="${PACKAGES}" FILES="${ROOT_DIR}/custom" EXTRA_IMAGE_NAME="${VARIANT}"
+if [[ ${DEVICE} -eq "x64" ]]; then
+    make -j "$(nproc)" image PACKAGES="${PACKAGES}" FILES="${ROOT_DIR}/custom" EXTRA_IMAGE_NAME=custom
 else
-    make -j "$(nproc)" image PROFILE="${DEVICE}" PACKAGES="${PACKAGES}" FILES="${ROOT_DIR}/custom" EXTRA_IMAGE_NAME=custom
+    if [[ -n ${VARIANT} ]]; then
+        make -j "$(nproc)" image PROFILE="${DEVICE}" PACKAGES="${PACKAGES}" FILES="${ROOT_DIR}/custom" EXTRA_IMAGE_NAME="${VARIANT}"
+    else
+        make -j "$(nproc)" image PROFILE="${DEVICE}" PACKAGES="${PACKAGES}" FILES="${ROOT_DIR}/custom" EXTRA_IMAGE_NAME=custom
+    fi
 fi
 
 for item in "${ROOT_DIR}/custom/etc/chinadns_chnroute.txt" \
