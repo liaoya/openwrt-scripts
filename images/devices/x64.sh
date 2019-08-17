@@ -5,11 +5,11 @@ BASE_URL="https://downloads.openwrt.org/releases/${VERSION}/targets/x86/64"
 
 PACKAGES=""
 PACKAGES="${PACKAGES:+$PACKAGES }-wpad-mini -dnsmasq"
-PACKAGES="${PACKAGES:+$PACKAGES }bash bind-dig ca-bundle ca-certificates coreutils-base64 curl dnsmasq-full file \
+PACKAGES="${PACKAGES:+$PACKAGES }bash bind-dig ca-bundle ca-certificates coreutils-base64 curl dnsmasq-full fdisk file \
 ip-full ipset iptables-mod-tproxy \
 libustream-openssl libpthread \
 luci luci-theme-bootstrap luci-i18n-base-zh-cn \
-screen tmux \
+nano screen tmux \
 uci wpad"
 PACKAGES="${PACKAGES:+$PACKAGES }luci-i18n-firewall-zh-cn"
 PACKAGES="${PACKAGES:+$PACKAGES }luci-i18n-adblock-zh-cn"
