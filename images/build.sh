@@ -44,7 +44,7 @@ fi
 
 if [[ -f "${ROOT_DIR}/devices/${DEVICE}.sh" ]]; then
     source "${ROOT_DIR}/devices/${DEVICE}.sh"
-elif [[ -f "${ROOT_DIR}/devices/${DEVICE}/${VARIANT}.sh" ]]; then
+elif [[ -n ${VARIANT} && -f "${ROOT_DIR}/devices/${DEVICE}/${VARIANT}.sh" ]]; then
     source "${ROOT_DIR}/devices/${DEVICE}/${VARIANT}.sh"
 else
     echo "Require customized ${ROOT_DIR}/devices/${DEVICE}.sh or ${ROOT_DIR}/devices/${DEVICE}/${VARIANT}.sh"

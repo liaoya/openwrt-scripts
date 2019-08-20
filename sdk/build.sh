@@ -39,6 +39,7 @@ if [[ -z ${DEVICE} ]]; then
 fi
 
 if [[ -f "${ROOT_DIR}/devices/${DEVICE}.sh" ]]; then
+#shellcheck disable=SC1090
     source "${ROOT_DIR}/devices/${DEVICE}.sh"
 else
     echo "Require customized ${ROOT_DIR}/devices/${DEVICE}.sh or ${ROOT_DIR}/devices/${DEVICE}/${VARIANT}.sh"
