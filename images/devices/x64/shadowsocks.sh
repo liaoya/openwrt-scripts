@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #shellcheck disable=SC2034
-BASE_URL="https://downloads.openwrt.org/releases/${VERSION}/targets/armvirt/64"
+BASE_URL="https://downloads.openwrt.org/releases/${VERSION}/targets/x86/64"
 
 PACKAGES=""
 PACKAGES="${PACKAGES:+$PACKAGES }-wpad-mini -dnsmasq"
@@ -12,7 +12,6 @@ luci luci-theme-bootstrap luci-i18n-base-zh-cn \
 nano screen tmux \
 uci wpad"
 PACKAGES="${PACKAGES:+$PACKAGES }luci-i18n-firewall-zh-cn"
-PACKAGES="${PACKAGES:+$PACKAGES }luci-i18n-adblock-zh-cn"
 PACKAGES="${PACKAGES:+$PACKAGES }ChinaDNS luci-app-chinadns dns-forwarder luci-app-dns-forwarder shadowsocks-libev luci-app-shadowsocks simple-obfs ShadowVPN luci-app-shadowvpn"
 PACKAGES="${PACKAGES:+$PACKAGES }busybox diffutils openssl-util ipset dnsmasq-full iptables-mod-nat-extra wget ca-bundle ca-certificates libustream-openssl"
 
@@ -30,8 +29,8 @@ if [[ ! -f "${CACHE_DIR}/${IMAGE_BUILDER_FILENAME}" ]]; then
 fi
 
 pre_ops() {
-    for repo in "src/gz reboot_openwrt_dist http://openwrt-dist.sourceforge.net/packages/base/aarch64_generic" \
-	            "src/gz reboot_openwrt_dist_luci http://openwrt-dist.sourceforge.net/packages/luci"; do
+    for repo in "src/gz reboot_openwrt_dist http://openwrt-dist.sourceforge.net/packages/base/x86_64" \
+                "src/gz reboot_openwrt_dist_luci http://openwrt-dist.sourceforge.net/packages/luci"; do
         repo=$(echo "${repo}" | sed 's/\//\\\//g')
         sed -i "/telephony$/a ${repo}" repositories.conf
     done
@@ -40,7 +39,7 @@ pre_ops() {
 
     mkdir -p "${ROOT_DIR}/custom/etc/opkg"
     cat << EOF > "${ROOT_DIR}/custom/etc/opkg/customfeeds.conf"
-src/gz openwrt_dist http://openwrt-dist.sourceforge.net/packages/base/aarch64_generic
+src/gz openwrt_dist http://openwrt-dist.sourceforge.net/packages/base/x86_64
 src/gz openwrt_dist_luci http://openwrt-dist.sourceforge.net/packages/luci
 EOF
 }

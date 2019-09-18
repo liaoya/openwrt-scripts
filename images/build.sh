@@ -9,7 +9,7 @@ CACHE_DIR="${HOME}/.cache/openwrt"
 mkdir -p "${CACHE_DIR}"
 
 DEVICE=""
-VARIANT=""
+VARIANT="custom"
 VERSION="18.06.4"
 CLEAN=0
 
@@ -44,7 +44,7 @@ fi
 
 if [[ -f "${ROOT_DIR}/devices/${DEVICE}.sh" ]]; then
     source "${ROOT_DIR}/devices/${DEVICE}.sh"
-elif [[ -n ${VARIANT} && -f "${ROOT_DIR}/devices/${DEVICE}/${VARIANT}.sh" ]]; then
+elif [[ -f "${ROOT_DIR}/devices/${DEVICE}/${VARIANT}.sh" ]]; then
     source "${ROOT_DIR}/devices/${DEVICE}/${VARIANT}.sh"
 else
     echo "Require customized ${ROOT_DIR}/devices/${DEVICE}.sh or ${ROOT_DIR}/devices/${DEVICE}/${VARIANT}.sh"
@@ -83,13 +83,9 @@ if [[ $(command -v pre_ops) ]]; then pre_ops; fi
 
 [[ ${CLEAN} -gt 0 ]] && make clean
 if [[ ${DEVICE} -eq "x64" ]]; then
-    make -j "$(nproc)" image PACKAGES="${PACKAGES}" FILES="${ROOT_DIR}/custom" EXTRA_IMAGE_NAME=custom
+    make -j "$(nproc)" image PACKAGES="${PACKAGES}" FILES="${ROOT_DIR}/custom" EXTRA_IMAGE_NAME="${VARIANT}"
 else
-    if [[ -n ${VARIANT} ]]; then
-        make -j "$(nproc)" image PROFILE="${DEVICE}" PACKAGES="${PACKAGES}" FILES="${ROOT_DIR}/custom" EXTRA_IMAGE_NAME="${VARIANT}"
-    else
-        make -j "$(nproc)" image PROFILE="${DEVICE}" PACKAGES="${PACKAGES}" FILES="${ROOT_DIR}/custom" EXTRA_IMAGE_NAME=custom
-    fi
+    make -j "$(nproc)" image PROFILE="${DEVICE}" PACKAGES="${PACKAGES}" FILES="${ROOT_DIR}/custom" EXTRA_IMAGE_NAME="${VARIANT}"
 fi
 
 for item in "${ROOT_DIR}/custom/etc/chinadns_chnroute.txt" \
