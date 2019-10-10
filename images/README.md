@@ -8,7 +8,7 @@ Run the following command to install the image build requirements for Ubuntu 18.
 
 ## Build
 
-- Arm Arch64: `bash build.sh -d aarch64_generic`
+- Arm Arch64: `bash build.sh -d armvirt` `aarch64_generic` platform
 - WNDR4300V1: `bash build.sh -d WNDR4300V1`
 - Newifi D2: `bash build.sh -d d-team_newifi-d2`
 - X86: `bash build.sh -d x64`
