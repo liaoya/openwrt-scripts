@@ -8,6 +8,7 @@ Run the following command to install the image build requirements for Ubuntu 18.
 
 ## Build
 
+- Arm Arch64: `bash build.sh -d aarch64_generic`
 - WNDR4300V1: `bash build.sh -d WNDR4300V1`
 - Newifi D2: `bash build.sh -d d-team_newifi-d2`
 - X86: `bash build.sh -d x64`
@@ -19,6 +20,11 @@ Run the following command to install the image build requirements for Ubuntu 18.
 ## Shadowsocks
 
 <http://openwrt-dist.sourceforge.net/packages> is the best shadowsocks solution I found for openwrt.
+
+```bash
+wget http://openwrt-dist.sourceforge.net/openwrt-dist.pub
+opkg-key add openwrt-dist.pub
+```
 
 ## Issues
 
@@ -37,3 +43,4 @@ Another important is the firmware start `0xa0000`, <https://git.openwrt.org/?p=o
 
 - <https://wiki.teltonika.lt/view/UCI_command_usage>
 - <http://www.panticz.de/tplink-etc-config-wireless>
+- <https://www.systutorials.com/241523/how-to-advertise-different-gateway-ip-via-dhcp-in-openwrt/> : `uci add_list dhcp.lan.dhcp_option="3,192.168.1.10"`

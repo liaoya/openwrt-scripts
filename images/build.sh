@@ -82,7 +82,7 @@ fi
 if [[ $(command -v pre_ops) ]]; then pre_ops; fi
 
 [[ ${CLEAN} -gt 0 ]] && make clean
-if [[ ${DEVICE} -eq "x64" ]]; then
+if [[ ${DEVICE} == "x64" ]]; then
     make -j "$(nproc)" image PACKAGES="${PACKAGES}" FILES="${ROOT_DIR}/custom" EXTRA_IMAGE_NAME=custom
 else
     if [[ -n ${VARIANT} ]]; then
