@@ -59,7 +59,7 @@ EOF
 
 pre_ops() {
     for repo in "src/gz reboot_openwrt_dist http://openwrt-dist.sourceforge.net/packages/base/mipsel_24kc" \
-	            "src/gz reboot_openwrt_dist_luci http://openwrt-dist.sourceforge.net/packages/luci"; do
+                "src/gz reboot_openwrt_dist_luci http://openwrt-dist.sourceforge.net/packages/luci"; do
         repo=$(echo "${repo}" | sed 's/\//\\\//g')
         sed -i "/telephony$/a ${repo}" repositories.conf
     done

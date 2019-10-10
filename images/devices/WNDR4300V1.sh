@@ -62,7 +62,7 @@ EOF
 pre_ops() {
     sed -i  s/'23552k(ubi),25600k@0x6c0000(firmware)'/'120832k(ubi),122880k@0x6c0000(firmware)'/ target/linux/ar71xx/image/legacy.mk
     for repo in "src/gz reboot_openwrt_dist http://openwrt-dist.sourceforge.net/packages/base/mips_24kc" \
-	            "src/gz reboot_openwrt_dist_luci http://openwrt-dist.sourceforge.net/packages/luci"; do
+                "src/gz reboot_openwrt_dist_luci http://openwrt-dist.sourceforge.net/packages/luci"; do
         repo=$(echo "${repo}" | sed 's/\//\\\//g')
         sed -i "/telephony$/a ${repo}" repositories.conf
     done
