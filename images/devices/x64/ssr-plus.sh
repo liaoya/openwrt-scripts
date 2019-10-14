@@ -37,9 +37,9 @@ pre_ops() {
     if [[ -d "${SDK_DIR}/bin/packages/x86_64" ]]; then
     #shellcheck disable=SC2164
         (cd "${SDK_DIR}/bin/packages/x86_64"; nohup python3 -m http.server 8080 1>/dev/null 2>&1 &)
-        for repo in "src/gz reboot_openwrt_dist http://localhost:8080/base" \
-                    "src/gz reboot_openwrt_dist_luci http://localhost:8080/luci" \
-                    "src/gz reboot_openwrt_dist_package http://localhost:8080/packages"; do
+        for repo in "src/gz reboot_sdk_base http://localhost:8080/base" \
+                    "src/gz reboot_sdk_luci http://localhost:8080/luci" \
+                    "src/gz reboot_sdk_package http://localhost:8080/packages"; do
             repo=$(echo "${repo}" | sed 's/\//\\\//g')
             sed -i "/telephony$/a ${repo}" repositories.conf
         done
