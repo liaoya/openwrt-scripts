@@ -34,9 +34,9 @@ if [[ ! -f "${CACHE_DIR}/${IMAGE_BUILDER_FILENAME}" ]]; then
 fi
 
 pre_ops() {
-    if [[ -d "${SDK_DIR}/bin/packages/aarch64_generic" ]]; then
+    if [[ -d "${SDK_DIR}/bin/packages/x86_64" ]]; then
     #shellcheck disable=SC2164
-        (cd "${SDK_DIR}/bin/packages/aarch64_generic"; nohup python3 -m http.server 8080 1>/dev/null 2>&1 &)
+        (cd "${SDK_DIR}/bin/packages/x86_64"; nohup python3 -m http.server 8080 1>/dev/null 2>&1 &)
         for repo in "src/gz reboot_openwrt_dist http://localhost:8080/base" \
                     "src/gz reboot_openwrt_dist_luci http://localhost:8080/luci" \
                     "src/gz reboot_openwrt_dist_package http://localhost:8080/packages"; do
