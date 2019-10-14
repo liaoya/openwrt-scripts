@@ -136,3 +136,4 @@ tags
 *-sdk-*.Linux-x86_64.tar.xz
 *-imagebuilder-*Linux-x86_64/
 sha256sums
+/sdk/lean

@@ -7,20 +7,20 @@ ROOT_DIR=$(dirname "${ROOT_DIR}")
 CACHE_DIR="${HOME}/.cache/openwrt"
 mkdir -p "${CACHE_DIR}"
 
-DEVICE=""
-VERSION="18.06.4"
+TARGET=${OPENWRT_TARGET:-""}
+VERSION=${OPENWRT_VERSION:-"18.06.4"}
 CLEAN=0
 
 print_usage() {
-    echo "Usage [-d|--device] <device name> [-V|--version] <openwrt version> [-c|--clean] [-h|--help]"
+    echo "Usage [-t|--target] <target name> [-V|--version] <openwrt version> [-c|--clean] [-h|--help]"
 }
 
-TEMP=$(getopt -o d:v:c::h:: --long device:,version:,clean::,help:: -- "$@")
+TEMP=$(getopt -o t:v:c::h:: --long target:,version:,clean::,help:: -- "$@")
 eval set -- "$TEMP"
 while true ; do
     case "$1" in
-        -d|--device)
-            DEVICE=$2; shift 2 ;;
+        -t|--target)
+            TARGET=$2; shift 2 ;;
         -V|--version)
 #shellcheck disable=SC2034
             VERSION=$2; shift 2 ;;
@@ -33,16 +33,16 @@ while true ; do
     esac
 done
 
-if [[ -z ${DEVICE} ]]; then
+if [[ -z ${TARGET} ]]; then
     echo "Please assign the device type"
     exit 1
 fi
 
-if [[ -f "${ROOT_DIR}/devices/${DEVICE}.sh" ]]; then
+if [[ -f "${ROOT_DIR}/target/${TARGET}.sh" ]]; then
 #shellcheck disable=SC1090
-    source "${ROOT_DIR}/devices/${DEVICE}.sh"
+    source "${ROOT_DIR}/target/${TARGET}.sh"
 else
-    echo "Require customized ${ROOT_DIR}/devices/${DEVICE}.sh or ${ROOT_DIR}/devices/${DEVICE}/${VARIANT}.sh"
+    echo "Require customized ${ROOT_DIR}/target/${TARGET}.sh"
     exit 1
 fi
 
@@ -58,6 +58,38 @@ fi
 if [[ ! -f "${CACHE_DIR}/${SDK_FILENAME}" ]]; then
     curl -sL "${BASE_URL}/${SDK_FILENAME}" -o "${CACHE_DIR}/${SDK_FILENAME}"
 fi
-#shellcheck disable=SC2046
-if [[ ${CLEAN} -gt 0 && -d $(basename -s .tar.xz "${SDK_FILENAME}") ]]; then rm -fr $(basename -s .tar.xz "${SDK_FILENAME}"); fi
+SDK_DIR=$(basename -s .tar.xz "${SDK_FILENAME}")
+SDK_DIR=$(basename -s .tar.xz "${SDK_FILENAME}")
+if [[ ${CLEAN} -gt 0 && -d "${SDK_DIR}" ]]; then rm -fr "${SDK_DIR}"; fi
 if [[ ! -d $(basename -s .tar.xz "${SDK_FILENAME}") ]]; then tar -xf "${CACHE_DIR}/${SDK_FILENAME}"; fi
+
+if [[ -d "${ROOT_DIR}/lede" ]]; then
+    (cd "${ROOT_DIR}/lede"; git fetch -p --all; git pull)
+else
+    git clone https://github.com/coolsnowwolf/lede.git
+fi
+
+if [[ $(command -v pre_ops) ]]; then pre_ops; fi
+
+if [[ -d "${SDK_DIR}/package/lean" ]]; then
+    rm -fr "${SDK_DIR}/package/lean"
+fi
+cp -pr "${ROOT_DIR}/lede/package/lean" "${SDK_DIR}/package"
+
+cd "${SDK_DIR}"
+./scripts/feeds update -a
+./scripts/feeds install -a
+# Build ssr-plus
+make -j"$(nproc)" package/feeds/luci/luci-base/compile
+make -j"$(nproc)" package/lean/luci-app-ssr-plus/compile
+make -j"$(nproc)" package/lean/shadowsocksr-libev/compile
+make -j"$(nproc)" package/lean/v2ray/compile
+# Build adbyby plus
+make -j"$(nproc)" package/lean/adbyby/compile
+make -j"$(nproc)" package/lean/luci-app-adbyby-plus/compile
+# Build vlmcsd
+make -j"$(nproc)" make package/lean/luci-app-vlmcsd/compile
+make -j"$(nproc)" package/lean/vlmcsd/compile
+make package/index
+
+if [[ $(command -v post_ops) ]]; then post_ops; fi
