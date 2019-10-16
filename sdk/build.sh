@@ -59,6 +59,7 @@ if [[ ! -f "${CACHE_DIR}/${SDK_FILENAME}" ]]; then
     curl -sL "${BASE_URL}/${SDK_FILENAME}" -o "${CACHE_DIR}/${SDK_FILENAME}"
 fi
 SDK_DIR=$(basename -s .tar.xz "${SDK_FILENAME}")
+SDK_DIR="${ROOT_DIR}/${SDK_DIR}"
 if [[ ${CLEAN} -gt 0 && -d "${SDK_DIR}" ]]; then rm -fr "${SDK_DIR}"; fi
 if [[ ! -d "${SDK_DIR}" ]]; then tar -xf "${CACHE_DIR}/${SDK_FILENAME}"; fi
 
@@ -90,18 +91,14 @@ fi
 cd "${SDK_DIR}"
 ./scripts/feeds update -a
 ./scripts/feeds install -a
-# Build ssr-plus
 make -j"$(nproc)" package/feeds/luci/luci-base/compile
-make -j"$(nproc)" package/lean/luci-app-ssr-plus/compile
-make -j"$(nproc)" package/lean/shadowsocksr-libev/compile
-make -j"$(nproc)" package/lean/v2ray/compile
-make -j"$(nproc)" package/lean/pdnsd-alt/compile
-# Build adbyby plus
-make -j"$(nproc)" package/lean/adbyby/compile
-make -j"$(nproc)" package/lean/luci-app-adbyby-plus/compile
-# Build vlmcsd
-make -j"$(nproc)" package/lean/luci-app-vlmcsd/compile
-make -j"$(nproc)" package/lean/vlmcsd/compile
+for item in "${SDK_DIR}"/package/lean/*; do
+    if [[ -d "${item}" ]]; then
+        name=$(basename "${item}")
+        make -j"$(nproc)" package/lean/${name}/compile || true
+    fi
+done
+
 make package/index
 
 if [[ $(command -v post_ops) ]]; then post_ops; fi
