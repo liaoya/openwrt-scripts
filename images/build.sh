@@ -8,6 +8,8 @@ ROOT_DIR=$(dirname "${ROOT_DIR}")
 CACHE_DIR="${HOME}/.cache/openwrt"
 mkdir -p "${CACHE_DIR}"
 
+BASE_URL_PREFIX="https://downloads.openwrt.org"
+# http://mirrors.tuna.tsinghua.edu.cn/lede
 DEVICE=${OPENWRT_DEVICE:-""}
 VARIANT=${OPENWRT_VARIANT_:-"custom"}
 VERSION=${OPENWRT_VERSION:-"18.06.4"}

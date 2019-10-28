@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #shellcheck disable=SC2034
-BASE_URL="https://downloads.openwrt.org/releases/${VERSION}/targets/ar71xx/nand"
+BASE_URL="${BASE_URL_PREFIX}/releases/${VERSION}/targets/ar71xx/nand"
 
 PACKAGES=""
 PACKAGES="${PACKAGES:+$PACKAGES }-wpad-mini -dnsmasq"

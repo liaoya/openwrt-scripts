@@ -7,6 +7,7 @@ ROOT_DIR=$(dirname "${ROOT_DIR}")
 CACHE_DIR="${HOME}/.cache/openwrt"
 mkdir -p "${CACHE_DIR}"
 
+BASE_URL_PREFIX="https://downloads.openwrt.org"
 TARGET=${OPENWRT_TARGET:-""}
 VERSION=${OPENWRT_VERSION:-"18.06.4"}
 CLEAN=0

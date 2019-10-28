@@ -1,5 +1,8 @@
 # Using official OpenWRT SDK to build third party package
 
+- `bash -t armvirt-64`
+- `bash -t x86-64`
+
 ## Build lean
 
 ```bash
