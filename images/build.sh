@@ -1,5 +1,5 @@
 #!/bin/bash
-#shellcheck disable=SC1090,SC2164
+#shellcheck disable=SC1090,SC2034,SC2164
 
 set -a -e -x
 
@@ -8,18 +8,18 @@ ROOT_DIR=$(dirname "${ROOT_DIR}")
 CACHE_DIR="${HOME}/.cache/openwrt"
 mkdir -p "${CACHE_DIR}"
 
-BASE_URL_PREFIX="https://downloads.openwrt.org"
-# http://mirrors.tuna.tsinghua.edu.cn/lede
+BASE_URL_PREFIX=http://downloads.openwrt.org
 DEVICE=${OPENWRT_DEVICE:-""}
 VARIANT=${OPENWRT_VARIANT_:-"custom"}
 VERSION=${OPENWRT_VERSION:-"18.06.5"}
 CLEAN=0
+MIRROR=0
 
 print_usage() {
-    echo "Usage [-d|--device] <device name> [-v|--variant] [image variant] [-V|--version] <openwrt version> [-c|--clean] [-h|--help]"
+    echo "Usage [-d|--device] <device name> [-v|--variant] [image variant] [-V|--version] <openwrt version> [-c|--clean] [-h|--help] [-m|--mirror]"
 }
 
-TEMP=$(getopt -o d:v:c::h:: --long device:,version:,clean::,help:: -- "$@")
+TEMP=$(getopt -o d:v:c::h::m:: --long device:,version:,clean::,help::,mirror:: -- "$@")
 eval set -- "$TEMP"
 while true ; do
     case "$1" in
@@ -29,11 +29,13 @@ while true ; do
             VARIANT=$2; shift 2 ;;
         -V|--version)
 #shellcheck disable=SC2034
-            VERSION=$2; shift 2 ;;
+            VERSION=$2; shift 1 ;;
         -c|--clean)
             CLEAN=1; shift 2 ;;
         -h|--help)
             print_usage; exit 0 ;;
+        -m|--mirror)
+            MIRROR=1; shift 2 ;;
         --) shift; break ;;
         *)  print_usage; exit 1 ;;
     esac
@@ -42,6 +44,10 @@ done
 if [[ -z ${DEVICE} ]]; then
     echo "Please assign the device type"
     exit 1
+fi
+
+if [[ ${MIRROR} -eq 1 ]]; then
+    BASE_URL_PREFIX=http://mirrors.tuna.tsinghua.edu.cn/lede
 fi
 
 if [[ -f "${ROOT_DIR}/devices/${DEVICE}.sh" ]]; then
@@ -77,6 +83,10 @@ fi
 if [[ ! -f repositories.conf.bak ]]; then
     cp -r repositories.conf repositories.conf.bak
 fi
+if [[ ${MIRROR} -eq 1 ]]; then
+    sed -i -e "s|http://downloads.openwrt.org|${BASE_URL_PREFIX}|g" -e "s|https://downloads.openwrt.org|${BASE_URL_PREFIX}|g" repositories.conf
+fi
+
 if [[ -f ~/.ssh/id_rsa.pub ]]; then
     [[ -d "${ROOT_DIR}/custom/etc/dropbear" ]] || mkdir "${ROOT_DIR}/custom/etc/dropbear"
     cat ~/.ssh/id_rsa.pub > "${ROOT_DIR}/custom/etc/dropbear/authorized_keys"

@@ -1,4 +1,5 @@
 #!/bin/bash
+#shellcheck disable=SC2034
 
 set -a -e -x
 
@@ -7,16 +8,17 @@ ROOT_DIR=$(dirname "${ROOT_DIR}")
 CACHE_DIR="${HOME}/.cache/openwrt"
 mkdir -p "${CACHE_DIR}"
 
-BASE_URL_PREFIX="https://downloads.openwrt.org"
+BASE_URL_PREFIX=http://downloads.openwrt.org
 TARGET=${OPENWRT_TARGET:-""}
-VERSION=${OPENWRT_VERSION:-"18.06.4"}
+VERSION=${OPENWRT_VERSION:-"18.06.5"}
 CLEAN=0
+MIRROR=0
 
 print_usage() {
-    echo "Usage [-t|--target] <target name> [-V|--version] <openwrt version> [-c|--clean] [-h|--help]"
+    echo "Usage [-t|--target] <target name> [-V|--version] <openwrt version> [-c|--clean] [-h|--help] [-m|--mirror]"
 }
 
-TEMP=$(getopt -o t:v:c::h:: --long target:,version:,clean::,help:: -- "$@")
+TEMP=$(getopt -o t:v:c::h::m:: --long target:,version:,clean::,help::,mirror:: -- "$@")
 eval set -- "$TEMP"
 while true ; do
     case "$1" in
@@ -29,10 +31,16 @@ while true ; do
             CLEAN=1; shift 2 ;;
         -h|--help)
             print_usage; exit 0 ;;
+        -m|--mirror)
+            MIRROR=1; shift 2 ;;
         --) shift; break ;;
         *)  print_usage; exit 1 ;;
     esac
 done
+
+if [[ ${MIRROR} -eq 1 ]]; then
+    BASE_URL_PREFIX=http://mirrors.tuna.tsinghua.edu.cn/lede
+fi
 
 if [[ -z ${TARGET} ]]; then
     echo "Please assign the device type"
@@ -96,7 +104,7 @@ make -j"$(nproc)" package/feeds/luci/luci-base/compile
 for item in "${SDK_DIR}"/package/lean/*; do
     if [[ -d "${item}" ]]; then
         name=$(basename "${item}")
-        make -j"$(nproc)" package/lean/${name}/compile || true
+        make -j"$(nproc)" "package/lean/${name}/compile" || true
     fi
 done
 

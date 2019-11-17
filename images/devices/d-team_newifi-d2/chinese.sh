@@ -3,7 +3,9 @@
 
 THIS_DIR=$(readlink -f "${BASH_SOURCE[0]}")
 THIS_DIR=$(dirname "${THIS_DIR}")
-source "${THIS_DIR}/functions.sh"
+if [[ -f "${THIS_DIR}/functions.sh" ]]; then
+    source "${THIS_DIR}/functions.sh"
+fi
 
 #shellcheck disable=SC2034
 BASE_URL="${BASE_URL_PREFIX}/releases/${VERSION}/targets/ramips/mt7621"

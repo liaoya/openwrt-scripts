@@ -9,7 +9,7 @@ source "${THIS_DIR}/functions.sh"
 BASE_URL=${BASE_URL_PREFIX}/releases/${VERSION}/targets/ramips/mt7620
 
 PACKAGES=""
-PACKAGES="${PACKAGES:+$PACKAGES }luci luci-theme-bootstrap luci-i18n-base-zh-cn"
+PACKAGES="${PACKAGES:+$PACKAGES }luci luci-theme-bootstrap luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn"
 
 pre_ops() {
     add_wireless_config

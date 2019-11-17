@@ -10,7 +10,7 @@ Run the following command to install the image build requirements for Ubuntu 18.
 
 - Arm Arch64: `bash build.sh -d armvirt` `aarch64_generic` platform
 - WNDR4300V1: `bash build.sh -d WNDR4300V1`
-- Newifi D2: `bash build.sh -d d-team_newifi-d2`
+- Newifi D2: `bash build.sh -d d-team_newifi-d2 -v chinese`
 - X86: `bash build.sh -d x64`
 - K2: It has only 8M Rom and 100Mb NIC, but its wireless signal is very good
   - Only add chinese translation: `bash build.sh -d psg1218a -v chinese`
