@@ -10,16 +10,25 @@ mkdir -p "${CACHE_DIR}"
 
 BASE_URL_PREFIX=http://downloads.openwrt.org
 DEVICE=${OPENWRT_DEVICE:-""}
-VARIANT=${OPENWRT_VARIANT_:-"custom"}
-VERSION=${OPENWRT_VERSION:-"18.06.5"}
+VARIANT=${OPENWRT_VARIANT:-"custom"}
+VERSION=${OPENWRT_VERSION:-"19.07.0"}
 CLEAN=0
 MIRROR=0
 
 print_usage() {
-    echo "Usage [-d|--device] <device name> [-v|--variant] [image variant] [-V|--version] <openwrt version> [-c|--clean] [-h|--help] [-m|--mirror]"
+    cat <<EOF
+Usage: $(basename "${BASH_SOURCE[0]}") [OPTIONS]
+OPTIONS
+    -d, --device DEVICE NAME
+    -v, --variant IMAGE VARIANT
+    -V, --version OpenWRT VERSION
+    -c, --clean clean build
+    -h, --help show help
+    -m, --mirror choose chinese openwrt mirror
+EOF
 }
 
-TEMP=$(getopt -o d:v:c::h::m:: --long device:,version:,clean::,help::,mirror:: -- "$@")
+TEMP=$(getopt -o d:v:V:c::h::m:: --long device:,variant:,version:,clean::,help::,mirror:: -- "$@")
 eval set -- "$TEMP"
 while true ; do
     case "$1" in
@@ -29,9 +38,9 @@ while true ; do
             VARIANT=$2; shift 2 ;;
         -V|--version)
 #shellcheck disable=SC2034
-            VERSION=$2; shift 1 ;;
+            VERSION=$2; shift 2 ;;
         -c|--clean)
-            CLEAN=1; shift 2 ;;
+            CLEAN=1; shift 1 ;;
         -h|--help)
             print_usage; exit 0 ;;
         -m|--mirror)
@@ -47,6 +56,7 @@ if [[ -z ${DEVICE} ]]; then
 fi
 
 if [[ ${MIRROR} -eq 1 ]]; then
+#    BASE_URL_PREFIX=http://mirrors.tuna.tsinghua.edu.cn/lede
     BASE_URL_PREFIX=http://mirrors.tuna.tsinghua.edu.cn/lede
 fi
 

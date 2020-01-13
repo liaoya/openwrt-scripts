@@ -11,7 +11,7 @@ fi
 BASE_URL="${BASE_URL_PREFIX}/releases/${VERSION}/targets/ramips/mt7621"
 
 PACKAGES=""
-PACKAGES="${PACKAGES:+$PACKAGES }-wpad-mini -dnsmasq"
+PACKAGES="${PACKAGES:+$PACKAGES }-wpad-mini -wpad-basic -dnsmasq"
 PACKAGES="${PACKAGES:+$PACKAGES }bash bind-dig ca-bundle ca-certificates coreutils-base64 curl dnsmasq-full file \
 ip-full ipset iptables-mod-tproxy \
 libustream-openssl libpthread \
