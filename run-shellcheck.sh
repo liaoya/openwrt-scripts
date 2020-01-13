@@ -19,7 +19,7 @@ run_shellcheck() {
 if [[ $# -eq 0 ]]; then
     run_shellcheck "${ROOT_DIR}"
 else
-    while (( "$#")); do
+    while (( "$#" )); do
         target_dir=$1; shift;
         [[ -d "${target_dir}" ]] && run_shellcheck "${target_dir}"
     done

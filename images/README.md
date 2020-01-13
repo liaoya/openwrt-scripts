@@ -13,7 +13,7 @@ Run the following command to install the image build requirements for Ubuntu 18.
 - Newifi D2: `bash build.sh -d d-team_newifi-d2 -v chinese`
 - X86: `bash build.sh -d x64`
 - K2: It has only 8M Rom and 100Mb NIC, but its wireless signal is very good
-  - Only add chinese translation: `bash build.sh -d psg1218a -v chinese`
+  - Only add chinese translation: `bash build.sh -d psg1218a -v chinese -V 18.06.6`
   - Add ShadowSocks: `bash build.sh -d psg1218a -v shadowsocks`
   - Add koolproxy support (koolproxy is not installed): `bash build.sh -d psg1218a -v koolproxy`
 
