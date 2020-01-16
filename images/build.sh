@@ -22,13 +22,13 @@ OPTIONS
     -d, --device DEVICE NAME
     -v, --variant IMAGE VARIANT
     -V, --version OpenWRT VERSION
-    -c, --clean clean build
-    -h, --help show help
-    -m, --mirror choose chinese openwrt mirror
+    -c, --clean: clean build
+    -h, --help: show help
+    -m, --mirror: choose chinese openwrt mirror
 EOF
 }
 
-TEMP=$(getopt -o d:v:V:c::h::m:: --long device:,variant:,version:,clean::,help::,mirror:: -- "$@")
+TEMP=$(getopt -o d:v:V:c:::h::m:: --long device:,variant:,version:,clean::,help::,mirror:: -- "$@")
 eval set -- "$TEMP"
 while true ; do
     case "$1" in
@@ -40,7 +40,7 @@ while true ; do
 #shellcheck disable=SC2034
             VERSION=$2; shift 2 ;;
         -c|--clean)
-            CLEAN=1; shift 1 ;;
+            CLEAN=1; shift 2 ;;
         -h|--help)
             print_usage; exit 0 ;;
         -m|--mirror)

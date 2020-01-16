@@ -20,9 +20,9 @@ Usage: $(basename "${BASH_SOURCE[0]}") [OPTIONS]
 OPTIONS
     -t, --target CPU Arch
     -v, --version OpenWRT VERSION
-    -c, --clean clean build
-    -h, --help show help
-    -m, --mirror choose chinese openwrt mirror
+    -c, --clean: clean build
+    -h, --help: show help
+    -m, --mirror: choose chinese openwrt mirror
 EOF
 }
 
@@ -36,7 +36,7 @@ while true ; do
 #shellcheck disable=SC2034
             VERSION=$2; shift 2 ;;
         -c|--clean)
-            CLEAN=1; shift 1 ;;
+            CLEAN=1; shift 2 ;;
         -h|--help)
             print_usage; exit 0 ;;
         -m|--mirror)
