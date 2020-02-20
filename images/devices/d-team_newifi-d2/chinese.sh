@@ -17,5 +17,5 @@ ip-full ipset iptables-mod-tproxy \
 libustream-openssl libpthread \
 luci luci-theme-bootstrap luci-i18n-base-zh-cn \
 screen tmux \
-uci wpad"
+uci uhttpd-mod-ubus wpad"
 PACKAGES="${PACKAGES:+$PACKAGES }luci-i18n-firewall-zh-cn"

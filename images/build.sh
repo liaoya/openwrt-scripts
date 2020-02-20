@@ -19,12 +19,12 @@ print_usage() {
     cat <<EOF
 Usage: $(basename "${BASH_SOURCE[0]}") [OPTIONS]
 OPTIONS
-    -d, --device DEVICE NAME
-    -v, --variant IMAGE VARIANT
-    -V, --version OpenWRT VERSION
-    -c, --clean clean build
-    -h, --help show help
-    -m, --mirror choose chinese openwrt mirror
+    -d, --device, DEVICE NAME
+    -v, --variant, IMAGE VARIANT
+    -V, --version, OpenWRT VERSION
+    -c, --clean, clean build
+    -h, --help, show help
+    -m, --mirror, choose chinese openwrt mirror
 EOF
 }
 
