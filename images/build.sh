@@ -28,26 +28,27 @@ OPTIONS
 EOF
 }
 
-TEMP=$(getopt -o d:v:V:c::h::m:: --long device:,variant:,version:,clean::,help::,mirror:: -- "$@")
+TEMP=$(getopt -o d:v:V:chm --long device:,variant:,version:,clean,help,mirror -- "$@")
 eval set -- "$TEMP"
 while true ; do
     case "$1" in
         -d|--device)
-            DEVICE=$2; shift 2 ;;
+            shift; DEVICE=$1; ;;
         -v|--variant)
-            VARIANT=$2; shift 2 ;;
+            shift; VARIANT=$1; ;;
         -V|--version)
 #shellcheck disable=SC2034
-            VERSION=$2; shift 2 ;;
+            shift; VERSION=$1 ;;
         -c|--clean)
-            CLEAN=1; shift 1 ;;
+            CLEAN=1; ;;
         -h|--help)
             print_usage; exit 0 ;;
         -m|--mirror)
-            MIRROR=1; shift 2 ;;
+            MIRROR=1; ;;
         --) shift; break ;;
         *)  print_usage; exit 1 ;;
     esac
+    shift
 done
 
 if [[ -z ${DEVICE} ]]; then

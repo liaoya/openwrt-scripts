@@ -26,24 +26,25 @@ OPTIONS
 EOF
 }
 
-TEMP=$(getopt -o t:v:c::h::m:: --long target:,version:,clean::,help::,mirror:: -- "$@")
+TEMP=$(getopt -o t:v:chm --long target:,version:,clean,help,mirror -- "$@")
 eval set -- "$TEMP"
 while true ; do
     case "$1" in
         -t|--target)
-            TARGET=$2; shift 2 ;;
+            shift; TARGET=$1; ;;
         -v|--version)
 #shellcheck disable=SC2034
-            VERSION=$2; shift 2 ;;
+            shift; VERSION=$1; ;;
         -c|--clean)
-            CLEAN=1; shift 1 ;;
+            CLEAN=1; ;;
         -h|--help)
-            print_usage; exit 0 ;;
+            print_usage; exit 0; ;;
         -m|--mirror)
-            MIRROR=1; shift 2 ;;
+            MIRROR=1; ;;
         --) shift; break ;;
-        *)  print_usage; exit 1 ;;
+        *)  print_usage; exit 1; ;;
     esac
+    shift
 done
 
 if [[ ${MIRROR} -eq 1 ]]; then
@@ -106,14 +107,15 @@ if [[ $(command -v pre_ops) ]]; then pre_ops; fi
 #     git clone https://github.com/kuoruan/luci-app-v2ray.git "${SDK_DIR}/package/luci-app-v2ray"
 # fi
 
-cd "${SDK_DIR}"
-echo "src-git lienol https://github.com/Lienol/openwrt-package;master" >> feeds.conf.default
-./scripts/feeds update -a
-./scripts/feeds install -a
-./scripts/feeds update -a
-./scripts/feeds install -a
-make -j"$(nproc)" package/feeds/luci/luci-base/compile
-make -j"$(nproc)" package/feeds/lienol/luci-app-passwall/compile
+# cd "${SDK_DIR}"
+# echo "src-git lienol https://github.com/Lienol/openwrt-package;master" >> feeds.conf.default
+# ./scripts/feeds update -a
+# ./scripts/feeds install -a
+# ./scripts/feeds update -a
+# ./scripts/feeds install -a
+# make -j"$(nproc)" package/feeds/luci/luci-base/compile
+# make -j"$(nproc)" package/feeds/lienol/luci-app-passwall/compile
+
 # for item in "${SDK_DIR}"/package/lean/*; do
 #     if [[ -d "${item}" ]]; then
 #         name=$(basename "${item}")
