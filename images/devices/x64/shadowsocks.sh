@@ -9,11 +9,14 @@ PACKAGES="${PACKAGES:+$PACKAGES }bash bind-dig ca-bundle ca-certificates coreuti
 ip-full ipset iptables-mod-tproxy \
 libustream-openssl libpthread \
 luci luci-theme-bootstrap luci-i18n-base-zh-cn \
-nano screen tmux \
-uci uhttpd-mod-ubus wpad"
+nano tmux \
+uci wpad"
 PACKAGES="${PACKAGES:+$PACKAGES }luci-i18n-firewall-zh-cn"
 PACKAGES="${PACKAGES:+$PACKAGES }ChinaDNS luci-app-chinadns dns-forwarder luci-app-dns-forwarder shadowsocks-libev luci-app-shadowsocks simple-obfs ShadowVPN luci-app-shadowvpn"
 PACKAGES="${PACKAGES:+$PACKAGES }busybox diffutils openssl-util ipset dnsmasq-full iptables-mod-nat-extra wget ca-bundle ca-certificates libustream-openssl"
+if [[ ${VERSOIN} =~ 19.07 ]]; then
+    PACKAGES="${PACKAGES:+$PACKAGES }-wpad-basic luci-compat uhttpd-mod-ubus"
+fi
 
 pre_ops() {
     for repo in "src/gz reboot_openwrt_dist http://openwrt-dist.sourceforge.net/packages/base/x86_64" \

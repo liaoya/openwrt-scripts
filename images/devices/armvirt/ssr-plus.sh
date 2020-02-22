@@ -4,18 +4,21 @@
 BASE_URL="${BASE_URL_PREFIX}/releases/${VERSION}/targets/armvirt/64"
 
 PACKAGES=""
-PACKAGES="${PACKAGES:+$PACKAGES }-wpad-mini -wpad-basic -dnsmasq"
+PACKAGES="${PACKAGES:+$PACKAGES }-wpad-mini -dnsmasq"
 PACKAGES="${PACKAGES:+$PACKAGES }bash bind-dig ca-bundle ca-certificates coreutils-base64 curl dnsmasq-full fdisk file \
 ip-full ipset iptables-mod-tproxy \
 libustream-openssl libpthread \
 luci luci-theme-bootstrap luci-i18n-base-zh-cn \
-nano screen tmux \
-uci uhttpd-mod-ubus wpad"
+nano tmux \
+uci wpad"
 PACKAGES="${PACKAGES:+$PACKAGES }luci-i18n-firewall-zh-cn"
 PACKAGES="${PACKAGES:+$PACKAGES }busybox diffutils openssl-util ipset dnsmasq-full iptables-mod-nat-extra wget ca-bundle ca-certificates libustream-openssl"
 PACKAGES="${PACKAGES:+$PACKAGES }luci-i18n-vlmcsd-zh-cn luci-app-vlmcsd vlmcsd"
 PACKAGES="${PACKAGES:+$PACKAGES }adbyby luci-app-adbyby-plus luci-i18n-adbyby-plus-zh-cn"
 PACKAGES="${PACKAGES:+$PACKAGES }luci-app-ssr-plus shadowsocksr-libev-ssr-local v2ray pdnsd-alt"
+if [[ ${VERSOIN} =~ 19.07 ]]; then
+    PACKAGES="${PACKAGES:+$PACKAGES }-wpad-basic luci-compat uhttpd-mod-ubus"
+fi
 
 curl -sLO "${BASE_URL}/sha256sums"
 SHA256_VALUE=$(grep imagebuilder sha256sums | cut -d' ' -f1)

@@ -14,7 +14,7 @@ PACKAGES="${PACKAGES:+$PACKAGES }bind-dig ca-bundle ca-certificates dnsmasq-full
 ip-full ipset iptables-mod-tproxy \
 libustream-openssl libpthread \
 luci luci-theme-bootstrap \
-uci uhttpd-mod-ubus wpad"
+uci wpad"
 PACKAGES="${PACKAGES:+$PACKAGES }ChinaDNS luci-app-chinadns dns-forwarder luci-app-dns-forwarder shadowsocks-libev luci-app-shadowsocks simple-obfs"
 
 pre_ops() {

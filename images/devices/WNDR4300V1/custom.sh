@@ -10,9 +10,11 @@ ip-full ipset iptables-mod-tproxy \
 libustream-openssl libpthread \
 luci luci-theme-bootstrap luci-i18n-base-zh-cn \
 screen tmux \
-uci uhttpd-mod-ubus wpad"
+uci wpad"
 PACKAGES="${PACKAGES:+$PACKAGES }luci-i18n-firewall-zh-cn"
-PACKAGES="${PACKAGES:+$PACKAGES }busybox diffutils openssl-util ipset dnsmasq-full iptables-mod-nat-extra wget ca-bundle ca-certificates libustream-openssl"
+if [[ ${VERSOIN} =~ 19.07 ]]; then
+    PACKAGES="${PACKAGES:+$PACKAGES }-wpad-basic luci-compat uhttpd-mod-ubus"
+fi
 
 add_wireless_config() {
     cat <<EOF > "${ROOT_DIR}/custom/etc/config/wireless"
