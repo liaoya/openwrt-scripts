@@ -7,8 +7,8 @@ PACKAGES=""
 PACKAGES="${PACKAGES:+$PACKAGES }-wpad-mini  -wpad-basic -dnsmasq"
 PACKAGES="${PACKAGES:+$PACKAGES }bash bind-dig ca-bundle ca-certificates coreutils-base64 curl dnsmasq-full file \
 ip-full ipset iptables-mod-tproxy \
-libustream-openssl libpthread \
-luci luci-theme-bootstrap luci-i18n-base-zh-cn \
+libpthread \
+luci luci-theme-bootstrap luci-i18n-base-zh-cn luci-ssl \
 screen tmux \
 uci wpad"
 PACKAGES="${PACKAGES:+$PACKAGES }luci-i18n-firewall-zh-cn"
