@@ -14,7 +14,7 @@ uci wpad"
 PACKAGES="${PACKAGES:+$PACKAGES }luci-i18n-firewall-zh-cn"
 PACKAGES="${PACKAGES:+$PACKAGES }luci-i18n-adblock-zh-cn"
 PACKAGES="${PACKAGES:+$PACKAGES }ChinaDNS luci-app-chinadns dns-forwarder luci-app-dns-forwarder shadowsocks-libev luci-app-shadowsocks simple-obfs ShadowVPN luci-app-shadowvpn"
-if [[ ${VERSOIN} =~ 19.07 ]]; then
+if [[ ${VERSION} =~ 19.07 ]]; then
     PACKAGES="${PACKAGES:+$PACKAGES }-wpad-basic luci-compat luci-lib-ipkg uhttpd-mod-ubus"
 fi
 

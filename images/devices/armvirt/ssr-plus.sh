@@ -16,7 +16,7 @@ PACKAGES="${PACKAGES:+$PACKAGES }busybox diffutils openssl-util ipset dnsmasq-fu
 PACKAGES="${PACKAGES:+$PACKAGES }luci-i18n-vlmcsd-zh-cn luci-app-vlmcsd vlmcsd"
 PACKAGES="${PACKAGES:+$PACKAGES }adbyby luci-app-adbyby-plus luci-i18n-adbyby-plus-zh-cn"
 PACKAGES="${PACKAGES:+$PACKAGES }luci-app-ssr-plus shadowsocksr-libev-ssr-local v2ray pdnsd-alt"
-if [[ ${VERSOIN} =~ 19.07 ]]; then
+if [[ ${VERSION} =~ 19.07 ]]; then
     PACKAGES="${PACKAGES:+$PACKAGES }-wpad-basic luci-compat luci-lib-ipkg uhttpd-mod-ubus"
 fi
 

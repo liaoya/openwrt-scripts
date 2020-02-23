@@ -12,7 +12,7 @@ luci luci-theme-bootstrap luci-i18n-base-zh-cn luci-ssl \
 screen tmux \
 uci wpad"
 PACKAGES="${PACKAGES:+$PACKAGES }luci-i18n-firewall-zh-cn"
-if [[ ${VERSOIN} =~ 19.07 ]]; then
+if [[ ${VERSION} =~ 19.07 ]]; then
     PACKAGES="${PACKAGES:+$PACKAGES }-wpad-basic luci-compat luci-lib-ipkg uhttpd-mod-ubus"
 fi
 
