@@ -14,7 +14,7 @@ uci wpad"
 PACKAGES="${PACKAGES:+$PACKAGES }luci-i18n-firewall-zh-cn"
 PACKAGES="${PACKAGES:+$PACKAGES }busybox diffutils openssl-util ipset dnsmasq-full iptables-mod-nat-extra wget ca-bundle ca-certificates libustream-openssl"
 if [[ ${VERSOIN} =~ 19.07 ]]; then
-    PACKAGES="${PACKAGES:+$PACKAGES }-wpad-basic luci-compat uhttpd-mod-ubus"
+    PACKAGES="${PACKAGES:+$PACKAGES }-wpad-basic luci-compat luci-lib-ipkg uhttpd-mod-ubus"
 fi
 
 curl -sLO "${BASE_URL}/sha256sums"

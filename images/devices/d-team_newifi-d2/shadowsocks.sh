@@ -17,7 +17,7 @@ PACKAGES="${PACKAGES:+$PACKAGES }ChinaDNS luci-app-chinadns dns-forwarder luci-a
 # for adbyby
 PACKAGES="${PACKAGES:+$PACKAGES }libstdcpp kmod-nls-base kmod-nls-utf8"
 if [[ ${VERSOIN} =~ 19.07 ]]; then
-    PACKAGES="${PACKAGES:+$PACKAGES }-wpad-basic luci-compat uhttpd-mod-ubus"
+    PACKAGES="${PACKAGES:+$PACKAGES }-wpad-basic luci-compat luci-lib-ipkg uhttpd-mod-ubus"
 fi
 
 add_wireless_config() {

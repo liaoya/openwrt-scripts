@@ -82,6 +82,12 @@ SDK_DIR="${ROOT_DIR}/${SDK_DIR}"
 if [[ ${CLEAN} -gt 0 && -d "${SDK_DIR}" ]]; then rm -fr "${SDK_DIR}"; fi
 if [[ ! -d "${SDK_DIR}" ]]; then tar -xf "${CACHE_DIR}/${SDK_FILENAME}"; fi
 
+sed -e 's|git.openwrt.org/openwrt/openwrt|github.com/openwrt/openwrt|g' \
+    -e 's|git.openwrt.org/feed/packages|github.com/openwrt/packages|g' \
+    -e 's|git.openwrt.org/project/luci|github.com/openwrt/luci|g' \
+    -e 's|git.openwrt.org/feed/telephony|github.com/openwrt/telephony|g' \
+    -i "${SDK_DIR}"/feeds.conf.default
+
 if [[ $(command -v pre_ops) ]]; then pre_ops; fi
 
 # if [[ -d "${ROOT_DIR}/lede" ]]; then
