@@ -18,6 +18,14 @@ Build SSR: <https://www.qiqisvm.life/archives/102>, <https://www.solarck.com/ins
 Password to lede: <https://github.com/Lienol/openwrt-package/issues/54>
 <https://awesomeopensource.com/projects/openwrt>
 
+```bash
+make package/feeds/luci/luci-base/compile
+make package/lean/luci-app-adbyby-plus/compile
+make package/lean/luci-app-autoreboot/compile
+make package/lean/luci-app-ssr-plus/compile
+make package/lean/luci-app-vlmcsd/compile
+```
+
 ## Examples
 
 - <https://github.com/mwarning/openwrt-examples>
