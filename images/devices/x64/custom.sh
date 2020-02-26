@@ -3,16 +3,15 @@
 #shellcheck disable=SC2034
 BASE_URL="${BASE_URL_PREFIX}/releases/${VERSION}/targets/x86/64"
 
-PACKAGES=""
+PACKAGES=${PACKAGES:-""}
 PACKAGES="${PACKAGES:+$PACKAGES }-wpad-mini -dnsmasq"
 PACKAGES="${PACKAGES:+$PACKAGES }bash bind-dig ca-bundle ca-certificates coreutils-base64 curl dnsmasq-full fdisk file \
 ip-full ipset iptables-mod-tproxy \
 libpthread \
-luci luci-theme-bootstrap luci-i18n-base-zh-cn luci-ssl \
+luci luci-theme-bootstrap luci-ssl \
 nano tmux \
-uci wpad"
-PACKAGES="${PACKAGES:+$PACKAGES }luci-i18n-firewall-zh-cn"
-PACKAGES="${PACKAGES:+$PACKAGES }busybox diffutils openssl-util ipset dnsmasq-full iptables-mod-nat-extra wget ca-bundle ca-certificates libustream-openssl"
+uci wget wpad"
+PACKAGES="${PACKAGES:+$PACKAGES }luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn"
 if [[ ${VERSION} =~ 19.07 ]]; then
     PACKAGES="${PACKAGES:+$PACKAGES }-wpad-basic luci-compat luci-lib-ipkg uhttpd-mod-ubus"
 fi

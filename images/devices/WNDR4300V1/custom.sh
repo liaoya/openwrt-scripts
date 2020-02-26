@@ -3,15 +3,15 @@
 #shellcheck disable=SC2034
 BASE_URL="${BASE_URL_PREFIX}/releases/${VERSION}/targets/ar71xx/nand"
 
-PACKAGES=""
+PACKAGES=${PACKAGES:-""}
 PACKAGES="${PACKAGES:+$PACKAGES }-wpad-mini  -wpad-basic -dnsmasq"
 PACKAGES="${PACKAGES:+$PACKAGES }bash bind-dig ca-bundle ca-certificates coreutils-base64 curl dnsmasq-full file \
 ip-full ipset iptables-mod-tproxy \
 libpthread \
-luci luci-theme-bootstrap luci-i18n-base-zh-cn luci-ssl \
-screen tmux \
-uci wpad"
-PACKAGES="${PACKAGES:+$PACKAGES }luci-i18n-firewall-zh-cn"
+luci luci-theme-bootstrap luci-ssl \
+nano tmux \
+uci wget wpad"
+PACKAGES="${PACKAGES:+$PACKAGES }luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn"
 if [[ ${VERSION} =~ 19.07 ]]; then
     PACKAGES="${PACKAGES:+$PACKAGES }-wpad-basic luci-compat luci-lib-ipkg uhttpd-mod-ubus"
 fi
@@ -61,9 +61,9 @@ pre_ops() {
     sed -i  s/'23552k(ubi),25600k@0x6c0000(firmware)'/'120832k(ubi),122880k@0x6c0000(firmware)'/ target/linux/ar71xx/image/legacy.mk
     add_wireless_config
 
-    mkdir -p "${ROOT_DIR}/custom/etc/opkg"
-    cat << EOF > "${ROOT_DIR}/custom/etc/opkg/customfeeds.conf"
-src/gz openwrt_dist http://openwrt-dist.sourceforge.net/packages/base/mips_24kc
-src/gz openwrt_dist_luci http://openwrt-dist.sourceforge.net/packages/luci
-EOF
+#     mkdir -p "${ROOT_DIR}/custom/etc/opkg"
+#     cat << EOF > "${ROOT_DIR}/custom/etc/opkg/customfeeds.conf"
+# src/gz openwrt_dist http://openwrt-dist.sourceforge.net/packages/base/mips_24kc
+# src/gz openwrt_dist_luci http://openwrt-dist.sourceforge.net/packages/luci
+# EOF
 }

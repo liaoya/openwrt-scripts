@@ -3,7 +3,7 @@
 #shellcheck disable=SC2034
 BASE_URL="${BASE_URL_PREFIX}/releases/${VERSION}/targets/armvirt/64"
 
-PACKAGES=""
+PACKAGES=${PACKAGES:-""}
 PACKAGES="${PACKAGES:+$PACKAGES }-wpad-mini -dnsmasq"
 PACKAGES="${PACKAGES:+$PACKAGES }bash bind-dig ca-bundle ca-certificates coreutils-base64 curl dnsmasq-full fdisk file \
 ip-full ipset iptables-mod-tproxy \

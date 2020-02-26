@@ -8,9 +8,10 @@ ROOT_DIR=$(dirname "${ROOT_DIR}")
 CACHE_DIR="${HOME}/.cache/openwrt"
 mkdir -p "${CACHE_DIR}"
 
-BASE_URL_PREFIX=http://downloads.openwrt.org
-TARGET=${OPENWRT_TARGET:-""}
-VERSION=${OPENWRT_VERSION:-"19.07.1"}
+BASE_URL_PREFIX=${BASE_URL_PREFIX:-http://downloads.openwrt.org}
+DL_DIR=${DL_DIR:-""}
+TARGET=${TARGET:-""}
+VERSION=${VERSION:-"19.07.1"}
 CLEAN=0
 MIRROR=0
 
@@ -18,6 +19,7 @@ print_usage() {
     cat <<EOF
 Usage: $(basename "${BASH_SOURCE[0]}") [OPTIONS]
 OPTIONS
+    -d, --dl, the global dl directory
     -t, --target, CPU Arch
     -v, --version, OpenWRT VERSION
     -c, --clean, clean build
@@ -26,10 +28,12 @@ OPTIONS
 EOF
 }
 
-TEMP=$(getopt -o t:v:chm --long target:,version:,clean,help,mirror -- "$@")
+TEMP=$(getopt -o d:t:v:chm --long dl:,target:,version:,clean,help,mirror -- "$@")
 eval set -- "$TEMP"
 while true ; do
     case "$1" in
+        -d|--dl)
+            shift; DL_DIR=$1; ;;
         -t|--target)
             shift; TARGET=$1; ;;
         -v|--version)
@@ -87,6 +91,11 @@ sed -e 's|git.openwrt.org/openwrt/openwrt|github.com/openwrt/openwrt|g' \
     -e 's|git.openwrt.org/project/luci|github.com/openwrt/luci|g' \
     -e 's|git.openwrt.org/feed/telephony|github.com/openwrt/telephony|g' \
     -i "${SDK_DIR}"/feeds.conf.default
+
+if [[ -n ${DL_DIR} ]]; then
+    if [[ -d "${SDK_DIR}/dl" ]]; then rm -fr "${SDK_DIR}/dl"; fi
+    ln -s "${DL_DIR}" "${SDK_DIR}/dl"
+fi
 
 if [[ $(command -v pre_ops) ]]; then pre_ops; fi
 

@@ -32,3 +32,12 @@ make package/lean/luci-app-vlmcsd/compile
 - <https://github.com/shadowsocks/openwrt-shadowsocks>
 - <https://github.com/shadowsocks/luci-app-shadowsocks>
 - <https://github.com/kuoruan/luci-app-v2ray>
+- <https://github.com/pexcn/openwrt-chinadns-ng>
+- <https://github.com/pymumu/luci-app-smartdns>
+
+```bash
+curl -sL https://easylist-downloads.adblockplus.org/easylistchina+easylist.txt -o /tmp/adnew.conf
+/usr/bin/ssr-ad
+cp -f /tmp/ad.conf /etc/dnsmasq.ssr/ad.conf
+/etc/init.d/dnsmasq restart
+```

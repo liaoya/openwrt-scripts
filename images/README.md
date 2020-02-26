@@ -10,11 +10,13 @@ Run the following command to install the image build requirements for Ubuntu 18.
 
 Some examples, read `build.sh` for usage.
 
-- Arm Arch64: `bash build.sh -d armvirt` `aarch64_generic` platform
-- WNDR4300V1: `bash build.sh -d WNDR4300V1`
-- Newifi D2: `bash build.sh -d d-team_newifi-d2 -v custom`
+- Arm Arch64: `bash build.sh -d armvirt -V 19.07.1 -m -p ~/Downloads/openwrt/aarch64/19.07` `aarch64_generic` platform
+- WNDR4300V1: `bash build.sh -d WNDR4300V1 -m -p ~/Downloads/openwrt/ar71xx/19.07`
+- Newifi D2: `bash build.sh -d d-team_newifi-d2`
 - X86: `bash build.sh -d x64`
-- K2: It has only 8M Rom and 100Mb NIC, but its wireless signal is very good, `bash build.sh -d psg1218a -v custom -V 18.06.6`
+- K2: `bash build.sh -d psg1218a -v custom -V 18.06.6`. It has only 8M Rom and 100Mb NIC, but its wireless signal is very good.
+
+Copy the personal ipk to a separate folder and pass it to `build.sh` with `-p`.
 
 ## Shadowsocks
 

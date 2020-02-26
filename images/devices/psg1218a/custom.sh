@@ -8,8 +8,11 @@ source "${THIS_DIR}/functions.sh"
 #shellcheck disable=SC2034
 BASE_URL=${BASE_URL_PREFIX}/releases/${VERSION}/targets/ramips/mt7620
 
-PACKAGES=""
-PACKAGES="${PACKAGES:+$PACKAGES }luci luci-theme-bootstrap luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn"
+PACKAGES=${PACKAGES:-""}
+PACKAGES="${PACKAGES:+$PACKAGES }luci luci-ssl luci-theme-bootstrap luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn"
+if [[ ${VERSION} =~ 19.07 ]]; then
+    PACKAGES="${PACKAGES:+$PACKAGES } luci-compat luci-lib-ipkg uhttpd-mod-ubus"
+fi
 
 pre_ops() {
     add_wireless_config
