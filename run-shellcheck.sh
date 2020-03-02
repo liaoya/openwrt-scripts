@@ -27,7 +27,7 @@ function run_shellcheck() {
 if [[ $(command -v git) ]]; then git clean -X -f; fi
 
 if [[ $# -eq 0 ]]; then
-    run_shellcheck_dir "${THIS_DIR}"
+    run_shellcheck "${THIS_DIR}"
 else
     while (( $# )); do
         target=$(readlink -f "${1}"); shift;

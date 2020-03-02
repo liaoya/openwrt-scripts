@@ -8,7 +8,8 @@ ROOT_DIR=$(dirname "${ROOT_DIR}")
 CACHE_DIR="${HOME}/.cache/openwrt"
 mkdir -p "${CACHE_DIR}"
 
-BASE_URL_PREFIX=${BASE_URL_PREFIX:-http://downloads.openwrt.org}
+BASE_URL=${BASE_URL:-""}
+BASE_URL_PREFIX=${BASE_URL_PREFIX:-""}
 DEVICE=${OPENWRT_DEVICE:-""}
 REPOSITORY=${REPOSITORY:-""}
 VARIANT=${OPENWRT_VARIANT:-"custom"}
@@ -22,6 +23,7 @@ Usage: $(basename "${BASH_SOURCE[0]}") [OPTIONS]
 OPTIONS
     -d, --device, DEVICE NAME
     -p, --repository, the local repository
+    -u, --url, provide the openwrt image builder url directly since the version
     -v, --variant, IMAGE VARIANT
     -V, --version, OpenWRT VERSION
     -c, --clean, clean build
@@ -38,6 +40,8 @@ while true ; do
             shift; DEVICE=$1 ;;
         -p|--repository)
             shift; REPOSITORY=$1 ;;
+        -u|--url)
+            shift; BASE_URL=$1 ;;
         -v|--variant)
             shift; VARIANT=$1 ;;
         -V|--version)
@@ -60,9 +64,17 @@ if [[ -z ${DEVICE} ]]; then
     exit 1
 fi
 
-if [[ ${MIRROR} -eq 1 ]]; then
-#    BASE_URL_PREFIX=http://mirrors.tuna.tsinghua.edu.cn/lede
-    BASE_URL_PREFIX=http://mirrors.tuna.tsinghua.edu.cn/lede
+if [[ ${VERSION} =~ 19.07 || ${VERSION} =~ 18.06 || ${VERSION} =~ 17.01 ]]; then
+    if [[ ${MIRROR} -eq 1 ]]; then
+        BASE_URL_PREFIX=http://mirrors.tuna.tsinghua.edu.cn/lede/releases/${VERSION}/targets
+    else
+        BASE_URL_PREFIX=http://downloads.openwrt.org/releases/${VERSION}/targets
+    fi
+else
+    if [[ -z ${BASE_URL} ]]; then
+        echo "Please provide \$BASE_URL"
+        exit 1
+    fi
 fi
 
 if [[ -f "${ROOT_DIR}/devices/${DEVICE}.sh" ]]; then

@@ -8,8 +8,10 @@ ROOT_DIR=$(dirname "${ROOT_DIR}")
 CACHE_DIR="${HOME}/.cache/openwrt"
 mkdir -p "${CACHE_DIR}"
 
-BASE_URL_PREFIX=${BASE_URL_PREFIX:-http://downloads.openwrt.org}
+BASE_URL=${BASE_URL:-""}
+BASE_URL_PREFIX=${BASE_URL_PREFIX:-""}
 DL_DIR=${DL_DIR:-""}
+NAME=${NAME:-""}
 TARGET=${TARGET:-""}
 VERSION=${VERSION:-"19.07.1"}
 CLEAN=0
@@ -20,7 +22,9 @@ print_usage() {
 Usage: $(basename "${BASH_SOURCE[0]}") [OPTIONS]
 OPTIONS
     -d, --dl, the global dl directory
+    -n, --name, the name of uncompress folder, some build will fail if the name is too long.
     -t, --target, CPU Arch
+    -u, --url, provide the openwrt image builder url directly since the version
     -v, --version, OpenWRT VERSION
     -c, --clean, clean build
     -h, --help, show help
@@ -33,27 +37,39 @@ eval set -- "$TEMP"
 while true ; do
     case "$1" in
         -d|--dl)
-            shift; DL_DIR=$1; ;;
+            shift; DL_DIR=$1 ;;
+        -n|--name)
+            shift; NAME=$1 ;;
         -t|--target)
-            shift; TARGET=$1; ;;
+            shift; TARGET=$1 ;;
+        -u|--url)
+            shift; BASE_URL=$1 ;;
         -v|--version)
 #shellcheck disable=SC2034
-            shift; VERSION=$1; ;;
+            shift; VERSION=$1 ;;
         -c|--clean)
-            CLEAN=1; ;;
+            CLEAN=1 ;;
         -h|--help)
-            print_usage; exit 0; ;;
+            print_usage; exit 0 ;;
         -m|--mirror)
-            MIRROR=1; ;;
+            MIRROR=1 ;;
         --) shift; break ;;
-        *)  print_usage; exit 1; ;;
+        *)  print_usage; exit 1 ;;
     esac
     shift
 done
 
-if [[ ${MIRROR} -eq 1 ]]; then
-#    BASE_URL_PREFIX=http://mirrors.tuna.tsinghua.edu.cn/lede
-    BASE_URL_PREFIX=http://mirrors.tuna.tsinghua.edu.cn/lede
+if [[ ${VERSION} =~ 19.07 || ${VERSION} =~ 18.06 || ${VERSION} =~ 17.01 ]]; then
+    if [[ ${MIRROR} -eq 1 ]]; then
+        BASE_URL_PREFIX=http://mirrors.tuna.tsinghua.edu.cn/lede/releases/${VERSION}/targets
+    else
+        BASE_URL_PREFIX=http://downloads.openwrt.org/releases/${VERSION}/targets
+    fi
+else
+    if [[ -z ${BASE_URL} ]]; then
+        echo "Please provide \$BASE_URL"
+        exit 1
+    fi
 fi
 
 if [[ -z ${TARGET} ]]; then
@@ -81,10 +97,17 @@ fi
 if [[ ! -f "${CACHE_DIR}/${SDK_FILENAME}" ]]; then
     curl -sL "${BASE_URL}/${SDK_FILENAME}" -o "${CACHE_DIR}/${SDK_FILENAME}"
 fi
-SDK_DIR=$(basename -s .tar.xz "${SDK_FILENAME}")
-SDK_DIR="${ROOT_DIR}/${SDK_DIR}"
-if [[ ${CLEAN} -gt 0 && -d "${SDK_DIR}" ]]; then rm -fr "${SDK_DIR}"; fi
-if [[ ! -d "${SDK_DIR}" ]]; then tar -xf "${CACHE_DIR}/${SDK_FILENAME}"; fi
+if [[ -n ${NAME} ]]; then
+    if [[ ${CLEAN} -gt 0 && -d "${NAME}" ]]; then rm -fr "${NAME}"; fi
+    SDK_DIR=$(dirname "${NAME}")
+    tar -xf "${CACHE_DIR}/${SDK_FILENAME}" -C "${SDK_DIR}"
+    SDK_DIR=${SDK_DIR=}/$(basename -s .tar.xz "${SDK_FILENAME}")
+else
+    SDK_DIR=$(basename -s .tar.xz "${SDK_FILENAME}")
+    SDK_DIR=${ROOT_DIR}/${SDK_DIR}
+    if [[ ${CLEAN} -gt 0 && -d "${SDK_DIR}" ]]; then rm -fr "${SDK_DIR}"; fi
+    if [[ ! -d "${SDK_DIR}" ]]; then tar -xf "${CACHE_DIR}/${SDK_FILENAME}"; fi
+fi
 
 sed -e 's|git.openwrt.org/openwrt/openwrt|github.com/openwrt/openwrt|g' \
     -e 's|git.openwrt.org/feed/packages|github.com/openwrt/packages|g' \
