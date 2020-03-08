@@ -48,7 +48,7 @@ sed -e 's|git.openwrt.org/openwrt/openwrt|github.com/openwrt/openwrt|g' \
 ```bash
 okpg install luci-compact luci-lib-ipkg uhttpd-mod-ubus
 
-for name in adbyby autoreboot brook chinadns-ng dns2socks ipt2socks kcptun passwall pdnsd shadowsocks simple-obfs smartdns ssr-plus tcping trojan v2ray vlmcsd; do
+for name in adbyby adguardhome autoreboot brook chinadns-ng dns2socks ipt2socks kcptun passwall pdnsd ramfree shadowsocks simple-obfs smartdns srelay ssr-plus tcping trojan v2ray vlmcsd; do
     for pkg in $(find bin -iname "*$name*.ipk"); do sshpass -p password scp -pr $pkg root@192.168.2.10:/tmp/tmp; done
 done
 ```

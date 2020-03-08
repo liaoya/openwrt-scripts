@@ -13,7 +13,7 @@ BASE_URL_PREFIX=${BASE_URL_PREFIX:-""}
 DEVICE=${OPENWRT_DEVICE:-""}
 REPOSITORY=${REPOSITORY:-""}
 VARIANT=${OPENWRT_VARIANT:-"custom"}
-VERSION=${OPENWRT_VERSION:-"19.07.1"}
+VERSION=${OPENWRT_VERSION:-"19.07.2"}
 CLEAN=0
 MIRROR=0
 
@@ -66,9 +66,9 @@ fi
 
 if [[ ${VERSION} =~ 19.07 || ${VERSION} =~ 18.06 || ${VERSION} =~ 17.01 ]]; then
     if [[ ${MIRROR} -eq 1 ]]; then
-        BASE_URL_PREFIX=http://mirrors.tuna.tsinghua.edu.cn/lede/releases/${VERSION}/targets
+        BASE_URL_PREFIX=http://mirrors.tuna.tsinghua.edu.cn/lede
     else
-        BASE_URL_PREFIX=http://downloads.openwrt.org/releases/${VERSION}/targets
+        BASE_URL_PREFIX=http://downloads.openwrt.org/
     fi
 else
     if [[ -z ${BASE_URL} ]]; then
@@ -109,24 +109,27 @@ fi
 if [[ ! -f repositories.conf.bak ]]; then
     cp -r repositories.conf repositories.conf.bak
 fi
-if [[ ${MIRROR} -eq 1 ]]; then
+if [[ ${MIRROR} -eq 1 && -n ${BASE_URL_PREFIX} ]]; then
     sed -i -e "s|http://downloads.openwrt.org|${BASE_URL_PREFIX}|g" -e "s|https://downloads.openwrt.org|${BASE_URL_PREFIX}|g" repositories.conf
 fi
 if [[ -n ${REPOSITORY} && -d ${REPOSITORY} ]]; then
     REPOSITORY=$(readlink -f "${REPOSITORY}")
-    _PACKAGES=$(for pkg in "${REPOSITORY}"/*.ipk; do basename "$pkg" | cut -d'_' -f1; done | paste -sd " " -)
-    PACKAGES=${PACKAGES:-""}
-    PACKAGES="${PACKAGES:+$PACKAGES }${_PACKAGES}"
-    unset -n _PACKAGES
-    # echo "src custom_repo file://${REPOSITORY}" >> repositories.conf
-    [[ -d packages ]] || mkdir -p packages
-    cp "${REPOSITORY}"/*.ipk packages/
+    if [[ -f ${REPOSITORY}/Packages.gz ]]; then
+        echo "src custom_repo file://${REPOSITORY}" >> repositories.conf
+    else
+        _PACKAGES=$(for pkg in "${REPOSITORY}"/*.ipk; do basename "$pkg" | cut -d'_' -f1; done | paste -sd " " -)
+        PACKAGES=${PACKAGES:-""}
+        PACKAGES="${PACKAGES:+$PACKAGES }${_PACKAGES}"
+        unset -n _PACKAGES
+        [[ -d packages ]] || mkdir -p packages
+        cp "${REPOSITORY}"/*.ipk packages/
+    fi
 fi
 
-if [[ -f ~/.ssh/id_rsa.pub ]]; then
-    [[ -d "${ROOT_DIR}/custom/etc/dropbear" ]] || mkdir "${ROOT_DIR}/custom/etc/dropbear"
-    cat ~/.ssh/id_rsa.pub > "${ROOT_DIR}/custom/etc/dropbear/authorized_keys"
-fi
+# if [[ -f ~/.ssh/id_rsa.pub ]]; then
+#     [[ -d "${ROOT_DIR}/custom/etc/dropbear" ]] || mkdir "${ROOT_DIR}/custom/etc/dropbear"
+#     cat ~/.ssh/id_rsa.pub > "${ROOT_DIR}/custom/etc/dropbear/authorized_keys"
+# fi
 if [[ $(command -v pre_ops) ]]; then pre_ops; fi
 
 [[ ${CLEAN} -gt 0 ]] && make clean

@@ -2,11 +2,11 @@
 
 if [[ -n ${BASE_URL_PREFIX} ]]; then
 #shellcheck disable=SC2034
-    BASE_URL="${BASE_URL_PREFIX}/x86/64"
+    BASE_URL="${BASE_URL_PREFIX}/releases/${VERSION}/targets/x86/64"
 fi
 
 PACKAGES=${PACKAGES:-""}
-PACKAGES="${PACKAGES:+$PACKAGES }-wpad-mini -dnsmasq"
+PACKAGES="${PACKAGES:+$PACKAGES }-dnsmasq -wpad-mini"
 PACKAGES="${PACKAGES:+$PACKAGES }bash bind-dig ca-bundle ca-certificates coreutils-base64 curl dnsmasq-full fdisk file \
 ip-full ipset iptables-mod-tproxy \
 libpthread \

@@ -8,11 +8,11 @@ if [[ -f "${THIS_DIR}/functions.sh" ]]; then
 fi
 
 if [[ -n ${BASE_URL_PREFIX} ]]; then
-    BASE_URL="${BASE_URL_PREFIX}/ramips/mt7621"
+    BASE_URL="${BASE_URL_PREFIX}/releases/${VERSION}/targets/ramips/mt7621"
 fi
 
 PACKAGES=${PACKAGES:-""}
-PACKAGES="${PACKAGES:+$PACKAGES }-wpad-mini -dnsmasq"
+PACKAGES="${PACKAGES:+$PACKAGES }-dnsmasq -wpad-mini"
 PACKAGES="${PACKAGES:+$PACKAGES }bash bind-dig ca-bundle ca-certificates coreutils-base64 curl dnsmasq-full file \
 ip-full ipset iptables-mod-tproxy \
 libpthread \

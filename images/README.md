@@ -12,11 +12,19 @@ Some examples, read `build.sh` for usage.
 
 - Arm Arch64: `bash build.sh -d armvirt -V 19.07.1 -m -p ~/Downloads/openwrt/aarch64/19.07` `aarch64_generic` platform
 - WNDR4300V1: `bash build.sh -d WNDR4300V1 -m -p ~/Downloads/openwrt/ar71xx/19.07`
-- Newifi D2: `bash build.sh -d d-team_newifi-d2`
+- Newifi D2: `bash build.sh -d d-team_newifi-d2 -m -p ~/Downloads/openwrt/mt7621/19.07`
 - X86: `bash build.sh -d x64`
 - K2: `bash build.sh -d psg1218a -v custom -V 18.06.6`. It has only 8M Rom and 100Mb NIC, but its wireless signal is very good.
 
 Copy the personal ipk to a separate folder and pass it to `build.sh` with `-p`.
+
+```bash
+PACKAGES="chinadns-ng dns2socks ipt2socks kcptun-client \
+    luci-app-adbyby-plus luci-app-autoreboot luci-app-kcptun luci-app-passwall luci-app-smartdns luci-app-ssr-plus luci-app-vlmcsd \
+    luci-i18n-adbyby-plus-zh-cn luci-i18n-autoreboot-zh-cn luci-i18n-kcptun-zh-cn luci-i18n-smartdns-zh-cn luci-i18n-vlmcsd-zh-cn \
+    shadowsocks-libev-config shadowsocks-libev-ss-local shadowsocks-libev-ss-redir shadowsocksr-libev-alt shadowsocksr-libev-ssr-local \
+    simple-obfs smartdns srelay tcping trojan v2ray vlmcsd"
+```
 
 ## Shadowsocks
 
