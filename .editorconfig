@@ -9,3 +9,6 @@ insert_final_newline = true
 
 [*.sh]
 end_of_line = lf
+
+[*.md]
+indent_size = 2
