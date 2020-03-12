@@ -136,6 +136,9 @@ fi
 if [[ $(command -v pre_ops) ]]; then pre_ops; fi
 
 pushd "${SDK_DIR}"
+mkdir -p staging_dir/host/bin
+if [[ $(command -v upx) ]]; then cp "$(command -v upx)" staging_dir/host/bin; fi
+if [[ $(command -v upx-ucl) ]]; then cp "$(command -v upx-ucl)" staging_dir/host/bin; fi
 echo "src-git lienol https://github.com/Lienol/openwrt-package" >> feeds.conf.default
 scripts/feeds clean
 ./scripts/feeds update -a

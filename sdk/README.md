@@ -1,5 +1,7 @@
 # Using official OpenWRT SDK to build third party package
 
+Run `git config --global url."http://127.0.0.1:8080/".insteadOf https://` if `git-cache-http-server` installed
+
 - `bash build.sh -d ~/Downloads/dl -n /work/armvirt -t armvirt -m -c`
 - `bash build.sh -d ~/Downloads/dl -n /work/ar71xx -t ar71xx -m -c`
 - `bash build.sh -d ~/Downloads/dl -n /work/mt7621 -t mt7621 -m -c`
@@ -124,6 +126,7 @@ done
 - <https://github.com/project-openwrt/luci-app-vssr-1>
 - <https://github.com/Leo-Jo-My/luci-app-ssr-plus-Jo/tree/master>
 - <https://github.com/kuoruan/openwrt-kcptun>
+- <https://github.com/cnsilvan/luci-app-unblockneteasemusic>
 
 The modified `ssr-plus` also need many dependencies. The good news is it can be built seprately.
 
@@ -138,3 +141,4 @@ The modified `ssr-plus` also need many dependencies. The good news is it can be 
   - <https://www.right.com.cn/forum/thread-344825-1-1.html>
   - <https://www.right.com.cn/forum/thread-1237348-1-1.html>
 - <https://openwrt.org/docs/guide-developer/single.package>
+- <https://jarviswwong.com/compile-ipk-separately-with-openwrt.html>, solve `staging_dir/host/bin/upx: No such file or directory`
