@@ -42,7 +42,7 @@ fi
 
 declare PACKAGES=(adbyby adguardhome autoreboot brook chinadns-ng coremark dns2socks guest-wifi \
     haproxy ipt2socks kcptun microsocks \
-    passwall pdnsd ramfree shadowsocks simple-obfs smartdns srelay ssr-plus tcping trojan \
+    passwall pdnsd redsock ramfree shadowsocks simple-obfs smartdns srelay ssr-plus tcping trojan \
     v2ray vlmcsd)
 
 if [[ ${OPERATION} == "list" ]]; then
