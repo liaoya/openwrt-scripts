@@ -14,7 +14,7 @@ Some examples, read `build.sh` for usage.
 - WNDR4300V1: `bash build.sh -d WNDR4300V1 -m -p ~/Downloads/openwrt/ar71xx/19.07`
 - Newifi D2: `bash build.sh -d d-team_newifi-d2 -m -p ~/Downloads/openwrt/mt7621/19.07`
 - X86: `bash build.sh -d x64`
-- K2: `bash build.sh -d psg1218a -v custom -V 18.06.6`. It has only 8M Rom and 100Mb NIC, but its wireless signal is very good.
+- K2: `bash build.sh -d psg1218a -m`. It has only 8M Rom and 100Mb NIC, but its wireless signal is very good.
 
 Copy the personal ipk to a separate folder and pass it to `build.sh` with `-p`.
 

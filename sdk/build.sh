@@ -119,6 +119,9 @@ else
     tar -xf "${CACHE_DIR}/${SDK_FILENAME}" -C "${ROOT_DIR}"
 fi
 
+[[ -f "${SDK_DIR}"/feeds.conf.default.origin ]] || cp "${SDK_DIR}"/feeds.conf.default "${SDK_DIR}"/feeds.conf.default.origin
+[[ -f "${SDK_DIR}"/feeds.conf.default.origin ]] && cp "${SDK_DIR}"/feeds.conf.default.origin "${SDK_DIR}"/feeds.conf.default
+
 sed -e 's|git.openwrt.org/openwrt/openwrt|github.com/openwrt/openwrt|g' \
     -e 's|git.openwrt.org/feed/packages|github.com/openwrt/packages|g' \
     -e 's|git.openwrt.org/project/luci|github.com/openwrt/luci|g' \
@@ -132,9 +135,16 @@ fi
 
 if [[ $(command -v pre_ops) ]]; then pre_ops; fi
 
-# "${SDK_DIR}/scripts/feeds" update -a
-# "${SDK_DIR}/scripts/feeds" install -a
-# pushd "${SDK_DIR}"
-# make defconfig
-# make -j"$(nproc)" package/feeds/luci/luci-base/compile
-# popd
+pushd "${SDK_DIR}"
+echo "src-git lienol https://github.com/Lienol/openwrt-package" >> feeds.conf.default
+scripts/feeds clean
+./scripts/feeds update -a
+# Remove the kcptun in package feed
+rm -fr feeds/packages/net/kcptun
+sed -i -e 's/PKG_VERSION:=.*/PKG_VERSION:=3.3.4/g' -e 's/PKG_RELEASE:=.*/PKG_RELEASE:=1/g' feeds/packages/net/shadowsocks-libev/Makefile
+./scripts/feeds update -i
+./scripts/feeds install -a
+make defconfig
+make -j"$(nproc)" package/feeds/luci/luci-base/compile
+rm -f .config
+popd

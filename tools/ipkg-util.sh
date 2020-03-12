@@ -40,7 +40,7 @@ if [[ ! -d "${SRC}/bin" ]]; then
     exit 1
 fi
 
-declare PACKAGES=(adbyby adguardhome autoreboot brook chinadns-ng coremark dns2socks \
+declare PACKAGES=(adbyby adguardhome autoreboot brook chinadns-ng coremark dns2socks guest-wifi \
     haproxy ipt2socks kcptun microsocks \
     passwall pdnsd ramfree shadowsocks simple-obfs smartdns srelay ssr-plus tcping trojan \
     v2ray vlmcsd)
