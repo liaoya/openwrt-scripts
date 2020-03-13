@@ -96,6 +96,17 @@ done
 ls -1 package/feeds/lienol/ package/lean/ | grep -v -e ':$' | sed -e '/^[[:space:]]*$/d' -e 's/luci-app-//g' | sort | uniq
 ```
 
+```bash
+mkdir -p package/jerrykuku/
+git clone https://github.com/jerrykuku/lua-maxminddb.git package/jerrykuku/lua-maxminddb
+git clone https://github.com/jerrykuku/luci-app-vssr.git package/jerrykuku/luci-app-vssr
+./scripts/feeds install -a
+# rm -f .config
+make menuconfig
+make -j$(nproc) package/jerrykuku/luci-app-vssr
+# git clone https://github.com/jerrykuku/luci-theme-argon.git package/jerrykuku/luci-theme-argon
+```
+
 ### Fix lean ssr-ad
 
 ```bash
@@ -127,6 +138,8 @@ done
 - <https://github.com/Leo-Jo-My/luci-app-ssr-plus-Jo/tree/master>
 - <https://github.com/kuoruan/openwrt-kcptun>
 - <https://github.com/cnsilvan/luci-app-unblockneteasemusic>
+- <https://github.com/kuoruan/openwrt-v2ray>
+- <https://github.com/kuoruan/luci-app-v2ray>
 
 The modified `ssr-plus` also need many dependencies. The good news is it can be built seprately.
 

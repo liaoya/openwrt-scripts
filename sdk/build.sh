@@ -86,13 +86,13 @@ else
 fi
 
 curl -sLO "${BASE_URL}/sha256sums"
-curl -sLO "${BASE_URL}/sha256sums.asc"
-curl -sLO "${BASE_URL}/sha256sums.sig"
-if [ ! -f sha256sums.asc ] && [ ! -f sha256sums.sig ]; then
-    echo "Missing sha256sums signature files"
-    exit 1
-fi
-[ ! -f sha256sums.asc ] || gpg --with-fingerprint --verify sha256sums.asc sha256sums
+# curl -sLO "${BASE_URL}/sha256sums.asc"
+# curl -sLO "${BASE_URL}/sha256sums.sig"
+# if [ ! -f sha256sums.asc ] && [ ! -f sha256sums.sig ]; then
+#     echo "Missing sha256sums signature files"
+#     exit 1
+# fi
+# [ ! -f sha256sums.asc ] || gpg --with-fingerprint --verify sha256sums.asc sha256sums
 
 SHA256_VALUE=$(grep openwrt-sdk sha256sums | cut -d' ' -f1)
 SDK_FILENAME=$(grep openwrt-sdk sha256sums | cut -d'*' -f2)

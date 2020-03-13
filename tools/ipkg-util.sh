@@ -41,7 +41,7 @@ if [[ ! -d "${SRC}/bin" ]]; then
 fi
 
 declare PACKAGES=(adbyby adguardhome autoreboot brook chinadns-ng coremark dns2socks guest-wifi \
-    haproxy ipt2socks kcptun microsocks \
+    haproxy ipt2socks kcptun luci-app-vssr maxminddb microsocks \
     passwall pdnsd redsock ramfree shadowsocks simple-obfs smartdns srelay ssr-plus tcping trojan \
     unblockmusic UnblockNetease v2ray vlmcsd)
 
