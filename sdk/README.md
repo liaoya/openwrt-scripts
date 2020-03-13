@@ -1,6 +1,6 @@
 # Using official OpenWRT SDK to build third party package
 
-Run `git config --global url."http://127.0.0.1:8080/".insteadOf https://` if `git-cache-http-server` installed
+Run `git config --global url."http://127.0.0.1:9080/".insteadOf https://` if `git-cache-http-server` installed
 
 - `bash build.sh -d ~/Downloads/dl -n /work/armvirt -t armvirt -m -c`
 - `bash build.sh -d ~/Downloads/dl -n /work/ar71xx -t ar71xx -m -c`

@@ -135,5 +135,5 @@ tags
 *-sdk-*.Linux-*.tar.xz
 *-imagebuilder-*Linux-*/
 *-sdk-*.Linux-*/
-sha256sums
+sha256sums*
 /sdk/lede

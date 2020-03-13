@@ -41,3 +41,11 @@ curl -sL -O https://kprule.com/koolproxy.txt -O https://kprule.com/kp.dat -O htt
 - newifi3 and k2p `curl -sL https://koolproxy.com/downloads/mipsel -o /usr/share/koolproxy/koolproxy; chmod 755 /usr/share/koolproxy/koolproxy; /etc/init.d/koolproxy restart`
 
 ## vlmcsd
+
+## Docker build
+
+```bash
+docker pull -q openwrtorg/sdk:armvirt-64-19.07.1
+
+docker pull -q openwrtorg/imagebuilder:armvirt-64-19.07.1
+```
