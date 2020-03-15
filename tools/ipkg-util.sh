@@ -40,14 +40,33 @@ if [[ ! -d "${SRC}/bin" ]]; then
     exit 1
 fi
 
-declare PACKAGES=(adbyby adguardhome autoreboot brook chinadns-ng coremark dns2socks guest-wifi \
-    haproxy ipt2socks kcptun luci-app-vssr maxminddb microsocks \
-    passwall pdnsd redsock ramfree shadowsocks simple-obfs smartdns srelay ssr-plus tcping trojan \
-    unblockmusic UnblockNetease v2ray vlmcsd)
+# declare -a PACKAGES=(adbyby adguardhome autoreboot brook chinadns-ng coremark dns2socks guest-wifi \
+#     haproxy ipt2socks kcptun luci-theme-bootstrap-mod luci-app-vssr maxminddb microsocks \
+#     passwall pdnsd redsock ramfree shadowsocks simple-obfs smartdns srelay ssr-plus tcping trojan \
+#     unblockmusic UnblockNetease v2ray vlmcsd)
+
+declare -a PACKAGES=()
+if [[ -d "${SRC}/package/feeds/lienol" ]]; then
+    for pkg in $(ls -1 "${SRC}/package/feeds/lienol"); do
+        PACKAGES=(${PACKAGES[@]} "${pkg}")
+    done
+fi
+if [[ -d "${SRC}/package/lean" ]]; then
+    for pkg in $(ls -1 "${SRC}/package/lean"); do
+        if [[ -d "${SRC}/package/lean/${pkg}" ]]; then
+            PACKAGES=(${PACKAGES[@]} "${pkg}")
+        fi
+    done
+fi
+# echo ${PACKAGES[@]}
 
 if [[ ${OPERATION} == "list" ]]; then
     for name in "${PACKAGES[@]}"; do
-        for pkg in $(find "${SRC}/bin" -iname "*$name*.ipk"); do ls -lh "${pkg}"; done
+        for pkg in $(find "${SRC}/bin" -iname "$name*.ipk"); do ls -lh "${pkg}"; done
+        if [[ ${name} =~ luci-app* ]]; then
+            name=${name/luci-app/luci-i18n}
+            for pkg in $(find "${SRC}/bin" -iname "$name*.ipk"); do ls -lh "${pkg}"; done
+        fi
     done
 elif [[ ${OPERATION} == "copy" ]]; then
     if [[ ! -d ${DEST} ]]; then
@@ -55,7 +74,11 @@ elif [[ ${OPERATION} == "copy" ]]; then
         exit 1
     fi
     for name in "${PACKAGES[@]}"; do
-        for pkg in $(find "${SRC}/bin" -iname "*$name*.ipk"); do cp -pr "${pkg}" "${DEST}"; done
+        for pkg in $(find "${SRC}/bin" -iname "$name*.ipk"); do cp -pr "${pkg}" "${DEST}"; done
+        if [[ ${name} =~ luci-app* ]]; then
+            name=${name/luci-app/luci-i18n}
+            for pkg in $(find "${SRC}/bin" -iname "$name*.ipk"); do cp -pr "${pkg}" "${DEST}"; done
+        fi
     done
     (cd "${DEST}"; ipkg-make-index.sh . > Packages && gzip -9nc Packages > Packages.gz)
 else

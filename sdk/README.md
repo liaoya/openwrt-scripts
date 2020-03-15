@@ -43,7 +43,10 @@ sed -i -e 's/PKG_VERSION:=.*/PKG_VERSION:=3.3.4/g' -e 's/PKG_RELEASE:=.*/PKG_REL
 
 ```bash
 LEAN_DIR=/work/github/coolsnowwolf/lede
-cp ${LEAN_DIR}/package/lean/ package/ -R
+cp -R ${LEAN_DIR}/package/lean/ package/
+
+LIENOL_DIR=/work/github/Lienol/openwrt
+cp -R ${LIENOL_DIR}/package/lean/*smartdns* package/lean/
 
 for pkg in $(ls -1 package/lean/); do
     if [[ -d package/feeds/lienol/${pkg} ]]; then
@@ -51,8 +54,55 @@ for pkg in $(ls -1 package/lean/); do
     fi
 done
 
-./scripts/feeds install -a
 rm -f .config
+./scripts/feeds install -a
+make defconfig
+
+for config in CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_V2ray_plugin \
+           CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Trojan \
+           CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Redsocks2 \
+           CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_ShadowsocksR_Server; do
+    sed -i "s/${config}=y/# ${config} is not set/g" .config
+done
+
+for config in CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks \
+           CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Simple_obfs \
+           CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_V2ray \
+           CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Kcptun \
+           CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_DNS2SOCKS; do
+    sed -i "s/# ${config} is not set/${config}=y/g" .config
+done
+
+for config in CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Trojan \
+           CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Brook \
+           CONFIG_PACKAGE_luci-app-passwall_INCLUDE_v2ray-plugin; do
+    sed -i "s/${config}=y/# ${config} is not set/g" .config
+done
+
+for config in CONFIG_PACKAGE_luci-app-passwall_INCLUDE_ipt2socks \
+           CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Shadowsocks \
+           CONFIG_PACKAGE_luci-app-passwall_INCLUDE_ShadowsocksR \
+           CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Shadowsocks_socks \
+           CONFIG_PACKAGE_luci-app-passwall_INCLUDE_ShadowsocksR_socks \
+           CONFIG_PACKAGE_luci-app-passwall_INCLUDE_V2ray \
+           CONFIG_PACKAGE_luci-app-passwall_INCLUDE_kcptun \
+           CONFIG_PACKAGE_luci-app-passwall_INCLUDE_haproxy \
+           CONFIG_PACKAGE_luci-app-passwall_INCLUDE_ChinaDNS_NG \
+           CONFIG_PACKAGE_luci-app-passwall_INCLUDE_pdnsd \
+           CONFIG_PACKAGE_luci-app-passwall_INCLUDE_dns2socks \
+           CONFIG_PACKAGE_luci-app-passwall_INCLUDE_simple-obfs; do
+    sed -i "s/# ${config} is not set/${config}=y/g" .config        
+done
+
+make -j"$(nproc)" package/feeds/luci/luci-base/compile
+for pkg in $(ls -1 package/feeds/lienol/); do
+    make -j"$(nproc)" package/feeds/lienol/${pkg}/compile || true
+done
+for pkg in $(ls -1 package/lean/); do
+    if [[ ! -d package/feeds/lienol/${pkg} ]]; then
+        make -j"$(nproc)" package/lean/${pkg}/compile || true
+    fi
+done
 ```
 
 Disable the following for `luci-app-ssr-plus`, then the rom size will be smaller
@@ -82,16 +132,8 @@ make -j$(nproc) package/lean/luci-app-adbyby-plus/compile
 make -j$(nproc) package/lean/luci-app-autoreboot/compile
 make -j$(nproc) package/lean/luci-app-ssr-plus/compile
 make -j$(nproc) package/lean/luci-app-vlmcsd/compile
-
-for pkg in $(ls -1 package/lean/); do
-    if [[ -d package/feeds/lienol/${pkg} ]]; then
-        make -j$(nproc) package/lean/${pkg}/compile
-    fi
-done
-
-for pkg in $(ls -1 package/feeds/lienol/); do
-    make -j$(nproc) package/feeds/lienol/${pkg}/compile
-done
+make -j$(nproc) package/lean/redsocks2/compile
+make -j$(nproc) package/lean/srelay/compile
 
 ls -1 package/feeds/lienol/ package/lean/ | grep -v -e ':$' | sed -e '/^[[:space:]]*$/d' -e 's/luci-app-//g' | sort | uniq
 ```

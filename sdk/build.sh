@@ -11,6 +11,8 @@ mkdir -p "${CACHE_DIR}"
 BASE_URL=${BASE_URL:-""}
 BASE_URL_PREFIX=${BASE_URL_PREFIX:-""}
 DL_DIR=${DL_DIR:-""}
+LEAN_DIR=${LEAN_DIR:-/work/github/coolsnowwolf/lede}
+LIENOL_DIR=${LIENOL_DIR:-/work/github/Lienol/openwrt}
 NAME=${NAME:-""}
 TARGET=${TARGET:-""}
 VERSION=${VERSION:-"19.07.2"}
@@ -21,7 +23,9 @@ print_usage() {
     cat <<EOF
 Usage: $(basename "${BASH_SOURCE[0]}") [OPTIONS]
 OPTIONS
-    -d, --dl, the global dl directory
+    -L, --lienol, the Lienol git workspace, the default value "${LIENOL_DIR}"
+    -d, --dl, the global dl directory, the default value "${LEAN_DIR}"
+    -l, --lean, the lean git workspace
     -n, --name, the name of uncompress folder, some build will fail if the name is too long.
     -t, --target, CPU Arch
     -u, --url, provide the openwrt image builder url directly for old version (before 17.01)
@@ -32,12 +36,16 @@ OPTIONS
 EOF
 }
 
-TEMP=$(getopt -o d:n:t:u:v:chm --long dl:,name:,target:,url:,version:,clean,help,mirror -- "$@")
+TEMP=$(getopt -o L:d:l:n:t:u:v:chm --long dl:,lean:,lienol:,name:,target:,url:,version:,clean,help,mirror -- "$@")
 eval set -- "$TEMP"
 while true ; do
     case "$1" in
+        -L|--lienol)
+            shift; LIENOL_DIR=$(readlink -f "$1") ;;
         -d|--dl)
             shift; DL_DIR=$(readlink -f "$1") ;;
+        -l|--lean)
+            shift; LEAN_DIR=$(readlink -f "$1") ;;
         -n|--name)
             shift; NAME=$(readlink -f "$1") ;;
         -t|--target)
@@ -144,6 +152,9 @@ fi
 if [[ $(command -v pre_ops) ]]; then pre_ops; fi
 
 pushd "${SDK_DIR}"
+if [[ $(docker ps -q --filter "name=git-cache-http-server") ]]; then
+    git config --global url."http://127.0.0.1:9080/".insteadOf https://
+fi
 mkdir -p staging_dir/host/bin
 if [[ $(command -v upx) ]]; then cp "$(command -v upx)" staging_dir/host/bin; fi
 if [[ $(command -v upx-ucl) ]]; then cp "$(command -v upx-ucl)" staging_dir/host/bin; fi
@@ -155,7 +166,68 @@ rm -fr feeds/packages/net/kcptun
 sed -i -e 's/PKG_VERSION:=.*/PKG_VERSION:=3.3.4/g' -e 's/PKG_RELEASE:=.*/PKG_RELEASE:=1/g' feeds/packages/net/shadowsocks-libev/Makefile
 ./scripts/feeds update -i
 ./scripts/feeds install -a
-make defconfig
-make -j"$(nproc)" package/feeds/luci/luci-base/compile
+git config --global --remove-section 'url.http://127.0.0.1:9080/'
+
+if [[ -d ${LEAN_DIR} ]]; then
+    git pull
+    cp -R ${LEAN_DIR}/package/lean/ package/
+fi
+if [[ -d ${LIENOL_DIR} ]]; then
+    git pull
+    cp -R ${LIENOL_DIR}/package/lean/*smartdns* package/lean/
+fi
+for pkg in $(ls -1 package/lean/); do
+    if [[ -d package/feeds/lienol/${pkg} ]]; then
+        rm -fr package/lean/${pkg}
+    fi
+done
 rm -f .config
+./scripts/feeds install -a
+make defconfig
+
+for config in CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_V2ray_plugin \
+           CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Trojan \
+           CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Redsocks2 \
+           CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_ShadowsocksR_Server; do
+    sed -i "s/${config}=y/# ${config} is not set/g" .config
+done
+
+for config in CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks \
+           CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Simple_obfs \
+           CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_V2ray \
+           CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Kcptun \
+           CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_DNS2SOCKS; do
+    sed -i "s/# ${config} is not set/${config}=y/g" .config
+done
+
+for config in CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Trojan \
+           CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Brook \
+           CONFIG_PACKAGE_luci-app-passwall_INCLUDE_v2ray-plugin; do
+    sed -i "s/${config}=y/# ${config} is not set/g" .config
+done
+
+for config in CONFIG_PACKAGE_luci-app-passwall_INCLUDE_ipt2socks \
+           CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Shadowsocks \
+           CONFIG_PACKAGE_luci-app-passwall_INCLUDE_ShadowsocksR \
+           CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Shadowsocks_socks \
+           CONFIG_PACKAGE_luci-app-passwall_INCLUDE_ShadowsocksR_socks \
+           CONFIG_PACKAGE_luci-app-passwall_INCLUDE_V2ray \
+           CONFIG_PACKAGE_luci-app-passwall_INCLUDE_kcptun \
+           CONFIG_PACKAGE_luci-app-passwall_INCLUDE_haproxy \
+           CONFIG_PACKAGE_luci-app-passwall_INCLUDE_ChinaDNS_NG \
+           CONFIG_PACKAGE_luci-app-passwall_INCLUDE_pdnsd \
+           CONFIG_PACKAGE_luci-app-passwall_INCLUDE_dns2socks \
+           CONFIG_PACKAGE_luci-app-passwall_INCLUDE_simple-obfs; do
+    sed -i "s/# ${config} is not set/${config}=y/g" .config        
+done
+
+# make -j"$(nproc)" package/feeds/luci/luci-base/compile
+# for pkg in $(ls -1 package/feeds/lienol/); do
+#     make -j"$(nproc)" package/feeds/lienol/${pkg}/compile || true
+# done
+# for pkg in $(ls -1 package/lean/); do
+#     if [[ ! -d package/feeds/lienol/${pkg} ]]; then
+#         make -j"$(nproc)" package/lean/${pkg}/compile || true
+#     fi
+# done
 popd
