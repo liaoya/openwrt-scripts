@@ -76,7 +76,7 @@ if [[ ${OPERATION} == "list" ]]; then
         while IFS= read -r -d '' pkg
         do
             ls -lh "${pkg}"
-        done < <(find "${SRC}/bin" -iname "$name*.ipk" -print0)
+        done < <(find "${SRC}/bin" -iname "*$name*.ipk" -print0)
     done
 elif [[ ${OPERATION} == "copy" ]]; then
     if [[ ! -d ${DEST} ]]; then
@@ -87,7 +87,7 @@ elif [[ ${OPERATION} == "copy" ]]; then
         while IFS= read -r -d '' pkg
         do
             cp -pr "${pkg}" "${DEST}"
-        done < <(find "${SRC}/bin" -iname "$name*.ipk" -print0)
+        done < <(find "${SRC}/bin" -iname "*$name*.ipk" -print0)
     done
     (cd "${DEST}"; ipkg-make-index.sh . > Packages && gzip -9nc Packages > Packages.gz)
 else
