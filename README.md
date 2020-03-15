@@ -1,6 +1,10 @@
 # README
 
-I use OpenWRT imagebuilder to assemble firmware for my own router.
+I use OpenWRT imagebuilder to assemble firmware for my own router. Fix the `luci` language display
+
+```bash
+opkg install --force-reinstall luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn
+```
 
 ## Adblock
 

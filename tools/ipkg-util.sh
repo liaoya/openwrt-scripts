@@ -1,4 +1,5 @@
 #!/bin/bash
+#shellcheck disable=SC2206
 
 set -e
 
@@ -47,13 +48,23 @@ fi
 
 declare -a PACKAGES=()
 if [[ -d "${SRC}/package/feeds/lienol" ]]; then
-    for pkg in $(ls -1 "${SRC}/package/feeds/lienol"); do
+    for pkg in "${SRC}/package/feeds/lienol"/*; do
+        pkg=$(basename "${pkg}")
         PACKAGES=(${PACKAGES[@]} "${pkg}")
+        if [[ ${pkg} =~ luci-app* ]]; then
+            pkg=${pkg/luci-app/luci-i18n}
+            PACKAGES=(${PACKAGES[@]} "${pkg}")
+        fi
     done
 fi
 if [[ -d "${SRC}/package/lean" ]]; then
-    for pkg in $(ls -1 "${SRC}/package/lean"); do
+    for pkg in "${SRC}/package/lean"/*; do
+        pkg=$(basename "${pkg}")
         if [[ -d "${SRC}/package/lean/${pkg}" ]]; then
+            PACKAGES=(${PACKAGES[@]} "${pkg}")
+        fi
+        if [[ ${pkg} =~ luci-app* ]]; then
+            pkg=${pkg/luci-app/luci-i18n}
             PACKAGES=(${PACKAGES[@]} "${pkg}")
         fi
     done
@@ -62,11 +73,10 @@ fi
 
 if [[ ${OPERATION} == "list" ]]; then
     for name in "${PACKAGES[@]}"; do
-        for pkg in $(find "${SRC}/bin" -iname "$name*.ipk"); do ls -lh "${pkg}"; done
-        if [[ ${name} =~ luci-app* ]]; then
-            name=${name/luci-app/luci-i18n}
-            for pkg in $(find "${SRC}/bin" -iname "$name*.ipk"); do ls -lh "${pkg}"; done
-        fi
+        while IFS= read -r -d '' pkg
+        do
+            ls -lh "${pkg}"
+        done < <(find "${SRC}/bin" -iname "$name*.ipk" -print0)
     done
 elif [[ ${OPERATION} == "copy" ]]; then
     if [[ ! -d ${DEST} ]]; then
@@ -74,11 +84,10 @@ elif [[ ${OPERATION} == "copy" ]]; then
         exit 1
     fi
     for name in "${PACKAGES[@]}"; do
-        for pkg in $(find "${SRC}/bin" -iname "$name*.ipk"); do cp -pr "${pkg}" "${DEST}"; done
-        if [[ ${name} =~ luci-app* ]]; then
-            name=${name/luci-app/luci-i18n}
-            for pkg in $(find "${SRC}/bin" -iname "$name*.ipk"); do cp -pr "${pkg}" "${DEST}"; done
-        fi
+        while IFS= read -r -d '' pkg
+        do
+            cp -pr "${pkg}" "${DEST}"
+        done < <(find "${SRC}/bin" -iname "$name*.ipk" -print0)
     done
     (cd "${DEST}"; ipkg-make-index.sh . > Packages && gzip -9nc Packages > Packages.gz)
 else

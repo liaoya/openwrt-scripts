@@ -170,17 +170,19 @@ git config --global --remove-section 'url.http://127.0.0.1:9080/'
 
 if [[ -d ${LEAN_DIR} ]]; then
     git pull
-    cp -R ${LEAN_DIR}/package/lean/ package/
+    cp -R "${LEAN_DIR}/package/lean/" package/
 fi
 if [[ -d ${LIENOL_DIR} ]]; then
     git pull
-    cp -R ${LIENOL_DIR}/package/lean/*smartdns* package/lean/
+    cp -R "${LIENOL_DIR}/package/lean"/*smartdns* package/lean/
 fi
-for pkg in $(ls -1 package/lean/); do
+for pkg in package/lean/*; do
+    pkg=$(basename "${pkg}")
     if [[ -d package/feeds/lienol/${pkg} ]]; then
-        rm -fr package/lean/${pkg}
+        rm -fr "package/lean/${pkg}"
     fi
 done
+git clone https://github.com/kuoruan/luci-app-v2ray.git package/kuoruan/luci-app-v2ray
 rm -f .config
 ./scripts/feeds install -a
 make defconfig
@@ -230,4 +232,5 @@ done
 #         make -j"$(nproc)" package/lean/${pkg}/compile || true
 #     fi
 # done
+# make -j"$(nproc)" package/kuoruan/luci-app-v2ray/compile
 popd

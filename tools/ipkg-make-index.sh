@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+#shellcheck disable=SC2006,SC2086
 set -e
 
 pkg_dir=$1

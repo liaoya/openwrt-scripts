@@ -44,16 +44,14 @@ sed -i -e 's/PKG_VERSION:=.*/PKG_VERSION:=3.3.4/g' -e 's/PKG_RELEASE:=.*/PKG_REL
 ```bash
 LEAN_DIR=/work/github/coolsnowwolf/lede
 cp -R ${LEAN_DIR}/package/lean/ package/
-
 LIENOL_DIR=/work/github/Lienol/openwrt
 cp -R ${LIENOL_DIR}/package/lean/*smartdns* package/lean/
-
 for pkg in $(ls -1 package/lean/); do
     if [[ -d package/feeds/lienol/${pkg} ]]; then
         rm -fr package/lean/${pkg}
     fi
 done
-
+git clone https://github.com/kuoruan/luci-app-v2ray.git package/kuoruan/luci-app-v2ray
 rm -f .config
 ./scripts/feeds install -a
 make defconfig
@@ -103,6 +101,7 @@ for pkg in $(ls -1 package/lean/); do
         make -j"$(nproc)" package/lean/${pkg}/compile || true
     fi
 done
+make -j"$(nproc)" package/kuoruan/luci-app-v2ray/compile
 ```
 
 Disable the following for `luci-app-ssr-plus`, then the rom size will be smaller
