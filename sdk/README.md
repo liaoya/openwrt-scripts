@@ -1,5 +1,7 @@
 # Using official OpenWRT SDK to build third party package
 
+I find some package build issue when build with SDK `18.06`
+
 Run `git config --global url."http://127.0.0.1:9080/".insteadOf https://` if `git-cache-http-server` installed
 
 - `bash build.sh -d ~/Downloads/dl -n /work/armvirt -t armvirt -m -c`
@@ -93,15 +95,20 @@ for config in CONFIG_PACKAGE_luci-app-passwall_INCLUDE_ipt2socks \
 done
 
 make -j"$(nproc)" package/feeds/luci/luci-base/compile
-for pkg in $(ls -1 package/feeds/lienol/); do
-    make -j"$(nproc)" package/feeds/lienol/${pkg}/compile || true
+for pkg in package/feeds/lienol/*; do
+    pkg=$(basename "${pkg}")
+    make -j"$(nproc)" package/feeds/lienol/"${pkg}"/compile || true
 done
-for pkg in $(ls -1 package/lean/); do
-    if [[ ! -d package/feeds/lienol/${pkg} ]]; then
-        make -j"$(nproc)" package/lean/${pkg}/compile || true
+for pkg in package/lean/*; do
+    pkg=$(basename "${pkg}")
+    if [[ ! -d "package/feeds/lienol/${pkg}" ]]; then
+        make -j"$(nproc)" package/lean/"${pkg}"/compile || true
     fi
 done
-make -j"$(nproc)" package/kuoruan/luci-app-v2ray/compile
+for pkg in package/kuoruan/*; do
+    pkg=$(basename "${pkg}")
+    make -j"$(nproc)" package/kuoruan/"${pkg}"/compile
+done
 ```
 
 Disable the following for `luci-app-ssr-plus`, then the rom size will be smaller
@@ -172,15 +179,15 @@ done
 - <https://github.com/mwarning/openwrt-examples>
 - <https://github.com/shadowsocks/openwrt-shadowsocks>
 - <https://github.com/shadowsocks/luci-app-shadowsocks>
+- <https://github.com/kuoruan/openwrt-v2ray>
 - <https://github.com/kuoruan/luci-app-v2ray>
 - <https://github.com/pexcn/openwrt-chinadns-ng>
 - <https://github.com/pymumu/luci-app-smartdns>
 - <https://github.com/project-openwrt/luci-app-vssr-1>
 - <https://github.com/Leo-Jo-My/luci-app-ssr-plus-Jo/tree/master>
 - <https://github.com/kuoruan/openwrt-kcptun>
+- <https://github.com/kuoruan/luci-app-kcptun>
 - <https://github.com/cnsilvan/luci-app-unblockneteasemusic>
-- <https://github.com/kuoruan/openwrt-v2ray>
-- <https://github.com/kuoruan/luci-app-v2ray>
 
 The modified `ssr-plus` also need many dependencies. The good news is it can be built seprately.
 

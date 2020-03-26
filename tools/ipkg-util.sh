@@ -69,13 +69,14 @@ if [[ -d "${SRC}/package/lean" ]]; then
         fi
     done
 fi
-# echo ${PACKAGES[@]}
+PACKAGES=(${PACKAGES[@]} shadowsocks-libev)
+# echo ${PACKAGES[@]} | tr ' ' '\n'
 
 if [[ ${OPERATION} == "list" ]]; then
     for name in "${PACKAGES[@]}"; do
         while IFS= read -r -d '' pkg
         do
-            ls -lh "${pkg}"
+            ls -1 "${pkg}"
         done < <(find "${SRC}/bin" -iname "*$name*.ipk" -print0)
     done
 elif [[ ${OPERATION} == "copy" ]]; then

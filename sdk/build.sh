@@ -36,16 +36,16 @@ OPTIONS
 EOF
 }
 
-TEMP=$(getopt -o L:d:l:n:t:u:v:chm --long dl:,lean:,lienol:,name:,target:,url:,version:,clean,help,mirror -- "$@")
+TEMP=$(getopt -o d:l:L:n:t:u:v:chm --long dl:,lean:,lienol:,name:,target:,url:,version:,clean,help,mirror -- "$@")
 eval set -- "$TEMP"
 while true ; do
     case "$1" in
-        -L|--lienol)
-            shift; LIENOL_DIR=$(readlink -f "$1") ;;
         -d|--dl)
             shift; DL_DIR=$(readlink -f "$1") ;;
         -l|--lean)
             shift; LEAN_DIR=$(readlink -f "$1") ;;
+        -L|--lienol)
+            shift; LIENOL_DIR=$(readlink -f "$1") ;;
         -n|--name)
             shift; NAME=$(readlink -f "$1") ;;
         -t|--target)
@@ -122,18 +122,23 @@ fi
 if [[ -d "${SDK_DIR}" ]]; then 
     if [[ ${CLEAN} -gt 0 ]]; then
         rm -fr "${SDK_DIR}"
-    else
-        eixt 0
+        if [[ -n ${NAME} ]]; then
+            NAME=$(dirname "${NAME}")
+            tar -xf "${CACHE_DIR}/${SDK_FILENAME}" -C "${NAME}"
+            NAME=${NAME}/$(basename -s .tar.xz "${SDK_FILENAME}")
+            mv "${NAME}" "${SDK_DIR}"
+        else
+            tar -xf "${CACHE_DIR}/${SDK_FILENAME}" -C "${ROOT_DIR}"
+        fi
     fi
 fi
-if [[ -n ${NAME} ]]; then
-    NAME=$(dirname "${NAME}")
-    tar -xf "${CACHE_DIR}/${SDK_FILENAME}" -C "${NAME}"
-    NAME=${NAME}/$(basename -s .tar.xz "${SDK_FILENAME}")
-    mv "${NAME}" "${SDK_DIR}"
-else
-    tar -xf "${CACHE_DIR}/${SDK_FILENAME}" -C "${ROOT_DIR}"
+
+if [[ -n ${DL_DIR} ]]; then
+    if [[ -d "${SDK_DIR}/dl" ]]; then rm -fr "${SDK_DIR}/dl"; fi
+    if [[ ! -h "${SDK_DIR}/dl" ]]; then ln -s "${DL_DIR}" "${SDK_DIR}/dl"; fi
 fi
+
+if [[ $(command -v pre_ops) ]]; then pre_ops; fi
 
 [[ -f "${SDK_DIR}"/feeds.conf.default.origin ]] || cp "${SDK_DIR}"/feeds.conf.default "${SDK_DIR}"/feeds.conf.default.origin
 [[ -f "${SDK_DIR}"/feeds.conf.default.origin ]] && cp "${SDK_DIR}"/feeds.conf.default.origin "${SDK_DIR}"/feeds.conf.default
@@ -143,43 +148,36 @@ sed -e 's|git.openwrt.org/openwrt/openwrt|github.com/openwrt/openwrt|g' \
     -e 's|git.openwrt.org/project/luci|github.com/openwrt/luci|g' \
     -e 's|git.openwrt.org/feed/telephony|github.com/openwrt/telephony|g' \
     -i "${SDK_DIR}"/feeds.conf.default
-
-if [[ -n ${DL_DIR} ]]; then
-    if [[ -d "${SDK_DIR}/dl" ]]; then rm -fr "${SDK_DIR}/dl"; fi
-    ln -s "${DL_DIR}" "${SDK_DIR}/dl"
-fi
-
-if [[ $(command -v pre_ops) ]]; then pre_ops; fi
+echo "src-git lienol https://github.com/Lienol/openwrt-package" >> "${SDK_DIR}"/feeds.conf.default
 
 pushd "${SDK_DIR}"
-if [[ $(docker ps -q --filter "name=git-cache-http-server") ]]; then
-    git config --global url."http://127.0.0.1:9080/".insteadOf https://
-fi
 mkdir -p staging_dir/host/bin
 if [[ $(command -v upx) ]]; then cp "$(command -v upx)" staging_dir/host/bin; fi
 if [[ $(command -v upx-ucl) ]]; then cp "$(command -v upx-ucl)" staging_dir/host/bin; fi
-echo "src-git lienol https://github.com/Lienol/openwrt-package" >> feeds.conf.default
+
 scripts/feeds clean
 ./scripts/feeds update -a
-# Remove the kcptun in package feed
+
+# Remove the kcptun in package feed since it's quite old
 rm -fr feeds/packages/net/kcptun
+# Fail to update node, need investigation
+# sed -i -e 's/PKG_VERSION:=.*/PKG_VERSION:=v12.15.0/g' -e 's/PKG_RELEASE:=.*/PKG_RELEASE:=1/g' feeds/packages/lang/node/Makefile
 sed -i -e 's/PKG_VERSION:=.*/PKG_VERSION:=3.3.4/g' -e 's/PKG_RELEASE:=.*/PKG_RELEASE:=1/g' feeds/packages/net/shadowsocks-libev/Makefile
+
 ./scripts/feeds update -i
 ./scripts/feeds install -a
-git config --global --remove-section 'url.http://127.0.0.1:9080/'
 
 if [[ -d ${LEAN_DIR} ]]; then
-    git pull
     cp -R "${LEAN_DIR}/package/lean/" package/
 fi
 if [[ -d ${LIENOL_DIR} ]]; then
-    git pull
     cp -R "${LIENOL_DIR}/package/lean"/*smartdns* package/lean/
 fi
 for pkg in package/lean/*; do
     pkg=$(basename "${pkg}")
     if [[ -d package/feeds/lienol/${pkg} ]]; then
         rm -fr "package/lean/${pkg}"
+        # rm -fr "package/feeds/lienol/${pkg}"
     fi
 done
 git clone https://github.com/kuoruan/luci-app-v2ray.git package/kuoruan/luci-app-v2ray
@@ -223,14 +221,19 @@ for config in CONFIG_PACKAGE_luci-app-passwall_INCLUDE_ipt2socks \
     sed -i "s/# ${config} is not set/${config}=y/g" .config        
 done
 
-# make -j"$(nproc)" package/feeds/luci/luci-base/compile
-# for pkg in $(ls -1 package/feeds/lienol/); do
-#     make -j"$(nproc)" package/feeds/lienol/${pkg}/compile || true
-# done
-# for pkg in $(ls -1 package/lean/); do
-#     if [[ ! -d package/feeds/lienol/${pkg} ]]; then
-#         make -j"$(nproc)" package/lean/${pkg}/compile || true
-#     fi
-# done
-# make -j"$(nproc)" package/kuoruan/luci-app-v2ray/compile
+make -j"$(nproc)" package/feeds/luci/luci-base/compile
+for pkg in package/feeds/lienol/*; do
+    pkg=$(basename "${pkg}")
+    make -j"$(nproc)" package/feeds/lienol/"${pkg}"/compile || true
+done
+for pkg in package/lean/*; do
+    pkg=$(basename "${pkg}")
+    if [[ ! -d "package/feeds/lienol/${pkg}" ]]; then
+        make -j"$(nproc)" package/lean/"${pkg}"/compile || true
+    fi
+done
+for pkg in package/kuoruan/*; do
+    pkg=$(basename "${pkg}")
+    make -j"$(nproc)" package/kuoruan/"${pkg}"/compile
+done
 popd
