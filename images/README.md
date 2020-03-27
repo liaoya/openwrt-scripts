@@ -20,7 +20,7 @@ Copy the personal ipk to a separate folder and pass it to `build.sh` with `-p`.
 
 ```bash
 export PACKAGES="luci-app-adbyby-plus luci-app-autoreboot luci-app-passwall luci-app-smartdns luci-app-ssr-plus luci-app-vlmcsd \
-    luci-i18n-adbyby-plus-zh-cn luci-i18n-autoreboot-zh-cn luci-i18n-smartdns-zh-cn luci-i18n-vlmcsd-zh-cn"
+luci-i18n-adbyby-plus-zh-cn luci-i18n-autoreboot-zh-cn luci-i18n-vlmcsd-zh-cn"
 ```
 
 ## Shadowsocks

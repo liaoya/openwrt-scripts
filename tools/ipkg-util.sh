@@ -69,7 +69,7 @@ if [[ -d "${SRC}/package/lean" ]]; then
         fi
     done
 fi
-PACKAGES=(${PACKAGES[@]} shadowsocks-libev)
+PACKAGES=(${PACKAGES[@]} shadowsocks-libev smartdns)
 # echo ${PACKAGES[@]} | tr ' ' '\n'
 
 if [[ ${OPERATION} == "list" ]]; then
@@ -90,7 +90,7 @@ elif [[ ${OPERATION} == "copy" ]]; then
             cp -pr "${pkg}" "${DEST}"
         done < <(find "${SRC}/bin" -iname "*$name*.ipk" -print0)
     done
-    (cd "${DEST}"; ipkg-make-index.sh . > Packages && gzip -9nc Packages > Packages.gz)
+    (cd "${DEST}"; rm -fr libopenssl*; ipkg-make-index.sh . > Packages && gzip -9nc Packages > Packages.gz)
 else
     echo "Unknown operaiton ${OPERATION}"
     exit 1

@@ -13,6 +13,7 @@ BASE_URL_PREFIX=${BASE_URL_PREFIX:-""}
 DL_DIR=${DL_DIR:-""}
 LEAN_DIR=${LEAN_DIR:-/work/github/coolsnowwolf/lede}
 LIENOL_DIR=${LIENOL_DIR:-/work/github/Lienol/openwrt}
+SMARTDNS_DIR=${SMARTDNS_DIR:-/work/github/pymumu/smartdns}
 NAME=${NAME:-""}
 TARGET=${TARGET:-""}
 VERSION=${VERSION:-"19.07.2"}
@@ -23,9 +24,7 @@ print_usage() {
     cat <<EOF
 Usage: $(basename "${BASH_SOURCE[0]}") [OPTIONS]
 OPTIONS
-    -L, --lienol, the Lienol git workspace, the default value "${LIENOL_DIR}"
-    -d, --dl, the global dl directory, the default value "${LEAN_DIR}"
-    -l, --lean, the lean git workspace
+    -d, --dl, the global dl directory, the default value "${DL_DIR}"
     -n, --name, the name of uncompress folder, some build will fail if the name is too long.
     -t, --target, CPU Arch
     -u, --url, provide the openwrt image builder url directly for old version (before 17.01)
@@ -36,16 +35,12 @@ OPTIONS
 EOF
 }
 
-TEMP=$(getopt -o d:l:L:n:t:u:v:chm --long dl:,lean:,lienol:,name:,target:,url:,version:,clean,help,mirror -- "$@")
+TEMP=$(getopt -o d:n:t:u:v:chm --long dl:,name:,target:,url:,version:,clean,help,mirror -- "$@")
 eval set -- "$TEMP"
 while true ; do
     case "$1" in
         -d|--dl)
             shift; DL_DIR=$(readlink -f "$1") ;;
-        -l|--lean)
-            shift; LEAN_DIR=$(readlink -f "$1") ;;
-        -L|--lienol)
-            shift; LIENOL_DIR=$(readlink -f "$1") ;;
         -n|--name)
             shift; NAME=$(readlink -f "$1") ;;
         -t|--target)
@@ -94,13 +89,6 @@ else
 fi
 
 curl -sLO "${BASE_URL}/sha256sums"
-# curl -sLO "${BASE_URL}/sha256sums.asc"
-# curl -sLO "${BASE_URL}/sha256sums.sig"
-# if [ ! -f sha256sums.asc ] && [ ! -f sha256sums.sig ]; then
-#     echo "Missing sha256sums signature files"
-#     exit 1
-# fi
-# [ ! -f sha256sums.asc ] || gpg --with-fingerprint --verify sha256sums.asc sha256sums
 
 SHA256_VALUE=$(grep openwrt-sdk sha256sums | cut -d' ' -f1)
 SDK_FILENAME=$(grep openwrt-sdk sha256sums | cut -d'*' -f2)
@@ -152,8 +140,8 @@ echo "src-git lienol https://github.com/Lienol/openwrt-package" >> "${SDK_DIR}"/
 
 pushd "${SDK_DIR}"
 mkdir -p staging_dir/host/bin
-if [[ $(command -v upx) ]]; then cp "$(command -v upx)" staging_dir/host/bin; fi
-if [[ $(command -v upx-ucl) ]]; then cp "$(command -v upx-ucl)" staging_dir/host/bin; fi
+if [[ $(command -v upx) ]]; then ln -s "$(command -v upx)" staging_dir/host/bin; fi
+if [[ $(command -v upx-ucl) ]]; then ln -s "$(command -v upx-ucl)" staging_dir/host/bin; fi
 
 scripts/feeds clean
 ./scripts/feeds update -a
@@ -170,18 +158,26 @@ sed -i -e 's/PKG_VERSION:=.*/PKG_VERSION:=3.3.4/g' -e 's/PKG_RELEASE:=.*/PKG_REL
 if [[ -d ${LEAN_DIR} ]]; then
     cp -R "${LEAN_DIR}/package/lean/" package/
 fi
-if [[ -d ${LIENOL_DIR} ]]; then
-    cp -R "${LIENOL_DIR}/package/lean"/*smartdns* package/lean/
+# if [[ -d ${LIENOL_DIR} ]]; then
+#     cp -R "${LIENOL_DIR}/package/lean"/*smartdns* package/lean/
+# fi
+if [[ -d ${SMARTDNS_DIR} ]]; then
+    mkdir -p package/smartdns
+    cp -pr "${SMARTDNS_DIR}/package/openwrt" package/smartdns
+    sed -i -e 's/PKG_VERSION:=.*/PKG_VERSION:=1.2020.02.25/g' \
+        -e 's/PKG_RELEASE:=.*/PKG_RELEASE:=2212/g' \
+        -e 's/PKG_SOURCE_VERSION:=.*/PKG_SOURCE_VERSION:=b31792ad9b3ef8c3bf87dd0f8bae0d0a5b5c9122/g' \
+        package/smartdns/openwrt/Makefile
 fi
 for pkg in package/lean/*; do
     pkg=$(basename "${pkg}")
     if [[ -d package/feeds/lienol/${pkg} ]]; then
-        rm -fr "package/lean/${pkg}"
-        # rm -fr "package/feeds/lienol/${pkg}"
+        # rm -fr "package/lean/${pkg}"
+        rm -fr "package/feeds/lienol/${pkg}"
     fi
 done
 git clone https://github.com/kuoruan/luci-app-v2ray.git package/kuoruan/luci-app-v2ray
-rm -f .config
+rm -f .config ./tmp
 ./scripts/feeds install -a
 make defconfig
 
@@ -233,7 +229,9 @@ for pkg in package/lean/*; do
     fi
 done
 for pkg in package/kuoruan/*; do
-    pkg=$(basename "${pkg}")
-    make -j"$(nproc)" package/kuoruan/"${pkg}"/compile
+    make -j"$(nproc)" "${pkg}"/compile
+done
+for pkg in package/smartdns/*; do
+    make -j"$(nproc)" "${pkg}"/compile
 done
 popd

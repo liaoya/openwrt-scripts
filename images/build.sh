@@ -12,6 +12,7 @@ BASE_URL=${BASE_URL:-""}
 BASE_URL_PREFIX=${BASE_URL_PREFIX:-""}
 DEVICE=${OPENWRT_DEVICE:-""}
 REPOSITORY=${REPOSITORY:-""}
+IMAGE_DIR=${IMAGE_DIR:-/work/imagebuilder}
 VARIANT=${OPENWRT_VARIANT:-"custom"}
 VERSION=${OPENWRT_VERSION:-"19.07.2"}
 CLEAN=0
@@ -23,6 +24,7 @@ Usage: $(basename "${BASH_SOURCE[0]}") [OPTIONS]
 OPTIONS
     -d, --device, DEVICE NAME
     -p, --repository, the local repository
+    -r, --root, the root directory of uncompress folder
     -u, --url, provide the openwrt image builder url directly since the version
     -v, --variant, IMAGE VARIANT
     -V, --version, OpenWRT VERSION
@@ -32,7 +34,7 @@ OPTIONS
 EOF
 }
 
-TEMP=$(getopt -o d:p:v:V:chm --long device:repository:,variant:,version:,clean,help,mirror -- "$@")
+TEMP=$(getopt -o d:p:r:v:V:chm --long device:repository:,root:,variant:,version:,clean,help,mirror -- "$@")
 eval set -- "$TEMP"
 while true ; do
     case "$1" in
@@ -40,6 +42,8 @@ while true ; do
             shift; DEVICE=$1 ;;
         -p|--repository)
             shift; REPOSITORY=$1 ;;
+        -r|--root)
+            shift; IMAGE_DIR=$(readlink -f "$1") ;;
         -u|--url)
             shift; BASE_URL=$1 ;;
         -v|--variant)
@@ -85,6 +89,9 @@ else
     echo "Require customized ${ROOT_DIR}/devices/${DEVICE}.sh or ${ROOT_DIR}/devices/${DEVICE}/${VARIANT}.sh"
     exit 1
 fi
+
+if [[ ! -d "${IMAGE_DIR}" ]]; then mkdir -p "${IMAGE_DIR}"; fi
+pushd "${IMAGE_DIR}"
 
 curl -sLO "${BASE_URL}/sha256sums"
 # curl -sLO "${BASE_URL}/sha256sums.asc"
@@ -159,3 +166,5 @@ for item in "${ROOT_DIR}/custom/etc/chinadns_chnroute.txt" \
 done
 
 if [[ $(command -v post_ops) ]]; then post_ops; fi
+
+popd
