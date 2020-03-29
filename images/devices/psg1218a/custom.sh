@@ -6,7 +6,7 @@ THIS_DIR=$(dirname "${THIS_DIR}")
 source "${THIS_DIR}/functions.sh"
 
 if [[ -n ${BASE_URL_PREFIX} ]]; then
-#shellcheck disable=SC2034
+    #shellcheck disable=SC2034
     BASE_URL=${BASE_URL_PREFIX}/releases/${VERSION}/targets/ramips/mt7620
 fi
 

@@ -36,29 +36,51 @@ EOF
 
 TEMP=$(getopt -o d:p:r:v:V:chm --long device:repository:,root:,variant:,version:,clean,help,mirror -- "$@")
 eval set -- "$TEMP"
-while true ; do
+while true; do
     case "$1" in
-        -d|--device)
-            shift; DEVICE=$1 ;;
-        -p|--repository)
-            shift; REPOSITORY=$1 ;;
-        -r|--root)
-            shift; IMAGE_DIR=$(readlink -f "$1") ;;
-        -u|--url)
-            shift; BASE_URL=$1 ;;
-        -v|--variant)
-            shift; VARIANT=$1 ;;
-        -V|--version)
-#shellcheck disable=SC2034
-            shift; VERSION=$1 ;;
-        -c|--clean)
-            CLEAN=1 ;;
-        -h|--help)
-            print_usage; exit 0 ;;
-        -m|--mirror)
-            MIRROR=1 ;;
-        --) shift; break ;;
-        *)  print_usage; exit 1 ;;
+    -d | --device)
+        shift
+        DEVICE=$1
+        ;;
+    -p | --repository)
+        shift
+        REPOSITORY=$1
+        ;;
+    -r | --root)
+        shift
+        IMAGE_DIR=$(readlink -f "$1")
+        ;;
+    -u | --url)
+        shift
+        BASE_URL=$1
+        ;;
+    -v | --variant)
+        shift
+        VARIANT=$1
+        ;;
+    -V | --version)
+        #shellcheck disable=SC2034
+        shift
+        VERSION=$1
+        ;;
+    -c | --clean)
+        CLEAN=1
+        ;;
+    -h | --help)
+        print_usage
+        exit 0
+        ;;
+    -m | --mirror)
+        MIRROR=1
+        ;;
+    --)
+        shift
+        break
+        ;;
+    *)
+        print_usage
+        exit 1
+        ;;
     esac
     shift
 done
@@ -130,7 +152,7 @@ fi
 if [[ -n ${REPOSITORY} && -d ${REPOSITORY} ]]; then
     REPOSITORY=$(readlink -f "${REPOSITORY}")
     if [[ -f ${REPOSITORY}/Packages.gz ]]; then
-        echo "src custom_repo file://${REPOSITORY}" >> repositories.conf
+        echo "src custom_repo file://${REPOSITORY}" >>repositories.conf
     else
         _PACKAGES=$(for pkg in "${REPOSITORY}"/*.ipk; do basename "$pkg" | cut -d'_' -f1; done | paste -sd " " -)
         PACKAGES=${PACKAGES:-""}
@@ -155,9 +177,9 @@ else
 fi
 
 for item in "${ROOT_DIR}/custom/etc/chinadns_chnroute.txt" \
-            "${ROOT_DIR}/custom/etc/config/wireless" \
-            "${ROOT_DIR}/custom/etc/dropbear/authorized_keys" \
-            "${ROOT_DIR}/custom/etc/opkg"; do
+    "${ROOT_DIR}/custom/etc/config/wireless" \
+    "${ROOT_DIR}/custom/etc/dropbear/authorized_keys" \
+    "${ROOT_DIR}/custom/etc/opkg"; do
     if [[ -f "${item}" ]]; then
         rm -f "${item}"
     elif [[ -d "${item}" ]]; then

@@ -20,18 +20,32 @@ EOF
 
 TEMP=$(getopt -o d:ho:s: --long dest:,help,operation:,src: -- "$@")
 eval set -- "$TEMP"
-while true ; do
+while true; do
     case "$1" in
-        -d|--dest)
-            shift; DEST=$(readlink -f "$1") ;;
-        -h|--help)
-            print_usage; exit 0 ;;
-        -o|--operation)
-            shift; OPERATION=$1 ;;
-        -s|--src)
-            shift; SRC=$(readlink -f "$1") ;;
-        --) shift; break ;;
-        *)  print_usage; exit 1 ;;
+    -d | --dest)
+        shift
+        DEST=$(readlink -f "$1")
+        ;;
+    -h | --help)
+        print_usage
+        exit 0
+        ;;
+    -o | --operation)
+        shift
+        OPERATION=$1
+        ;;
+    -s | --src)
+        shift
+        SRC=$(readlink -f "$1")
+        ;;
+    --)
+        shift
+        break
+        ;;
+    *)
+        print_usage
+        exit 1
+        ;;
     esac
     shift
 done
@@ -69,13 +83,22 @@ if [[ -d "${SRC}/package/lean" ]]; then
         fi
     done
 fi
-PACKAGES=(${PACKAGES[@]} shadowsocks-libev smartdns)
+declare -a INGNORE_PACKAGES=(openssl1.1)
+declare __PACKAGES=()
+for name in "${PACKAGES[@]}"; do
+    for ignore in "${INGNORE_PACKAGES[@]}"; do
+        if [[ ${name} != "${ignore}" ]]; then
+            __PACKAGES+=(${name})
+        fi
+    done
+done
+PACKAGES=(${__PACKAGES[@]} shadowsocks-libev smartdns)
+unset __PACKAGES
 # echo ${PACKAGES[@]} | tr ' ' '\n'
 
 if [[ ${OPERATION} == "list" ]]; then
     for name in "${PACKAGES[@]}"; do
-        while IFS= read -r -d '' pkg
-        do
+        while IFS= read -r -d '' pkg; do
             ls -1 "${pkg}"
         done < <(find "${SRC}/bin" -iname "*$name*.ipk" -print0)
     done
@@ -85,12 +108,15 @@ elif [[ ${OPERATION} == "copy" ]]; then
         exit 1
     fi
     for name in "${PACKAGES[@]}"; do
-        while IFS= read -r -d '' pkg
-        do
+        while IFS= read -r -d '' pkg; do
             cp -pr "${pkg}" "${DEST}"
         done < <(find "${SRC}/bin" -iname "*$name*.ipk" -print0)
     done
-    (cd "${DEST}"; rm -fr libopenssl*; ipkg-make-index.sh . > Packages && gzip -9nc Packages > Packages.gz)
+    (
+        cd "${DEST}"
+        rm -fr libopenssl*
+        ipkg-make-index.sh . >Packages && gzip -9nc Packages >Packages.gz
+    )
 else
     echo "Unknown operaiton ${OPERATION}"
     exit 1

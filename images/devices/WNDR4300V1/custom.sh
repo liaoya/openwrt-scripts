@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ -n ${BASE_URL_PREFIX} ]]; then
-#shellcheck disable=SC2034
+    #shellcheck disable=SC2034
     BASE_URL="${BASE_URL_PREFIX}/releases/${VERSION}/targets/ar71xx/nand"
 fi
 
@@ -19,7 +19,7 @@ if [[ ${VERSION} =~ 19.07 ]]; then
 fi
 
 add_wireless_config() {
-    cat <<EOF > "${ROOT_DIR}/custom/etc/config/wireless"
+    cat <<EOF >"${ROOT_DIR}/custom/etc/config/wireless"
 config wifi-device 'radio0'
         option type 'mac80211'
         option hwmode '11g'
@@ -60,12 +60,12 @@ EOF
 }
 
 pre_ops() {
-    sed -i  s/'23552k(ubi),25600k@0x6c0000(firmware)'/'120832k(ubi),122880k@0x6c0000(firmware)'/ target/linux/ar71xx/image/legacy.mk
+    sed -i s/'23552k(ubi),25600k@0x6c0000(firmware)'/'120832k(ubi),122880k@0x6c0000(firmware)'/ target/linux/ar71xx/image/legacy.mk
     add_wireless_config
 
-#     mkdir -p "${ROOT_DIR}/custom/etc/opkg"
-#     cat << EOF > "${ROOT_DIR}/custom/etc/opkg/customfeeds.conf"
-# src/gz openwrt_dist http://openwrt-dist.sourceforge.net/packages/base/mips_24kc
-# src/gz openwrt_dist_luci http://openwrt-dist.sourceforge.net/packages/luci
-# EOF
+    #     mkdir -p "${ROOT_DIR}/custom/etc/opkg"
+    #     cat << EOF > "${ROOT_DIR}/custom/etc/opkg/customfeeds.conf"
+    # src/gz openwrt_dist http://openwrt-dist.sourceforge.net/packages/base/mips_24kc
+    # src/gz openwrt_dist_luci http://openwrt-dist.sourceforge.net/packages/luci
+    # EOF
 }

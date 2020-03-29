@@ -1,7 +1,7 @@
 #!/bin/bash
 
 add_wireless_config() {
-    cat <<EOF > "${ROOT_DIR}/custom/etc/config/wireless"
+    cat <<EOF >"${ROOT_DIR}/custom/etc/config/wireless"
 config wifi-device 'radio0'
         option type 'mac80211'
         option hwmode '11a'

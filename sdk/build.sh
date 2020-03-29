@@ -37,27 +37,47 @@ EOF
 
 TEMP=$(getopt -o d:n:t:u:v:chm --long dl:,name:,target:,url:,version:,clean,help,mirror -- "$@")
 eval set -- "$TEMP"
-while true ; do
+while true; do
     case "$1" in
-        -d|--dl)
-            shift; DL_DIR=$(readlink -f "$1") ;;
-        -n|--name)
-            shift; NAME=$(readlink -f "$1") ;;
-        -t|--target)
-            shift; TARGET=$1 ;;
-        -u|--url)
-            shift; BASE_URL=$1 ;;
-        -v|--version)
-#shellcheck disable=SC2034
-            shift; VERSION=$1 ;;
-        -c|--clean)
-            CLEAN=1 ;;
-        -h|--help)
-            print_usage; exit 0 ;;
-        -m|--mirror)
-            MIRROR=1 ;;
-        --) shift; break ;;
-        *)  print_usage; exit 1 ;;
+    -d | --dl)
+        shift
+        DL_DIR=$(readlink -f "$1")
+        ;;
+    -n | --name)
+        shift
+        NAME=$(readlink -f "$1")
+        ;;
+    -t | --target)
+        shift
+        TARGET=$1
+        ;;
+    -u | --url)
+        shift
+        BASE_URL=$1
+        ;;
+    -v | --version)
+        #shellcheck disable=SC2034
+        shift
+        VERSION=$1
+        ;;
+    -c | --clean)
+        CLEAN=1
+        ;;
+    -h | --help)
+        print_usage
+        exit 0
+        ;;
+    -m | --mirror)
+        MIRROR=1
+        ;;
+    --)
+        shift
+        break
+        ;;
+    *)
+        print_usage
+        exit 1
+        ;;
     esac
     shift
 done
@@ -81,7 +101,7 @@ if [[ -z ${TARGET} ]]; then
 fi
 
 if [[ -f "${ROOT_DIR}/target/${TARGET}.sh" ]]; then
-#shellcheck disable=SC1090
+    #shellcheck disable=SC1090
     source "${ROOT_DIR}/target/${TARGET}.sh"
 else
     echo "Require customized ${ROOT_DIR}/target/${TARGET}.sh"
@@ -107,26 +127,22 @@ else
     SDK_DIR=$(basename -s .tar.xz "${SDK_FILENAME}")
     SDK_DIR=${ROOT_DIR}/${SDK_DIR}
 fi
-if [[ -d "${SDK_DIR}" ]]; then 
-    if [[ ${CLEAN} -gt 0 ]]; then
-        rm -fr "${SDK_DIR}"
-        if [[ -n ${NAME} ]]; then
-            NAME=$(dirname "${NAME}")
-            tar -xf "${CACHE_DIR}/${SDK_FILENAME}" -C "${NAME}"
-            NAME=${NAME}/$(basename -s .tar.xz "${SDK_FILENAME}")
-            mv "${NAME}" "${SDK_DIR}"
-        else
-            tar -xf "${CACHE_DIR}/${SDK_FILENAME}" -C "${ROOT_DIR}"
-        fi
+if [[ ${CLEAN} -gt 0 && -d "${SDK_DIR}" ]]; then rm -fr "${SDK_DIR}"; fi
+if [[ ! -d "${SDK_DIR}" ]]; then
+    if [[ -n ${NAME} ]]; then
+        NAME=$(dirname "${NAME}")
+        tar -xf "${CACHE_DIR}/${SDK_FILENAME}" -C "${NAME}"
+        NAME=${NAME}/$(basename -s .tar.xz "${SDK_FILENAME}")
+        mv "${NAME}" "${SDK_DIR}"
+    else
+        tar -xf "${CACHE_DIR}/${SDK_FILENAME}" -C "${ROOT_DIR}"
     fi
 fi
 
 if [[ -n ${DL_DIR} ]]; then
     if [[ -d "${SDK_DIR}/dl" ]]; then rm -fr "${SDK_DIR}/dl"; fi
-    if [[ ! -h "${SDK_DIR}/dl" ]]; then ln -s "${DL_DIR}" "${SDK_DIR}/dl"; fi
+    if [[ ! -L "${SDK_DIR}/dl" ]]; then ln -s "${DL_DIR}" "${SDK_DIR}/dl"; fi
 fi
-
-if [[ $(command -v pre_ops) ]]; then pre_ops; fi
 
 [[ -f "${SDK_DIR}"/feeds.conf.default.origin ]] || cp "${SDK_DIR}"/feeds.conf.default "${SDK_DIR}"/feeds.conf.default.origin
 [[ -f "${SDK_DIR}"/feeds.conf.default.origin ]] && cp "${SDK_DIR}"/feeds.conf.default.origin "${SDK_DIR}"/feeds.conf.default
@@ -136,12 +152,12 @@ sed -e 's|git.openwrt.org/openwrt/openwrt|github.com/openwrt/openwrt|g' \
     -e 's|git.openwrt.org/project/luci|github.com/openwrt/luci|g' \
     -e 's|git.openwrt.org/feed/telephony|github.com/openwrt/telephony|g' \
     -i "${SDK_DIR}"/feeds.conf.default
-echo "src-git lienol https://github.com/Lienol/openwrt-package" >> "${SDK_DIR}"/feeds.conf.default
+echo "src-git lienol https://github.com/Lienol/openwrt-package" >>"${SDK_DIR}"/feeds.conf.default
 
 pushd "${SDK_DIR}"
 mkdir -p staging_dir/host/bin
-if [[ $(command -v upx) ]]; then ln -s "$(command -v upx)" staging_dir/host/bin; fi
-if [[ $(command -v upx-ucl) ]]; then ln -s "$(command -v upx-ucl)" staging_dir/host/bin; fi
+if [[ $(command -v upx) && ! -L staging_dir/host/bin/upx ]]; then ln -s "$(command -v upx)" staging_dir/host/bin; fi
+if [[ $(command -v upx-ucl) && ! -L staging_dir/host/bin/upx-ucl ]]; then ln -s "$(command -v upx-ucl)" staging_dir/host/bin; fi
 
 scripts/feeds clean
 ./scripts/feeds update -a
@@ -176,46 +192,19 @@ for pkg in package/lean/*; do
         rm -fr "package/feeds/lienol/${pkg}"
     fi
 done
-git clone https://github.com/kuoruan/luci-app-v2ray.git package/kuoruan/luci-app-v2ray
-rm -f .config ./tmp
+if [[ -d package/kuoruan/luci-app-v2ray ]]; then
+    (
+        cd package/kuoruan/luci-app-v2ray
+        git pull
+    )
+else
+    git clone https://github.com/kuoruan/luci-app-v2ray.git package/kuoruan/luci-app-v2ray
+fi
+rm -fr .config ./tmp
 ./scripts/feeds install -a
 make defconfig
 
-for config in CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_V2ray_plugin \
-           CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Trojan \
-           CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Redsocks2 \
-           CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_ShadowsocksR_Server; do
-    sed -i "s/${config}=y/# ${config} is not set/g" .config
-done
-
-for config in CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks \
-           CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Simple_obfs \
-           CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_V2ray \
-           CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Kcptun \
-           CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_DNS2SOCKS; do
-    sed -i "s/# ${config} is not set/${config}=y/g" .config
-done
-
-for config in CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Trojan \
-           CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Brook \
-           CONFIG_PACKAGE_luci-app-passwall_INCLUDE_v2ray-plugin; do
-    sed -i "s/${config}=y/# ${config} is not set/g" .config
-done
-
-for config in CONFIG_PACKAGE_luci-app-passwall_INCLUDE_ipt2socks \
-           CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Shadowsocks \
-           CONFIG_PACKAGE_luci-app-passwall_INCLUDE_ShadowsocksR \
-           CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Shadowsocks_socks \
-           CONFIG_PACKAGE_luci-app-passwall_INCLUDE_ShadowsocksR_socks \
-           CONFIG_PACKAGE_luci-app-passwall_INCLUDE_V2ray \
-           CONFIG_PACKAGE_luci-app-passwall_INCLUDE_kcptun \
-           CONFIG_PACKAGE_luci-app-passwall_INCLUDE_haproxy \
-           CONFIG_PACKAGE_luci-app-passwall_INCLUDE_ChinaDNS_NG \
-           CONFIG_PACKAGE_luci-app-passwall_INCLUDE_pdnsd \
-           CONFIG_PACKAGE_luci-app-passwall_INCLUDE_dns2socks \
-           CONFIG_PACKAGE_luci-app-passwall_INCLUDE_simple-obfs; do
-    sed -i "s/# ${config} is not set/${config}=y/g" .config        
-done
+if [[ $(command -v pre_ops) ]]; then pre_ops; fi
 
 make -j"$(nproc)" package/feeds/luci/luci-base/compile
 for pkg in package/feeds/lienol/*; do
