@@ -91,7 +91,7 @@ for config in CONFIG_PACKAGE_luci-app-passwall_INCLUDE_ipt2socks \
            CONFIG_PACKAGE_luci-app-passwall_INCLUDE_pdnsd \
            CONFIG_PACKAGE_luci-app-passwall_INCLUDE_dns2socks \
            CONFIG_PACKAGE_luci-app-passwall_INCLUDE_simple-obfs; do
-    sed -i "s/# ${config} is not set/${config}=y/g" .config        
+    sed -i "s/# ${config} is not set/${config}=y/g" .config
 done
 
 make -j"$(nproc)" package/feeds/luci/luci-base/compile

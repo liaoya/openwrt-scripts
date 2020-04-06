@@ -187,40 +187,43 @@ if [[ -d ${SMARTDNS_DIR} ]]; then
 fi
 for pkg in package/lean/*; do
     pkg=$(basename "${pkg}")
+    # find feeds/lienol -type d -iname "$pkg"
     if [[ -d package/feeds/lienol/${pkg} ]]; then
         # rm -fr "package/lean/${pkg}"
         rm -fr "package/feeds/lienol/${pkg}"
     fi
 done
-if [[ -d package/kuoruan/luci-app-v2ray ]]; then
-    (
-        cd package/kuoruan/luci-app-v2ray
-        git pull
-    )
-else
-    git clone https://github.com/kuoruan/luci-app-v2ray.git package/kuoruan/luci-app-v2ray
+if [[ -d package/kuoruan ]]; then
+    rm -fr package/kuoruan
 fi
+git clone https://github.com/kuoruan/luci-app-v2ray.git package/kuoruan/luci-app-v2ray
+# git clone https://github.com/kuoruan/openwrt-v2ray.git package/kuoruan/openwrt-v2ray
+# sed -i -e 's/PKG_NAME:=v2ray-core/PKG_NAME:=v2ray/g' package/kuoruan/openwrt-v2ray/M
+# sed -i -e 's/$(PKG_NAME)/v2ray-core/g' package/kuoruan/openwrt-v2ray/Makefile
+# rm -fr package/feeds/lienol/v2ray
+# rm -fr package/lean/v2ray
+
 rm -fr .config ./tmp
 ./scripts/feeds install -a
 make defconfig
 
 if [[ $(command -v pre_ops) ]]; then pre_ops; fi
 
-make -j"$(nproc)" package/feeds/luci/luci-base/compile
-for pkg in package/feeds/lienol/*; do
-    pkg=$(basename "${pkg}")
-    make -j"$(nproc)" package/feeds/lienol/"${pkg}"/compile || true
-done
-for pkg in package/lean/*; do
-    pkg=$(basename "${pkg}")
-    if [[ ! -d "package/feeds/lienol/${pkg}" ]]; then
-        make -j"$(nproc)" package/lean/"${pkg}"/compile || true
-    fi
-done
-for pkg in package/kuoruan/*; do
-    make -j"$(nproc)" "${pkg}"/compile
-done
-for pkg in package/smartdns/*; do
-    make -j"$(nproc)" "${pkg}"/compile
-done
+# make -j"$(nproc)" package/feeds/luci/luci-base/compile
+# for pkg in package/feeds/lienol/*; do
+#     pkg=$(basename "${pkg}")
+#     make -j"$(nproc)" package/feeds/lienol/"${pkg}"/compile || true
+# done
+# for pkg in package/lean/*; do
+#     pkg=$(basename "${pkg}")
+#     if [[ ! -d "package/feeds/lienol/${pkg}" ]]; then
+#         make -j"$(nproc)" package/lean/"${pkg}"/compile || true
+#     fi
+# done
+# for pkg in package/kuoruan/*; do
+#     make -j"$(nproc)" "${pkg}"/compile
+# done
+# for pkg in package/smartdns/*; do
+#     make -j"$(nproc)" "${pkg}"/compile
+# done
 popd

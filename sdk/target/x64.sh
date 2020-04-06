@@ -8,6 +8,7 @@ source "${THIS_DIR}/functions.sh"
 function pre_ops() {
     configure_passwall
     configure_ssr_plus
+    configure_v2ray
 }
 
 if [[ -n ${BASE_URL_PREFIX} ]]; then
