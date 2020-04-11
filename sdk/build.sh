@@ -84,7 +84,7 @@ done
 
 if [[ ${VERSION} =~ 19.07 || ${VERSION} =~ 18.06 || ${VERSION} =~ 17.01 ]]; then
     if [[ ${MIRROR} -eq 1 ]]; then
-        BASE_URL_PREFIX=http://mirrors.tuna.tsinghua.edu.cn/lede
+        BASE_URL_PREFIX=https://mirrors.tuna.tsinghua.edu.cn/lede
     else
         BASE_URL_PREFIX=http://downloads.openwrt.org
     fi
@@ -172,6 +172,7 @@ sed -i -e 's/PKG_VERSION:=.*/PKG_VERSION:=3.3.4/g' -e 's/PKG_RELEASE:=.*/PKG_REL
 ./scripts/feeds install -a
 
 if [[ -d ${LEAN_DIR} ]]; then
+    [ -d package/lean ] && rm -fr package/lean
     cp -R "${LEAN_DIR}/package/lean/" package/
 fi
 # if [[ -d ${LIENOL_DIR} ]]; then
@@ -189,19 +190,22 @@ for pkg in package/lean/*; do
     pkg=$(basename "${pkg}")
     # find feeds/lienol -type d -iname "$pkg"
     if [[ -d package/feeds/lienol/${pkg} ]]; then
-        # rm -fr "package/lean/${pkg}"
-        rm -fr "package/feeds/lienol/${pkg}"
+        rm -fr "package/lean/${pkg}"
+        # rm -fr "package/feeds/lienol/${pkg}"
     fi
 done
-if [[ -d package/kuoruan ]]; then
-    rm -fr package/kuoruan
-fi
+[ -d package/kuoruan ] && rm -fr package/kuoruan
 git clone https://github.com/kuoruan/luci-app-v2ray.git package/kuoruan/luci-app-v2ray
 # git clone https://github.com/kuoruan/openwrt-v2ray.git package/kuoruan/openwrt-v2ray
-# sed -i -e 's/PKG_NAME:=v2ray-core/PKG_NAME:=v2ray/g' package/kuoruan/openwrt-v2ray/M
+# sed -i -e 's/PKG_NAME:=v2ray-core/PKG_NAME:=v2ray/g' package/kuoruan/openwrt-v2ray/Makefile
 # sed -i -e 's/$(PKG_NAME)/v2ray-core/g' package/kuoruan/openwrt-v2ray/Makefile
 # rm -fr package/feeds/lienol/v2ray
 # rm -fr package/lean/v2ray
+
+# [ -d package/kuoruan ] && rm -fr package/kuoruan
+# mkdir -p package/cokebar
+# git clone https://github.com/cokebar/openwrt-vlmcsd.git package/cokebar/openwrt-vlmcsd
+# git clone https://github.com/cokebar/luci-app-vlmcsd.git package/cokebar/luci-app-vlmcsd
 
 rm -fr .config ./tmp
 ./scripts/feeds install -a
@@ -209,21 +213,24 @@ make defconfig
 
 if [[ $(command -v pre_ops) ]]; then pre_ops; fi
 
-# make -j"$(nproc)" package/feeds/luci/luci-base/compile
-# for pkg in package/feeds/lienol/*; do
-#     pkg=$(basename "${pkg}")
-#     make -j"$(nproc)" package/feeds/lienol/"${pkg}"/compile || true
-# done
-# for pkg in package/lean/*; do
-#     pkg=$(basename "${pkg}")
-#     if [[ ! -d "package/feeds/lienol/${pkg}" ]]; then
-#         make -j"$(nproc)" package/lean/"${pkg}"/compile || true
-#     fi
-# done
-# for pkg in package/kuoruan/*; do
-#     make -j"$(nproc)" "${pkg}"/compile
-# done
-# for pkg in package/smartdns/*; do
-#     make -j"$(nproc)" "${pkg}"/compile
-# done
+make -j"$(nproc)" package/feeds/luci/luci-base/compile
+for pkg in package/feeds/lienol/*; do
+    pkg=$(basename "${pkg}")
+    make -j"$(nproc)" package/feeds/lienol/"${pkg}"/compile || true
+done
+for pkg in package/lean/*; do
+    pkg=$(basename "${pkg}")
+    if [[ ! -d "package/feeds/lienol/${pkg}" ]]; then
+        make -j"$(nproc)" package/lean/"${pkg}"/compile || true
+    fi
+done
+for pkg in package/kuoruan/*; do
+    make -j"$(nproc)" "${pkg}"/compile
+done
+for pkg in package/smartdns/*; do
+    make -j"$(nproc)" "${pkg}"/compile
+done
+for pkg in package/cokebar/*; do
+    make -j"$(nproc)" "${pkg}"/compile
+done
 popd
