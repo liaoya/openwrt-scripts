@@ -215,19 +215,23 @@ if [[ $(command -v pre_ops) ]]; then pre_ops; fi
 
 make -j"$(nproc)" package/feeds/luci/luci-base/compile
 for pkg in package/feeds/lienol/*; do
+    [[ -d ${pkg} ]] || break
     pkg=$(basename "${pkg}")
     make -j"$(nproc)" package/feeds/lienol/"${pkg}"/compile || true
 done
 for pkg in package/lean/*; do
+    [[ -d ${pkg} ]] || break
     pkg=$(basename "${pkg}")
     if [[ ! -d "package/feeds/lienol/${pkg}" ]]; then
         make -j"$(nproc)" package/lean/"${pkg}"/compile || true
     fi
 done
 for pkg in package/kuoruan/*; do
+    [[ -d ${pkg} ]] || break
     make -j"$(nproc)" "${pkg}"/compile
 done
 for pkg in package/smartdns/*; do
+    [[ -d ${pkg} ]] || break
     make -j"$(nproc)" "${pkg}"/compile
 done
 for pkg in package/cokebar/*; do
