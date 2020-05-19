@@ -181,9 +181,9 @@ fi
 if [[ -d ${SMARTDNS_DIR} ]]; then
     mkdir -p package/smartdns
     cp -pr "${SMARTDNS_DIR}/package/openwrt" package/smartdns
-    sed -i -e 's/PKG_VERSION:=.*/PKG_VERSION:=1.2020.02.25/g' \
-        -e 's/PKG_RELEASE:=.*/PKG_RELEASE:=2212/g' \
-        -e 's/PKG_SOURCE_VERSION:=.*/PKG_SOURCE_VERSION:=b31792ad9b3ef8c3bf87dd0f8bae0d0a5b5c9122/g' \
+    sed -i -e 's/PKG_VERSION:=.*/PKG_VERSION:=1.2020.05.04/g' \
+        -e 's/PKG_RELEASE:=.*/PKG_RELEASE:=0005/g' \
+        -e 's/PKG_SOURCE_VERSION:=.*/PKG_SOURCE_VERSION:=770ce9e8bc502b2769f897676df9495129fb3afa/g' \
         package/smartdns/openwrt/Makefile
 fi
 for pkg in package/lean/*; do
@@ -194,18 +194,32 @@ for pkg in package/lean/*; do
         # rm -fr "package/feeds/lienol/${pkg}"
     fi
 done
+
+[ -d package/fw876 ] && rm -fr package/fw876
+mkdir -p package/fw876
+temp_dir=$(mktemp -d)
+rm -fr "${temp_dir}"
+git clone https://github.com/fw876/helloworld.git "${temp_dir}"
+mv "${temp_dir}"/luci-app-ssr-plus package/fw876/
+unset -v temp_dir
+
 [ -d package/kuoruan ] && rm -fr package/kuoruan
 git clone https://github.com/kuoruan/luci-app-v2ray.git package/kuoruan/luci-app-v2ray
 # git clone https://github.com/kuoruan/openwrt-v2ray.git package/kuoruan/openwrt-v2ray
 # sed -i -e 's/PKG_NAME:=v2ray-core/PKG_NAME:=v2ray/g' package/kuoruan/openwrt-v2ray/Makefile
 # sed -i -e 's/$(PKG_NAME)/v2ray-core/g' package/kuoruan/openwrt-v2ray/Makefile
-# rm -fr package/feeds/lienol/v2ray
-# rm -fr package/lean/v2ray
+# [ -d package/feeds/lienol/v2ray ] && rm -fr package/feeds/lienol/v2ray
+# [ -d package/lean/v2ray ] && rm -fr package/lean/v2ray
 
-# [ -d package/kuoruan ] && rm -fr package/kuoruan
+# [ -d package/cokebar ] && rm -fr package/cokebar
 # mkdir -p package/cokebar
 # git clone https://github.com/cokebar/openwrt-vlmcsd.git package/cokebar/openwrt-vlmcsd
 # git clone https://github.com/cokebar/luci-app-vlmcsd.git package/cokebar/luci-app-vlmcsd
+
+[ -d package/jerrykuku ] && rm -fr package/jerrykuku
+for _pkg in lua-maxminddb luci-app-vssr; do
+    git clone "https://github.com/jerrykuku/${_pkg}.git" package/jerrykuku/${_pkg}
+done
 
 rm -fr .config ./tmp
 ./scripts/feeds install -a
@@ -214,27 +228,12 @@ make defconfig
 if [[ $(command -v pre_ops) ]]; then pre_ops; fi
 
 make -j"$(nproc)" package/feeds/luci/luci-base/compile
-for pkg in package/feeds/lienol/*; do
-    [[ -d ${pkg} ]] || break
-    pkg=$(basename "${pkg}")
-    make -j"$(nproc)" package/feeds/lienol/"${pkg}"/compile || true
+
+for src_dir in package/feeds/lienol package/lean package/cokebar package/fw876 package/jerrykuku package/kuoruan package/smartdns; do
+    for pkg in "${src_dir}"/*; do
+        [[ -d ${pkg} ]] || break
+        make -j"$(nproc)" "${pkg}"/compile || true
+    done
 done
-for pkg in package/lean/*; do
-    [[ -d ${pkg} ]] || break
-    pkg=$(basename "${pkg}")
-    if [[ ! -d "package/feeds/lienol/${pkg}" ]]; then
-        make -j"$(nproc)" package/lean/"${pkg}"/compile || true
-    fi
-done
-for pkg in package/kuoruan/*; do
-    [[ -d ${pkg} ]] || break
-    make -j"$(nproc)" "${pkg}"/compile
-done
-for pkg in package/smartdns/*; do
-    [[ -d ${pkg} ]] || break
-    make -j"$(nproc)" "${pkg}"/compile
-done
-for pkg in package/cokebar/*; do
-    make -j"$(nproc)" "${pkg}"/compile
-done
+
 popd

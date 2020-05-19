@@ -61,8 +61,10 @@ fi
 #     unblockmusic UnblockNetease v2ray vlmcsd)
 
 declare -a PACKAGES=()
-if [[ -d "${SRC}/package/feeds/lienol" ]]; then
-    for pkg in "${SRC}/package/feeds/lienol"/*; do
+
+for src_dir in package/feeds/lienol package/lean package/cokebar package/fw876 package/jerrykuku package/kuoruan package/smartdns; do
+    for pkg in "${SRC}/${src_dir}"/*; do
+        [[ -d ${pkg} ]] || break
         pkg=$(basename "${pkg}")
         PACKAGES=(${PACKAGES[@]} "${pkg}")
         if [[ ${pkg} =~ luci-app* ]]; then
@@ -70,19 +72,8 @@ if [[ -d "${SRC}/package/feeds/lienol" ]]; then
             PACKAGES=(${PACKAGES[@]} "${pkg}")
         fi
     done
-fi
-if [[ -d "${SRC}/package/lean" ]]; then
-    for pkg in "${SRC}/package/lean"/*; do
-        pkg=$(basename "${pkg}")
-        if [[ -d "${SRC}/package/lean/${pkg}" ]]; then
-            PACKAGES=(${PACKAGES[@]} "${pkg}")
-        fi
-        if [[ ${pkg} =~ luci-app* ]]; then
-            pkg=${pkg/luci-app/luci-i18n}
-            PACKAGES=(${PACKAGES[@]} "${pkg}")
-        fi
-    done
-fi
+done
+
 declare -a INGNORE_PACKAGES=(openssl1.1)
 declare __PACKAGES=()
 for name in "${PACKAGES[@]}"; do

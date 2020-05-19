@@ -10,7 +10,9 @@ function enable_option() {
     sed -i "s/# ${config} is not set/${config}=y/g" .config
 }
 
+# Passwall has been remove the source code
 function configure_passwall() {
+    return 0
     for config in CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Brook \
         CONFIG_PACKAGE_luci-app-passwall_INCLUDE_v2ray-plugin; do
         disable_option "${config}"
@@ -51,7 +53,7 @@ function configure_ssr_plus() {
 }
 
 function configure_v2ray() {
-    enable_option CONFIG_V2RAY_COMPRESS_GOPROXY
+    # enable_option CONFIG_V2RAY_COMPRESS_GOPROXY
     if [[ -x $(readlink -f staging_dir/host/bin/upx) ]]; then
         enable_option CONFIG_V2RAY_COMPRESS_UPX
     else
