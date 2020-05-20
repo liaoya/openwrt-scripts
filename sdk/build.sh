@@ -225,6 +225,9 @@ rm -fr .config ./tmp
 ./scripts/feeds install -a
 make defconfig
 
+# The following is tempoary fix
+sed -i 's/^PKG_HASH:=.*/PKG_HASH:=fce47a956fad0c30def9c71821bcec450a40d3f881548e31e66cedf262b89eb1/g' feeds/packages/net/shadowsocks-libev/Makefile
+
 if [[ $(command -v pre_ops) ]]; then pre_ops; fi
 
 make -j"$(nproc)" package/feeds/luci/luci-base/compile
