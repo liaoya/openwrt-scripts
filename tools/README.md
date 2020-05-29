@@ -3,7 +3,7 @@
 ```bash
 gcc -s -o mkhash mkhash.c
 sudo mv mkhash /usr/local/bin
-sudo mv ipkg-make-index.sh /usr/local/bin
+sudo cp ipkg-make-index.sh /usr/local/bin
 ```
 
 ```bash

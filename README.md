@@ -41,12 +41,16 @@ opkg install luci-i18n-v2ray-zh-cn
 ## Docker build
 
 ```bash
-docker pull -q openwrtorg/sdk:armvirt-64-19.07.1
+docker pull -q openwrtorg/sdk:armvirt-64-19.07.3
 
-docker pull -q openwrtorg/imagebuilder:armvirt-64-19.07.1
+docker pull -q openwrtorg/imagebuilder:armvirt-64-19.07.3
 ```
 
 - <https://github.com/openwrt/docker>
+
+```bash
+sudo apt-get install build-essential libncurses5-dev libncursesw5-dev zlib1g-dev gawk git gettext libssl-dev xsltproc wget unzip python
+```
 
 ## AD Block
 

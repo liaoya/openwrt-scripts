@@ -16,7 +16,7 @@ LIENOL_DIR=${LIENOL_DIR:-/work/github/Lienol/openwrt}
 SMARTDNS_DIR=${SMARTDNS_DIR:-/work/github/pymumu/smartdns}
 NAME=${NAME:-""}
 TARGET=${TARGET:-""}
-VERSION=${VERSION:-"19.07.2"}
+VERSION=${VERSION:-"19.07.3"}
 CLEAN=0
 MIRROR=0
 
