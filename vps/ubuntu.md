@@ -9,17 +9,22 @@ apt-get update -qq -y
 # apt-get upgrade -qq -y -o "Dpkg::Use-Pty=0"
 apt-get install -qq -y -o "Dpkg::Use-Pty=0" software-properties-common # for ppa
 
-add-apt-repository -u -y universe
-add-apt-repository -u -y ppa:apt-fast/stable
-add-apt-repository -u -y ppa:certbot/certbot
-apt-add-repository -u -y ppa:fish-shell/release-3
-apt-add-repository -u -y ppa:jonathonf/vim
-apt-add-repository -u -y ppa:kelleyk/emacs
-apt-add-repository -u -y ppa:kimura-o/ppa-tig
-apt-add-repository -u -y ppa:rmescandon/yq
-apt-add-repository -u -y ppa:savoury1/backports
-if [[ $(lsb_release -sc) == bionic ]]; then
-    apt-add-repository -u -y ppa:spvkgn/bionic-updates
+export APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=yes
+VERSION=$(echo "$(lsb_release -r | cut -d':' -f2 | tr -d '[:space:]') * 100 / 1" | bc)
+declare -a ppa_repos
+if [[ ${VERSION} -eq 1804 ]]; then
+    ppa_repos+=(ppa:savoury1/backports ppa:spvkgn/bionic-updates)
+    ppa_repos+=(ppa:apt-fast/stable ppa:codeblocks-devs/release ppa:kelleyk/emacs ppa:fish-shell/release-3
+        ppa:lazygit-team/release
+        ppa:kimura-o/ppa-tig ppa:pypy/ppa ppa:unilogicbv/shellcheck
+        ppa:jonathonf/vim ppa:rmescandon/yq)
+    for ppa in "${ppa_repos[@]}"; do add-apt-repository -y "$ppa"; done
+elif [[ ${VERSION} -eq 2004 ]]; then
+    # ppa:mtvoid/ppa for emacs27
+    # ppa:mjuhasz/backports for tmux 3.1b
+    ppa_repos+=(ppa:savoury1/backports)
+    ppa_repos+=(ppa:mtvoid/ppa ppa:mjuhasz/backports ppa:pypy/ppa ppa:jonathonf/vim)
+    for ppa in "${ppa_repos[@]}"; do add-apt-repository -y "$ppa"; done
 fi
 
 apt-get install -qq -y -o "Dpkg::Use-Pty=0" certbot curl docker.io fish git gnupg jq moreutils nmon nano python3-distutils screen sshpass tig tmux vim
@@ -180,6 +185,7 @@ vimfolder=$(find ~/.local/lib -iname vim | grep powerline | grep bindings)
 cat <<EOF >> ~/.vimrc
 set rtp+=$vimfolder
 set laststatus=2
+set paste
 set t_Co=256
 EOF
 
