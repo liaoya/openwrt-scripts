@@ -16,7 +16,7 @@ LIENOL_DIR=${LIENOL_DIR:-/work/github/Lienol/openwrt}
 SMARTDNS_DIR=${SMARTDNS_DIR:-/work/github/pymumu/smartdns}
 NAME=${NAME:-""}
 TARGET=${TARGET:-""}
-VERSION=${VERSION:-"19.07.3"}
+VERSION=${VERSION:-"19.07.4"}
 CLEAN=0
 MIRROR=0
 
@@ -152,7 +152,7 @@ sed -e 's|git.openwrt.org/openwrt/openwrt|github.com/openwrt/openwrt|g' \
     -e 's|git.openwrt.org/project/luci|github.com/openwrt/luci|g' \
     -e 's|git.openwrt.org/feed/telephony|github.com/openwrt/telephony|g' \
     -i "${SDK_DIR}"/feeds.conf.default
-echo "src-git lienol https://github.com/Lienol/openwrt-package" >>"${SDK_DIR}"/feeds.conf.default
+echo "src-git lienol https://github.com/Lienol/openwrt-packages" >>"${SDK_DIR}"/feeds.conf.default
 
 pushd "${SDK_DIR}"
 mkdir -p staging_dir/host/bin

@@ -199,6 +199,7 @@ done
 - <https://github.com/kuoruan/openwrt-kcptun>
 - <https://github.com/kuoruan/luci-app-kcptun>
 - <https://github.com/cnsilvan/luci-app-unblockneteasemusic>
+- <https://github.com/xiaorouji/openwrt-package>: contain passwall
 
 The modified `ssr-plus` also need many dependencies. The good news is it can be built seprately.
 
