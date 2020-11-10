@@ -64,7 +64,7 @@ declare -a PACKAGES=()
 
 for src_dir in package/feeds/lienol package/lean package/cokebar package/fw876 package/jerrykuku package/kuoruan package/smartdns; do
     for pkg in "${SRC}/${src_dir}"/*; do
-        [[ -d ${pkg} ]] || break
+        [[ -d ${pkg} ]] || continue
         pkg=$(basename "${pkg}")
         PACKAGES=(${PACKAGES[@]} "${pkg}")
         if [[ ${pkg} =~ luci-app* ]]; then

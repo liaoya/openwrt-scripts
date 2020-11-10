@@ -34,7 +34,7 @@ sed -i -e 's/PKG_VERSION:=.*/PKG_VERSION:=3.3.4/g' -e 's/PKG_RELEASE:=.*/PKG_REL
 # Remove kcptun-c and kcptun-s
 ./scripts/feeds uninstall kcptun
 if ! grep -s -q "src-git lienol" feeds.conf.default; then
-    echo "src-git lienol https://github.com/Lienol/openwrt-package" >> feeds.conf.default
+    echo "src-git lienol https://github.com/xiaorouji/openwrt-package" >> feeds.conf.default
 fi
 ./scripts/feeds update -a
 ./scripts/feeds install -a -p lienol -f -d y
@@ -42,7 +42,7 @@ fi
 
 ```bash
 if ! grep -s -q "src-git lienol" feeds.conf.default; then
-    echo "src-git lienol https://github.com/Lienol/openwrt-package" >> feeds.conf.default
+    echo "src-git lienol https://github.com/xiaorouji/openwrt-package" >> feeds.conf.default
 fi
 ./scripts/feeds update -a
 # Remove the kcptun in package feed
@@ -209,7 +209,7 @@ The modified `ssr-plus` also need many dependencies. The good news is it can be 
   - <https://www.qiqisvm.life/archives/102>
   - <https://www.solarck.com/install-ssr-plus.html>
 - build lean
-  - <https://github.com/Lienol/openwrt-package/issues/54>, integrate lean package to Lienol on `19.07`
+  - <https://github.com/xiaorouji/openwrt-package/issues/54>, integrate lean package to Lienol on `19.07`
 - Lean's pakcage description
   - <https://www.right.com.cn/forum/thread-344825-1-1.html>
   - <https://www.right.com.cn/forum/thread-1237348-1-1.html>

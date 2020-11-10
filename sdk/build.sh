@@ -10,6 +10,7 @@ mkdir -p "${CACHE_DIR}"
 
 BASE_URL=${BASE_URL:-""}
 BASE_URL_PREFIX=${BASE_URL_PREFIX:-""}
+BUILD=0
 DL_DIR=${DL_DIR:-""}
 LEAN_DIR=${LEAN_DIR:-/work/github/coolsnowwolf/lede}
 LIENOL_DIR=${LIENOL_DIR:-/work/github/Lienol/openwrt}
@@ -24,6 +25,7 @@ print_usage() {
     cat <<EOF
 Usage: $(basename "${BASH_SOURCE[0]}") [OPTIONS]
 OPTIONS
+    -b, --build, perform build
     -d, --dl, the global dl directory, the default value "${DL_DIR}"
     -n, --name, the name of uncompress folder, some build will fail if the name is too long.
     -t, --target, CPU Arch
@@ -35,10 +37,13 @@ OPTIONS
 EOF
 }
 
-TEMP=$(getopt -o d:n:t:u:v:chm --long dl:,name:,target:,url:,version:,clean,help,mirror -- "$@")
+TEMP=$(getopt -o b:d:n:t:u:v:chm --long build,dl:,name:,target:,url:,version:,clean,help,mirror -- "$@")
 eval set -- "$TEMP"
 while true; do
     case "$1" in
+    -b | --build)
+        BUILD=1
+        ;;
     -d | --dl)
         shift
         DL_DIR=$(readlink -f "$1")
@@ -152,7 +157,7 @@ sed -e 's|git.openwrt.org/openwrt/openwrt|github.com/openwrt/openwrt|g' \
     -e 's|git.openwrt.org/project/luci|github.com/openwrt/luci|g' \
     -e 's|git.openwrt.org/feed/telephony|github.com/openwrt/telephony|g' \
     -i "${SDK_DIR}"/feeds.conf.default
-echo "src-git lienol https://github.com/Lienol/openwrt-packages" >>"${SDK_DIR}"/feeds.conf.default
+echo "src-git lienol https://github.com/xiaorouji/openwrt-packages" >>"${SDK_DIR}"/feeds.conf.default
 
 pushd "${SDK_DIR}"
 mkdir -p staging_dir/host/bin
@@ -166,7 +171,11 @@ scripts/feeds clean
 rm -fr feeds/packages/net/kcptun
 # Fail to update node, need investigation
 # sed -i -e 's/PKG_VERSION:=.*/PKG_VERSION:=v12.15.0/g' -e 's/PKG_RELEASE:=.*/PKG_RELEASE:=1/g' feeds/packages/lang/node/Makefile
-sed -i -e 's/PKG_VERSION:=.*/PKG_VERSION:=3.3.4/g' -e 's/PKG_RELEASE:=.*/PKG_RELEASE:=1/g' feeds/packages/net/shadowsocks-libev/Makefile
+# sed -i -e 's/PKG_VERSION:=.*/PKG_VERSION:=3.3.4/g' -e 's/PKG_RELEASE:=.*/PKG_RELEASE:=1/g' feeds/packages/net/shadowsocks-libev/Makefile
+# Refer to https://github.com/openwrt/packages/blob/master/net/shadowsocks-libev/Makefile
+sed -i -e 's/^PKG_VERSION:=.*/PKG_VERSION:=3.3.5/g' \
+    -e 's/^PKG_RELEASE:=.*/PKG_RELEASE:=1/g' \
+    -e 's/^PKG_HASH:=.*/PKG_HASH:=cfc8eded35360f4b67e18dc447b0c00cddb29cc57a3cec48b135e5fb87433488/g' feeds/packages/net/shadowsocks-libev/Makefile
 
 ./scripts/feeds update -i
 ./scripts/feeds install -a
@@ -200,7 +209,7 @@ mkdir -p package/fw876
 temp_dir=$(mktemp -d)
 rm -fr "${temp_dir}"
 git clone https://github.com/fw876/helloworld.git "${temp_dir}"
-mv "${temp_dir}"/luci-app-ssr-plus package/fw876/
+mv "${temp_dir}"/* package/fw876/
 unset -v temp_dir
 
 [ -d package/kuoruan ] && rm -fr package/kuoruan
@@ -225,18 +234,17 @@ rm -fr .config ./tmp
 ./scripts/feeds install -a
 make defconfig
 
-# The following is tempoary fix
-sed -i 's/^PKG_HASH:=.*/PKG_HASH:=fce47a956fad0c30def9c71821bcec450a40d3f881548e31e66cedf262b89eb1/g' feeds/packages/net/shadowsocks-libev/Makefile
-
 if [[ $(command -v pre_ops) ]]; then pre_ops; fi
 
 make -j"$(nproc)" package/feeds/luci/luci-base/compile
 
-for src_dir in package/feeds/lienol package/lean package/cokebar package/fw876 package/jerrykuku package/kuoruan package/smartdns; do
-    for pkg in "${src_dir}"/*; do
-        [[ -d ${pkg} ]] || break
-        make -j"$(nproc)" "${pkg}"/compile || true
+if [[ ${BUILD} -gt 0 ]]; then
+    for src_dir in package/feeds/lienol package/lean package/cokebar package/fw876 package/jerrykuku package/kuoruan package/smartdns; do
+        for pkg in "${src_dir}"/*; do
+            [[ -d ${pkg} ]] || continue
+            make -j"$(nproc)" "${pkg}"/compile || true
+        done
     done
-done
+fi
 
 popd

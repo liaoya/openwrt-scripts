@@ -1,5 +1,7 @@
 #!/bin/bash
 
+_tmp_dir=$(mktemp -d)
+
 function disable_option() {
     local config=$1
     sed -i "s/${config}=y/# ${config} is not set/g" .config
@@ -8,6 +10,12 @@ function disable_option() {
 function enable_option() {
     local config=$1
     sed -i "s/# ${config} is not set/${config}=y/g" .config
+}
+
+function configure_golang() {
+    sed -i -e 's/GO_VERSION_MAJOR_MINOR:=.*/GO_VERSION_MAJOR_MINOR:=1.14/g' \
+        -e 's/GO_VERSION_PATCH:=.*/GO_VERSION_PATCH:=10/g' feeds/packages/lang/golang/golang-version.mk
+    sed -i -e 's/PKG_HASH:=.*/PKG_HASH:=b37699a7e3eab0f90412b3969a90fd072023ecf61e0b86369da532810a95d665/g' feeds/packages/lang/golang/golang/Makefile
 }
 
 # Passwall has been remove the source code
@@ -44,6 +52,7 @@ function configure_ssr_plus() {
 
     for config in CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_DNS2SOCKS \
         CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Kcptun \
+        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_NaiveProxy \
         CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks \
         CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Simple_obfs \
         CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Trojan \
@@ -53,10 +62,36 @@ function configure_ssr_plus() {
 }
 
 function configure_v2ray() {
-    # enable_option CONFIG_V2RAY_COMPRESS_GOPROXY
+    # configure_golang
+    # if [[ -n ${GOPROXY} ]]; then
+    #     sed -i -e "s%^export GOPROXY=.*%export GOPROXY=$GOPROXY%" package/lean/v2ray/Makefile
+    #     enable_option CONFIG_V2RAY_COMPRESS_GOPROXY
+    # else
+    #     disable_option CONFIG_V2RAY_COMPRESS_GOPROXY
+    # fi
+    enable_option CONFIG_V2RAY_COMPRESS_GOPROXY
     if [[ -x $(readlink -f staging_dir/host/bin/upx) ]]; then
         enable_option CONFIG_V2RAY_COMPRESS_UPX
     else
         disable_option CONFIG_V2RAY_COMPRESS_UPX
     fi
+}
+
+function install_upx() {
+    if [[ -x /usr/local/bin/upx ]]; then
+        local _dir _machine _url UPX_VERSION
+        UPX_VERSION=$(curl -sL "${CURL_OPTS[@]}" https://api.github.com/repos/upx/upx/releases/latest | jq -r .tag_name)
+        UPX_VERSION=${UPX_VERSION:-v3.96}
+        _machine=$(uname -m)
+        if [[ ${_machine} == "x86_64" ]]; then
+            _url="https://github.com/upx/upx/releases/download/${UPX_VERSION}/upx-${UPX_VERSION:1}-amd64_linux.tar.xz"
+        elif [[ ${_machine} == "aarch64" ]]; then
+            _url="https://github.com/upx/upx/releases/download/${UPX_VERSION}/upx-${UPX_VERSION:1}-arm64_linux.tar.xz"
+        fi
+        curl -sL "${_url}" -o - | tar -C "${_tmp_dir}" -I xz -xf -
+        _dir=$(basename -s .tar.xz "${_url}")
+        mv "${_tmp_dir}/${_dir}"/upx /usr/local/bin
+        rm -fr "${_tmp_dir:?}"/*
+    fi
+    cp /usr/local/bin/upx staging_dir/host/bin/upx
 }
