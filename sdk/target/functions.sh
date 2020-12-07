@@ -63,13 +63,6 @@ function configure_ssr_plus() {
 
 function configure_v2ray() {
     configure_golang
-    if [[ -n ${GOPROXY} ]]; then
-        # sed -i -e "s%^export GOPROXY=.*%export GOPROXY=$GOPROXY%" feeds/lienol/package/v2ray/Makefile
-        sed -i -e '/^export GOPROXY=/d' feeds/lienol/package/v2ray/Makefile
-        enable_option CONFIG_V2RAY_COMPRESS_GOPROXY
-    else
-        disable_option CONFIG_V2RAY_COMPRESS_GOPROXY
-    fi
     if [[ -x $(readlink -f staging_dir/host/bin/upx) ]]; then
         enable_option CONFIG_V2RAY_COMPRESS_UPX
     else

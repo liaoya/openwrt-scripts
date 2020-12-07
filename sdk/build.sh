@@ -157,7 +157,12 @@ sed -e 's|git.openwrt.org/openwrt/openwrt|github.com/openwrt/openwrt|g' \
     -e 's|git.openwrt.org/project/luci|github.com/openwrt/luci|g' \
     -e 's|git.openwrt.org/feed/telephony|github.com/openwrt/telephony|g' \
     -i "${SDK_DIR}"/feeds.conf.default
-echo "src-git lienol https://github.com/xiaorouji/openwrt-package" >>"${SDK_DIR}"/feeds.conf.default
+echo "src-git xiaorouji https://github.com/xiaorouji/openwrt-passwall" >>"${SDK_DIR}"/feeds.conf.default
+if [[ ${VERSION} =~ 19.07 ]]; then
+    echo "src-git liuran001 https://github.com/liuran001/openwrt-packages;packages-19.07" >>"${SDK_DIR}"/feeds.conf.default
+else
+    echo "src-git liuran001 https://github.com/liuran001/openwrt-packages;packages" >>"${SDK_DIR}"/feeds.conf.default
+fi
 
 pushd "${SDK_DIR}"
 mkdir -p staging_dir/host/bin
