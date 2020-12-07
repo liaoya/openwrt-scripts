@@ -7,7 +7,7 @@ DEST=${DEST:-""}
 OPERATION=${OPERATION:-"list"}
 SRC=${SRC:-""}
 
-print_usage() {
+function _print_help() {
     cat <<EOF
 Usage: $(basename "${BASH_SOURCE[0]}") [OPTIONS]
 OPTIONS
@@ -27,7 +27,7 @@ while true; do
         DEST=$(readlink -f "$1")
         ;;
     -h | --help)
-        print_usage
+        _print_help
         exit 0
         ;;
     -o | --operation)
@@ -43,7 +43,7 @@ while true; do
         break
         ;;
     *)
-        print_usage
+        _print_help
         exit 1
         ;;
     esac

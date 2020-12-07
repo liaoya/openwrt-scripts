@@ -13,9 +13,9 @@ function enable_option() {
 }
 
 function configure_golang() {
-    sed -i -e 's/GO_VERSION_MAJOR_MINOR:=.*/GO_VERSION_MAJOR_MINOR:=1.14/g' \
-        -e 's/GO_VERSION_PATCH:=.*/GO_VERSION_PATCH:=10/g' feeds/packages/lang/golang/golang-version.mk
-    sed -i -e 's/PKG_HASH:=.*/PKG_HASH:=b37699a7e3eab0f90412b3969a90fd072023ecf61e0b86369da532810a95d665/g' feeds/packages/lang/golang/golang/Makefile
+    sed -i -e 's/GO_VERSION_MAJOR_MINOR:=.*/GO_VERSION_MAJOR_MINOR:=1.15/g' \
+        -e 's/GO_VERSION_PATCH:=.*/GO_VERSION_PATCH:=2/g' feeds/packages/lang/golang/golang-version.mk
+    sed -i -e 's/PKG_HASH:=.*/PKG_HASH:=28bf9d0bcde251011caae230a4a05d917b172ea203f2a62f2c2f9533589d4b4d/g' feeds/packages/lang/golang/golang/Makefile
 }
 
 # Passwall has been remove the source code
@@ -62,14 +62,14 @@ function configure_ssr_plus() {
 }
 
 function configure_v2ray() {
-    # configure_golang
-    # if [[ -n ${GOPROXY} ]]; then
-    #     sed -i -e "s%^export GOPROXY=.*%export GOPROXY=$GOPROXY%" package/lean/v2ray/Makefile
-    #     enable_option CONFIG_V2RAY_COMPRESS_GOPROXY
-    # else
-    #     disable_option CONFIG_V2RAY_COMPRESS_GOPROXY
-    # fi
-    enable_option CONFIG_V2RAY_COMPRESS_GOPROXY
+    configure_golang
+    if [[ -n ${GOPROXY} ]]; then
+        # sed -i -e "s%^export GOPROXY=.*%export GOPROXY=$GOPROXY%" feeds/lienol/package/v2ray/Makefile
+        sed -i -e '/^export GOPROXY=/d' feeds/lienol/package/v2ray/Makefile
+        enable_option CONFIG_V2RAY_COMPRESS_GOPROXY
+    else
+        disable_option CONFIG_V2RAY_COMPRESS_GOPROXY
+    fi
     if [[ -x $(readlink -f staging_dir/host/bin/upx) ]]; then
         enable_option CONFIG_V2RAY_COMPRESS_UPX
     else

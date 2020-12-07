@@ -1,7 +1,8 @@
 # Ubuntu for VPS
 
 ```bash
-hostnamectl set-hostname
+hostnamectl set-hostname <>
+timedatectl set-timezone UTC
 # Make sudo work without warning
 echo $(hostname -I) $(hostname)  | tee -a /etc/hosts
 
@@ -13,19 +14,24 @@ export APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=yes
 VERSION=$(echo "$(lsb_release -r | cut -d':' -f2 | tr -d '[:space:]') * 100 / 1" | bc)
 declare -a ppa_repos
 if [[ ${VERSION} -eq 1804 ]]; then
-    ppa_repos+=(ppa:savoury1/backports ppa:spvkgn/bionic-updates)
-    ppa_repos+=(ppa:apt-fast/stable ppa:codeblocks-devs/release ppa:kelleyk/emacs ppa:fish-shell/release-3
+    # ppa:deadsnakes/ppa for various python
+    # ppa:git-core/ppa, now ppa:savoury1/backports has latest git
+    ppa_repos+=(ppa:savoury1/backports)
+    ppa_repos+=(ppa:apt-fast/stable ppa:codeblocks-devs/release ppa:deadsnakes/ppa ppa:kelleyk/emacs ppa:fish-shell/release-3
         ppa:lazygit-team/release
         ppa:kimura-o/ppa-tig ppa:pypy/ppa ppa:unilogicbv/shellcheck
         ppa:jonathonf/vim ppa:rmescandon/yq)
     for ppa in "${ppa_repos[@]}"; do add-apt-repository -y "$ppa"; done
 elif [[ ${VERSION} -eq 2004 ]]; then
+    # ppa:deadsnakes/ppa for various python
+    # ppa:git-core/ppa, now ppa:savoury1/backports has latest git
     # ppa:mtvoid/ppa for emacs27
     # ppa:mjuhasz/backports for tmux 3.1b
     ppa_repos+=(ppa:savoury1/backports)
-    ppa_repos+=(ppa:mtvoid/ppa ppa:mjuhasz/backports ppa:pypy/ppa ppa:jonathonf/vim)
+    ppa_repos+=(ppa:deadsnakes/ppa ppa:mtvoid/ppa ppa:mjuhasz/backports ppa:pypy/ppa ppa:jonathonf/vim)
     for ppa in "${ppa_repos[@]}"; do add-apt-repository -y "$ppa"; done
 fi
+sudo apt update -qq
 
 apt-get install -qq -y -o "Dpkg::Use-Pty=0" certbot curl docker.io fish git gnupg jq moreutils nmon nano python3-distutils screen sshpass tig tmux vim
 

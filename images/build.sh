@@ -18,7 +18,7 @@ VERSION=${OPENWRT_VERSION:-"19.07.4"}
 CLEAN=0
 MIRROR=0
 
-print_usage() {
+function _print_help() {
     cat <<EOF
 Usage: $(basename "${BASH_SOURCE[0]}") [OPTIONS]
 OPTIONS
@@ -67,7 +67,7 @@ while true; do
         CLEAN=1
         ;;
     -h | --help)
-        print_usage
+        _print_help
         exit 0
         ;;
     -m | --mirror)
@@ -78,7 +78,7 @@ while true; do
         break
         ;;
     *)
-        print_usage
+        _print_help
         exit 1
         ;;
     esac

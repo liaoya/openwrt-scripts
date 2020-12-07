@@ -1,7 +1,7 @@
 #!/bin/bash
 #shellcheck disable=SC2034
 
-set -a -e -x
+set -aex
 
 ROOT_DIR=$(readlink -f "${BASH_SOURCE[0]}")
 ROOT_DIR=$(dirname "${ROOT_DIR}")
@@ -21,7 +21,7 @@ VERSION=${VERSION:-"19.07.4"}
 CLEAN=0
 MIRROR=0
 
-print_usage() {
+function _print_help() {
     cat <<EOF
 Usage: $(basename "${BASH_SOURCE[0]}") [OPTIONS]
 OPTIONS
@@ -69,7 +69,7 @@ while true; do
         CLEAN=1
         ;;
     -h | --help)
-        print_usage
+        _print_help
         exit 0
         ;;
     -m | --mirror)
@@ -80,7 +80,7 @@ while true; do
         break
         ;;
     *)
-        print_usage
+        _print_help
         exit 1
         ;;
     esac
@@ -157,7 +157,7 @@ sed -e 's|git.openwrt.org/openwrt/openwrt|github.com/openwrt/openwrt|g' \
     -e 's|git.openwrt.org/project/luci|github.com/openwrt/luci|g' \
     -e 's|git.openwrt.org/feed/telephony|github.com/openwrt/telephony|g' \
     -i "${SDK_DIR}"/feeds.conf.default
-echo "src-git lienol https://github.com/xiaorouji/openwrt-packages" >>"${SDK_DIR}"/feeds.conf.default
+echo "src-git lienol https://github.com/xiaorouji/openwrt-package" >>"${SDK_DIR}"/feeds.conf.default
 
 pushd "${SDK_DIR}"
 mkdir -p staging_dir/host/bin
@@ -184,9 +184,9 @@ if [[ -d ${LEAN_DIR} ]]; then
     [ -d package/lean ] && rm -fr package/lean
     cp -R "${LEAN_DIR}/package/lean/" package/
 fi
-# if [[ -d ${LIENOL_DIR} ]]; then
-#     cp -R "${LIENOL_DIR}/package/lean"/*smartdns* package/lean/
-# fi
+if [[ -d ${LIENOL_DIR} ]]; then
+    cp -R "${LIENOL_DIR}/package/lean" package/lean/
+fi
 if [[ -d ${SMARTDNS_DIR} ]]; then
     mkdir -p package/smartdns
     cp -pr "${SMARTDNS_DIR}/package/openwrt" package/smartdns
@@ -213,7 +213,7 @@ mv "${temp_dir}"/* package/fw876/
 unset -v temp_dir
 
 [ -d package/kuoruan ] && rm -fr package/kuoruan
-git clone https://github.com/kuoruan/luci-app-v2ray.git package/kuoruan/luci-app-v2ray
+# git clone https://github.com/kuoruan/luci-app-v2ray.git package/kuoruan/luci-app-v2ray
 # git clone https://github.com/kuoruan/openwrt-v2ray.git package/kuoruan/openwrt-v2ray
 # sed -i -e 's/PKG_NAME:=v2ray-core/PKG_NAME:=v2ray/g' package/kuoruan/openwrt-v2ray/Makefile
 # sed -i -e 's/$(PKG_NAME)/v2ray-core/g' package/kuoruan/openwrt-v2ray/Makefile
