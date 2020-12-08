@@ -18,6 +18,7 @@ Run `git config --global url."http://127.0.0.1:9080/".insteadOf https://` if `gi
 - `bash build.sh -d ~/Downloads/dl -n /work/armvirt -t armvirt -m -c`
 - `bash build.sh -d ~/Downloads/dl -n /work/ar71xx -t ar71xx -m -c`
 - `bash build.sh -d ~/Downloads/dl -n /work/mt7621 -t mt7621 -m -c`
+- `bash build.sh -d ~/Downloads/dl -n /work/mt7620 -t mt7620 -m -c`
 - `bash build.sh -t ~/Downloads/dl -n /work/x64 -t x64 -m -c`
 
 ## Handle Package conflicts
@@ -187,18 +188,19 @@ done
 
 ## Other Packages
 
-- <https://github.com/mwarning/openwrt-examples>
-- <https://github.com/shadowsocks/openwrt-shadowsocks>
-- <https://github.com/shadowsocks/luci-app-shadowsocks>
-- <https://github.com/kuoruan/openwrt-v2ray>
-- <https://github.com/kuoruan/luci-app-v2ray>
-- <https://github.com/pexcn/openwrt-chinadns-ng>
-- <https://github.com/pymumu/luci-app-smartdns>
-- <https://github.com/project-openwrt/luci-app-vssr-1>
-- <https://github.com/Leo-Jo-My/luci-app-ssr-plus-Jo/tree/master>
-- <https://github.com/kuoruan/openwrt-kcptun>
-- <https://github.com/kuoruan/luci-app-kcptun>
 - <https://github.com/cnsilvan/luci-app-unblockneteasemusic>
+- <https://github.com/kuoruan/luci-app-kcptun>
+- <https://github.com/kuoruan/luci-app-v2ray>
+- <https://github.com/kuoruan/openwrt-kcptun>
+- <https://github.com/kuoruan/openwrt-v2ray>
+- <https://github.com/Leo-Jo-My/luci-app-ssr-plus-Jo/tree/master>
+- <https://github.com/liuran001/openwrt-packages>
+- <https://github.com/mwarning/openwrt-examples>
+- <https://github.com/pexcn/openwrt-chinadns-ng>
+- <https://github.com/project-openwrt/luci-app-vssr-1>
+- <https://github.com/pymumu/luci-app-smartdns>
+- <https://github.com/shadowsocks/luci-app-shadowsocks>
+- <https://github.com/shadowsocks/openwrt-shadowsocks>
 - <https://github.com/xiaorouji/openwrt-passwall>: contain passwall
 
 The modified `ssr-plus` also need many dependencies. The good news is it can be built seprately.
@@ -208,8 +210,6 @@ The modified `ssr-plus` also need many dependencies. The good news is it can be 
 - builfd SSR-Plus
   - <https://www.qiqisvm.life/archives/102>
   - <https://www.solarck.com/install-ssr-plus.html>
-- build lean
-  - <https://github.com/xiaorouji/openwrt-passwall/issues/54>, integrate lean package to Lienol on `19.07`
 - Lean's pakcage description
   - <https://www.right.com.cn/forum/thread-344825-1-1.html>
   - <https://www.right.com.cn/forum/thread-1237348-1-1.html>

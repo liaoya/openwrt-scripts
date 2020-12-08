@@ -10,16 +10,16 @@ Run the following command to install the image build requirements for Ubuntu 18.
 
 Some examples, read `build.sh` for usage.
 
-- Arm Arch64: `bash build.sh -d armvirt -m -p ~/Downloads/openwrt/aarch64/19.07`
-- WNDR4300V1: `bash build.sh -d WNDR4300V1 -m -p ~/Downloads/openwrt/ar71xx/19.07`
-- Newifi D2: `bash build.sh -d d-team_newifi-d2 -m -p ~/Downloads/openwrt/mt7621/19.07`
+- Arm Arch64: `bash build.sh -d armvirt -p ~/Downloads/package/armvirt`
+- WNDR4300V1: `bash build.sh -d WNDR4300V1 -p ~/Downloads/package/ar71xx`
+- Newifi D2: `bash build.sh -d d-team_newifi-d2 -p ~/Downloads/package/mt7621`
 - X86: `bash build.sh -d x64 -m`
-- K2: `unset PACKAGES; bash build.sh -d psg1218a -m -p ~/Downloads/openwrt/mt7621/19.07`. It has only 8M Rom and 100Mb NIC, but its wireless signal is very good.
+- K2: `env PACKAGES="luci-app-wol luci-app-vlmcsd luci-i18n-vlmcsd-zh-cn" bash build.sh -d psg1218a -p ~/Downloads/package/mt7621`. It has only 8M Rom and 100Mb NIC, but its wireless signal is very good.
 
 Copy the personal ipk to a separate folder and pass it to `build.sh` with `-p`.
 
 ```bash
-export PACKAGES="luci-app-adbyby-plus luci-app-autoreboot luci-app-passwall luci-app-smartdns luci-app-ssr-plus luci-app-vlmcsd luci-app-wol \
+export PACKAGES="luci-app-adbyby-plus luci-app-autoreboot luci-app-passwall-plus luci-app-smartdns luci-app-ssr-plus luci-app-vlmcsd luci-app-wol \
 luci-i18n-adbyby-plus-zh-cn luci-i18n-autoreboot-zh-cn luci-i18n-ssr-plus-zh-cn luci-i18n-vlmcsd-zh-cn luci-i18n-wol-zh-cn \
 tcping"
 ```
@@ -34,10 +34,6 @@ opkg-key add openwrt-dist.pub
 ```
 
 ## Issues
-
-### Can't put `diffutils` in rom
-
-koolproxy require diffutils, but we can't package it into rom. This is a know issue <https://github.com/openwrt/packages/issues/6361#issuecomment-500958659>, now there's workaround. But I only
 
 ### K2P
 

@@ -11,7 +11,7 @@ PACKAGES="${PACKAGES:+$PACKAGES }bash bind-dig ca-bundle ca-certificates coreuti
 ip-full ipset iptables-mod-tproxy \
 libpthread \
 luci luci-theme-bootstrap luci-ssl \
-nano \
+nano tmux \
 uci wget wpad"
 PACKAGES="${PACKAGES:+$PACKAGES }luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn"
 if [[ ${VERSION} =~ 19.07 ]]; then
