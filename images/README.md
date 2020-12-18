@@ -11,10 +11,10 @@ Run the following command to install the image build requirements for Ubuntu 18.
 Some examples, read `build.sh` for usage.
 
 - Arm Arch64: `bash build.sh -d armvirt -p ~/Downloads/package/armvirt`
-- WNDR4300V1: `bash build.sh -d WNDR4300V1 -p ~/Downloads/package/ar71xx`
+- WNDR4300V1: `env PACKAGES="luci-app-wol luci-app-vlmcsd luci-i18n-vlmcsd-zh-cn luci-app-ddns luci-i18n-ddns-zh-cn" bash build.sh -d WNDR4300V1 -p ~/Downloads/package/ar71xx`
 - Newifi D2: `bash build.sh -d d-team_newifi-d2 -p ~/Downloads/package/mt7621`
 - X86: `bash build.sh -d x64 -m`
-- K2: `env PACKAGES="luci-app-wol luci-app-vlmcsd luci-i18n-vlmcsd-zh-cn" bash build.sh -d psg1218a -p ~/Downloads/package/mt7621`. It has only 8M Rom and 100Mb NIC, but its wireless signal is very good.
+- K2: `env PACKAGES="luci-app-vlmcsd luci-i18n-vlmcsd-zh-cn" bash build.sh -d psg1218a -p ~/Downloads/package/mt7620`. It has only 8M Rom and 100Mb NIC, but its wireless signal is very good.
 
 Copy the personal ipk to a separate folder and pass it to `build.sh` with `-p`.
 
