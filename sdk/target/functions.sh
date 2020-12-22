@@ -22,7 +22,8 @@ function configure_golang() {
 function configure_passwall() {
     return 0
     for config in CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Brook \
-        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_v2ray-plugin; do
+        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_ShadowsocksR \
+        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_ShadowsocksR_Server; do
         disable_option "${config}"
     done
 
@@ -31,6 +32,7 @@ function configure_passwall() {
         CONFIG_PACKAGE_luci-app-passwall_INCLUDE_haproxy \
         CONFIG_PACKAGE_luci-app-passwall_INCLUDE_ipt2socks \
         CONFIG_PACKAGE_luci-app-passwall_INCLUDE_kcptun \
+        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_NaiveProxy \
         CONFIG_PACKAGE_luci-app-passwall_INCLUDE_pdnsd \
         CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Shadowsocks \
         CONFIG_PACKAGE_luci-app-passwall_INCLUDE_ShadowsocksR \
@@ -38,25 +40,25 @@ function configure_passwall() {
         CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Shadowsocks_socks \
         CONFIG_PACKAGE_luci-app-passwall_INCLUDE_simple-obfs \
         CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Trojan \
-        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_V2ray; do
+        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_V2ray \
+        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_v2ray-plugin; do
         enable_option "${config}"
     done
 }
 
 function configure_ssr_plus() {
-    for config in CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Redsocks2 \
-        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_ShadowsocksR_Server \
-        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_V2ray_plugin; do
+    for config in CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_ShadowsocksR_Server; do
         disable_option "${config}"
     done
 
-    for config in CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_DNS2SOCKS \
-        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Kcptun \
+    for config in CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Kcptun \
         CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_NaiveProxy \
+        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Redsocks2 \
         CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks \
         CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Simple_obfs \
         CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Trojan \
-        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_V2ray; do
+        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_V2ray \
+        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_V2ray_plugin; do
         enable_option "${config}"
     done
 }
@@ -68,6 +70,27 @@ function configure_v2ray() {
     else
         disable_option CONFIG_V2RAY_COMPRESS_UPX
     fi
+}
+
+function configure_vssr() {
+    for config in CONFIG_PACKAGE_luci-app-vssr-plus_INCLUDE_ShadowsocksR_Server \
+        CONFIG_PACKAGE_luci-app-vssr-plus_INCLUDE_ShadowsocksR_Socks; do
+        disable_option "${config}"
+    done
+
+    for config in  CONFIG_PACKAGE_luci-app-vssr_INCLUDE_Kcptun \
+        CONFIG_PACKAGE_luci-app-vssr_INCLUDE_Trojan \
+        CONFIG_PACKAGE_luci-app-vssr_INCLUDE_V2ray \
+        CONFIG_PACKAGE_luci-app-vssr_INCLUDE_V2ray_plugin; do
+        enable_option "${config}"
+    done
+}
+
+function configure_vssr-plus() {
+    for config in CONFIG_PACKAGE_luci-app-vssr-plus_INCLUDE_ShadowsocksR_Server \
+        CONFIG_PACKAGE_luci-app-vssr-plus_INCLUDE_ShadowsocksR_Socks; do
+        disable_option "${config}"
+    done
 }
 
 function install_upx() {

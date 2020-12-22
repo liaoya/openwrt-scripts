@@ -9,6 +9,8 @@ function pre_ops() {
     configure_passwall
     configure_ssr_plus
     configure_v2ray
+    configure_vssr
+    configure_vssr-plus
 }
 
 if [[ -n ${BASE_URL_PREFIX} ]]; then

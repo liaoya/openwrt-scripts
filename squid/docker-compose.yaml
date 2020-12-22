@@ -1,0 +1,16 @@
+---
+version: '3.0'
+
+volumes:
+  data:
+    driver: local
+
+services:
+  squid:
+    image: docker.io/yaekee/squid:latest
+    ports:
+      - "3128:3128"
+    restart: always
+    volumes:
+      - ./squid.conf:/etc/squid/squid.conf:ro
+      - data:/var/spool/squid
