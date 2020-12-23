@@ -29,7 +29,7 @@ Some examples, read `build.sh` for usage.
 Copy the personal ipk to a separate folder and pass it to `build.sh` with `-p`.
 
 ```bash
-export PACKAGES="luci-app-adbyby-plus luci-app-autoreboot luci-app-passwall-plus luci-app-smartdns luci-app-ssr-plus luci-app-vlmcsd luci-app-wol \
+export PACKAGES="luci-app-adbyby-plus luci-app-passwall luci-app-smartdns luci-app-ssr-plus luci-app-vlmcsd luci-app-wol \
 luci-i18n-adbyby-plus-zh-cn luci-i18n-autoreboot-zh-cn luci-i18n-ssr-plus-zh-cn luci-i18n-vlmcsd-zh-cn luci-i18n-wol-zh-cn \
 tcping"
 ```

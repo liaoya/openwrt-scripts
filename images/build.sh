@@ -92,7 +92,8 @@ fi
 
 if [[ ${VERSION} =~ 19.07 || ${VERSION} =~ 18.06 || ${VERSION} =~ 17.01 ]]; then
     if [[ ${MIRROR} -eq 1 ]]; then
-        BASE_URL_PREFIX=https://mirrors.tuna.tsinghua.edu.cn/lede
+        # BASE_URL_PREFIX=https://mirrors.tuna.tsinghua.edu.cn/lede
+        BASE_URL_PREFIX=http://mirrors.ustc.edu.cn/openwrt
     else
         BASE_URL_PREFIX=http://downloads.openwrt.org
     fi

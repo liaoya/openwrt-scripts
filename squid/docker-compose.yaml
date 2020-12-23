@@ -7,6 +7,9 @@ volumes:
 
 services:
   squid:
+    environment:
+      - CLEAN=1
+      - LOG_LEVEL=1
     image: docker.io/yaekee/squid:latest
     ports:
       - "3128:3128"
