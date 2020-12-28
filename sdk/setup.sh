@@ -73,7 +73,8 @@ function check_param() {
 
 if [[ ${MIRROR} -eq 1 ]]; then
     # BASE_URL_PREFIX=https://mirrors.tuna.tsinghua.edu.cn/lede
-    BASE_URL_PREFIX=http://mirrors.ustc.edu.cn/openwrt
+    # BASE_URL_PREFIX=http://mirrors.ustc.edu.cn/openwrt
+    BASE_URL_PREFIX=https://mirrors.cloud.tencent.com/openwrt/
 else
     BASE_URL_PREFIX=http://downloads.openwrt.org
 fi
