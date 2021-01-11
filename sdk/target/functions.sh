@@ -12,12 +12,6 @@ function enable_option() {
     sed -i "s/# ${config} is not set/${config}=y/g" .config
 }
 
-function configure_golang() {
-    sed -i -e 's/GO_VERSION_MAJOR_MINOR:=.*/GO_VERSION_MAJOR_MINOR:=1.15/g' \
-        -e 's/GO_VERSION_PATCH:=.*/GO_VERSION_PATCH:=2/g' feeds/packages/lang/golang/golang-version.mk
-    sed -i -e 's/PKG_HASH:=.*/PKG_HASH:=28bf9d0bcde251011caae230a4a05d917b172ea203f2a62f2c2f9533589d4b4d/g' feeds/packages/lang/golang/golang/Makefile
-}
-
 # Passwall has been remove the source code
 function configure_passwall() {
     return 0
@@ -64,7 +58,6 @@ function configure_ssr_plus() {
 }
 
 function configure_v2ray() {
-    configure_golang
     if [[ -x $(readlink -f staging_dir/host/bin/upx) ]]; then
         enable_option CONFIG_V2RAY_COMPRESS_UPX
     else

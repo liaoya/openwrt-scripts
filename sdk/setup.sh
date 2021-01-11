@@ -160,18 +160,20 @@ scripts/feeds clean
 ./scripts/feeds update -a
 
 # Remove the kcptun in package feed since it's quite old
-rm -fr feeds/packages/net/kcptun
+# rm -fr feeds/packages/net/kcptun
 # Fail to update node, need investigation
 # sed -i -e 's/PKG_VERSION:=.*/PKG_VERSION:=v12.15.0/g' -e 's/PKG_RELEASE:=.*/PKG_RELEASE:=1/g' feeds/packages/lang/node/Makefile
 # sed -i -e 's/PKG_VERSION:=.*/PKG_VERSION:=3.3.4/g' -e 's/PKG_RELEASE:=.*/PKG_RELEASE:=1/g' feeds/packages/net/shadowsocks-libev/Makefile
 # Refer to https://github.com/openwrt/packages/blob/master/net/shadowsocks-libev/Makefile
-sed -i -e 's/^PKG_VERSION:=.*/PKG_VERSION:=3.3.5/g' \
-    -e 's/^PKG_RELEASE:=.*/PKG_RELEASE:=1/g' \
-    -e 's/^PKG_HASH:=.*/PKG_HASH:=cfc8eded35360f4b67e18dc447b0c00cddb29cc57a3cec48b135e5fb87433488/g' feeds/packages/net/shadowsocks-libev/Makefile
+# sed -i -e 's/^PKG_VERSION:=.*/PKG_VERSION:=3.3.5/g' \
+#     -e 's/^PKG_RELEASE:=.*/PKG_RELEASE:=1/g' \
+#     -e 's/^PKG_HASH:=.*/PKG_HASH:=cfc8eded35360f4b67e18dc447b0c00cddb29cc57a3cec48b135e5fb87433488/g' feeds/packages/net/shadowsocks-libev/Makefile
+# sed -i -e 's/GO_VERSION_MAJOR_MINOR:=.*/GO_VERSION_MAJOR_MINOR:=1.15/g' \
+#     -e 's/GO_VERSION_PATCH:=.*/GO_VERSION_PATCH:=2/g' feeds/packages/lang/golang/golang-version.mk
+# sed -i -e 's/PKG_HASH:=.*/PKG_HASH:=28bf9d0bcde251011caae230a4a05d917b172ea203f2a62f2c2f9533589d4b4d/g' feeds/packages/lang/golang/golang/Makefile
+# ./scripts/feeds update -i
 
-./scripts/feeds update -i
 ./scripts/feeds install -a
-
 rm -fr .config ./tmp
 make defconfig
 
