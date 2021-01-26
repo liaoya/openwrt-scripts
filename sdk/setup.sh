@@ -12,7 +12,7 @@ BASE_URL_PREFIX=${BASE_URL_PREFIX:-""}
 DL_DIR=${DL_DIR:-""}
 NAME=${NAME:-""}
 TARGET=${TARGET:-""}
-VERSION=${VERSION:-"19.07.5"}
+VERSION=${VERSION:-"19.07.6"}
 CLEAN=0
 MIRROR=0
 
@@ -130,6 +130,7 @@ fi
 [[ -f "${SDK_DIR}"/feeds.conf.default.origin ]] || cp "${SDK_DIR}"/feeds.conf.default "${SDK_DIR}"/feeds.conf.default.origin
 [[ -f "${SDK_DIR}"/feeds.conf.default.origin ]] && cp "${SDK_DIR}"/feeds.conf.default.origin "${SDK_DIR}"/feeds.conf.default
 
+# The preceding declare has high priority
 # https://github.com/Lienol/openwrt-packages;packages-19.07
 # sed -e 's|git.openwrt.org/openwrt/openwrt|github.com/openwrt/openwrt|g' \
 #     -e 's|git.openwrt.org/feed/packages|github.com/openwrt/packages|g' \
@@ -143,12 +144,14 @@ sed -e 's|git.openwrt.org/openwrt/openwrt|github.com/openwrt/openwrt|g' \
     -i "${SDK_DIR}"/feeds.conf.default
 echo "src-git packages https://github.com/Lienol/openwrt-packages;19.07" >>"${SDK_DIR}"/feeds.conf.default
 echo "src-git Lienol https://github.com/Lienol/openwrt-package" >>"${SDK_DIR}"/feeds.conf.default
+echo "src-git xiaorouji https://github.com/xiaorouji/openwrt-passwall" >>"${SDK_DIR}"/feeds.conf.default
+echo "src-git fw876 https://github.com/fw876/helloworld" >>"${SDK_DIR}"/feeds.conf.default
 if [[ ${VERSION} =~ 19.07 ]]; then
     echo "src-git liuran001 https://github.com/liuran001/openwrt-packages;packages-19.07" >>"${SDK_DIR}"/feeds.conf.default
 else
     echo "src-git liuran001 https://github.com/liuran001/openwrt-packages;packages" >>"${SDK_DIR}"/feeds.conf.default
 fi
-echo "src-git xiaorouji https://github.com/xiaorouji/openwrt-passwall" >>"${SDK_DIR}"/feeds.conf.default
+echo "src-git kenzok8 https://github.com/kenzok8/openwrt-packages" >>"${SDK_DIR}"/feeds.conf.default
 
 pushd "${SDK_DIR}"
 
@@ -181,7 +184,7 @@ if [[ $(command -v pre_ops) ]]; then pre_ops; fi
 
 make -j"$(nproc)" package/feeds/luci/luci-base/compile
 
-# for src_dir in package/feeds/Lienol package/feeds/liuran001 package/feeds/xiaorouji; do
+# for src_dir in package/feeds/Lienol package/feeds/xiaorouji package/feeds/fw876 package/feeds/liuran001 package/feeds/kenzok8; do
 #     for pkg in "${src_dir}"/*; do
 #         [[ -d ${pkg} ]] || continue
 #         make -j"$(nproc)" "${pkg}"/compile || true

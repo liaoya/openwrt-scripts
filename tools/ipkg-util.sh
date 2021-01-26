@@ -62,8 +62,7 @@ fi
 
 declare -a PACKAGES=()
 
-for src_dir in package/feeds/Lienol package/feeds/liuran001 package/feeds/xiaorouji \
-    package/lean package/cokebar package/fw876 package/jerrykuku package/kuoruan package/smartdns; do
+for src_dir in package/feeds/Lienol package/feeds/xiaorouji package/feeds/fw876 package/feeds/liuran001 package/feeds/kenzok8; do
     for pkg in "${SRC}/${src_dir}"/*; do
         [[ -d ${pkg} ]] || continue
         pkg=$(basename "${pkg}")

@@ -71,7 +71,6 @@ sed -i -e 's/PKG_VERSION:=.*/PKG_VERSION:=3.3.4/g' -e 's/PKG_RELEASE:=.*/PKG_REL
 - <https://github.com/kuoruan/openwrt-kcptun>
 - <https://github.com/kuoruan/openwrt-v2ray>
 - <https://github.com/Leo-Jo-My/luci-app-ssr-plus-Jo/tree/master>
-- <https://github.com/liuran001/openwrt-packages>
 - <https://github.com/mwarning/openwrt-examples>
 - <https://github.com/pexcn/openwrt-chinadns-ng>
 - <https://github.com/project-openwrt/luci-app-vssr-1>
@@ -79,6 +78,13 @@ sed -i -e 's/PKG_VERSION:=.*/PKG_VERSION:=3.3.4/g' -e 's/PKG_RELEASE:=.*/PKG_REL
 - <https://github.com/shadowsocks/luci-app-shadowsocks>
 - <https://github.com/shadowsocks/openwrt-shadowsocks>
 - <https://github.com/xiaorouji/openwrt-passwall>: contain passwall
+- <https://github.com/fw876/helloworld>: official luci-app-ssr-plus
+
+### Pakcage collects
+
+- <https://github.com/project-openwrt>: all valued packages
+- <https://github.com/kenzok8/openwrt-packages>
+- <https://github.com/liuran001/openwrt-packages>
 
 The modified `ssr-plus` also need many dependencies. The good news is it can be built seprately.
 
