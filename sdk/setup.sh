@@ -1,4 +1,5 @@
 #!/bin/bash
+#shellcheck disable=SC2129
 
 set -ex
 
@@ -152,6 +153,7 @@ else
     echo "src-git liuran001 https://github.com/liuran001/openwrt-packages;packages" >>"${SDK_DIR}"/feeds.conf.default
 fi
 echo "src-git kenzok8 https://github.com/kenzok8/openwrt-packages" >>"${SDK_DIR}"/feeds.conf.default
+echo "src-git small https://github.com/kenzok8/small" >>"${SDK_DIR}"/feeds.conf.default
 
 pushd "${SDK_DIR}"
 

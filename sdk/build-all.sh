@@ -6,7 +6,7 @@ THIS_FILE=$(readlink -f "${BASH_SOURCE[0]}")
 THIS_DIR=$(dirname "${THIS_FILE}")
 
 function build() {
-    for src_dir in package/feeds/Lienol package/feeds/xiaorouji package/feeds/fw876 package/feeds/liuran001 package/feeds/kenzok8; do
+    for src_dir in package/feeds/Lienol package/feeds/xiaorouji package/feeds/fw876 package/feeds/liuran001 package/feeds/kenzok8 package/feeds/small; do
         for pkg in "${src_dir}"/*; do
             [[ -d ${pkg} ]] || continue
             make -j"$(nproc)" "${pkg}"/compile || true
