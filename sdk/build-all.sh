@@ -6,11 +6,21 @@ THIS_FILE=$(readlink -f "${BASH_SOURCE[0]}")
 THIS_DIR=$(dirname "${THIS_FILE}")
 
 function build() {
-    for src_dir in package/feeds/Lienol package/feeds/xiaorouji package/feeds/fw876 package/feeds/liuran001 package/feeds/kenzok8 package/feeds/small; do
-        for pkg in "${src_dir}"/*; do
-            [[ -d ${pkg} ]] || continue
-            make -j"$(nproc)" "${pkg}"/compile || true
+    for src_dir in package/feeds/*; do
+        [[ -d "${src_dir}" ]] || continue
+        _build=1
+        for official in base luci packages routing telephony; do
+            if [[ ${src_dir} == "package/feeds/$official" || ${src_dir} == "package/feeds/$official/" ]]; then
+                _build=0
+                break
+            fi
         done
+        if [[ "${_build}" -gt 0 ]]; then
+            for pkg in "${src_dir}"/*; do
+                [[ -d ${pkg} ]] || continue
+                make -j"$(nproc)" "${pkg}"/compile || true
+            done
+        fi
     done
 }
 

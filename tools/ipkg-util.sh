@@ -55,23 +55,28 @@ if [[ ! -d "${SRC}/bin" ]]; then
     exit 1
 fi
 
-# declare -a PACKAGES=(adbyby adguardhome autoreboot brook chinadns-ng coremark dns2socks guest-wifi \
-#     haproxy ipt2socks kcptun luci-theme-bootstrap-mod luci-app-vssr maxminddb microsocks \
-#     passwall pdnsd redsock ramfree shadowsocks simple-obfs smartdns srelay ssr-plus tcping trojan \
-#     unblockmusic UnblockNetease v2ray vlmcsd)
-
 declare -a PACKAGES=()
 
-for src_dir in package/feeds/Lienol package/feeds/xiaorouji package/feeds/fw876 package/feeds/liuran001 package/feeds/kenzok8; do
-    for pkg in "${SRC}/${src_dir}"/*; do
-        [[ -d ${pkg} ]] || continue
-        pkg=$(basename "${pkg}")
-        PACKAGES=(${PACKAGES[@]} "${pkg}")
-        if [[ ${pkg} =~ luci-app* ]]; then
-            pkg=${pkg/luci-app/luci-i18n}
-            PACKAGES=(${PACKAGES[@]} "${pkg}")
+for src_dir in "${SRC}"/package/feeds/*; do
+    [[ -d "${src_dir}" ]] || continue
+    _build=1
+    for official in base luci packages routing telephony; do
+        if [[ ${src_dir} == "${SRC}/package/feeds/$official" || ${src_dir} == "${SRC}/package/feeds/$official/" ]]; then
+            _build=0
+            break
         fi
     done
+    if [[ "${_build}" -gt 0 ]]; then
+        for pkg in "${src_dir}"/*; do
+            [[ -d ${pkg} ]] || continue
+            pkg=$(basename "${pkg}")
+            PACKAGES=(${PACKAGES[@]} "${pkg}")
+            if [[ ${pkg} =~ luci-app* ]]; then
+                pkg=${pkg/luci-app/luci-i18n}
+                PACKAGES=(${PACKAGES[@]} "${pkg}")
+            fi
+        done
+    fi
 done
 
 declare -a INGNORE_PACKAGES=(openssl1.1)
