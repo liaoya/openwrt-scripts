@@ -13,7 +13,7 @@ BASE_URL_PREFIX=${BASE_URL_PREFIX:-""}
 DL_DIR=${DL_DIR:-""}
 NAME=${NAME:-""}
 TARGET=${TARGET:-""}
-VERSION=${VERSION:-"19.07.6"}
+VERSION=${VERSION:-"19.07.7"}
 CLEAN=0
 MIRROR=0
 
@@ -21,7 +21,7 @@ function _print_help() {
     cat <<EOF
 Usage: $(basename "${BASH_SOURCE[0]}") [OPTIONS]
 OPTIONS
-    -d, --dl, the global dl directory, the default value "${DL_DIR}"
+    -d, --dl, the global dl directory. ${DL_DIR:- the default value "${DL_DIR}"}
     -n, --name, the name of uncompress folder, some build will fail if the name is too long.
     -t, --target, CPU Arch
     -v, --version, OpenWRT VERSION
