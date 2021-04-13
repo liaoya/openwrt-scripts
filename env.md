@@ -13,8 +13,9 @@ git config --global url."http://10.113.69.101:5903/".insteadOf https://
 
 ```bash
 rsync ~/.cache/openwrt/*.xz root@10.113.69.101:/var/mirror/openwrt/
-rsync -r --exclude go-mod-cache dl root@10.113.69.101:/var/mirror/openwrt/dl
-rsync -r package root@10.113.69.101:/var/mirror/openwrt/package
+rsync -r --exclude go-mod-cache ~/Downloads/dl root@10.113.69.101:/var/mirror/openwrt/
+rsync -r ~/Downloads/package root@10.113.69.101:/var/mirror/openwrt/
 
-rsync -r root@10.113.69.101:/var/mirror/openwrt .
+# In the parent folder of openwrt
+rsync -r root@10.113.69.101:/var/mirror/openwrt/ .
 ```
