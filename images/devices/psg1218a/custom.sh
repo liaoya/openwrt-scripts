@@ -1,5 +1,5 @@
 #!/bin/bash
-#shellcheck disable=SC1090
+#shellcheck disable=SC1091
 
 THIS_DIR=$(readlink -f "${BASH_SOURCE[0]}")
 THIS_DIR=$(dirname "${THIS_DIR}")
@@ -13,7 +13,7 @@ fi
 PACKAGES=${PACKAGES:-""}
 PACKAGES="${PACKAGES:+$PACKAGES }luci luci-ssl luci-theme-bootstrap"
 PACKAGES="${PACKAGES:+$PACKAGES }luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn"
-PACKAGES="${PACKAGES:+$PACKAGES }bash curl mtr nano tmux"
+PACKAGES="${PACKAGES:+$PACKAGES }bash curl dropbearconvert mtr nano tmux"
 PACKAGES="${PACKAGES:+$PACKAGES }luci-app-ddns luci-i18n-ddns-zh-cn"
 PACKAGES="${PACKAGES:+$PACKAGES }luci-app-wol"
 if [[ ${VERSION} =~ 19.07 ]]; then

@@ -109,7 +109,7 @@ if [[ -z ${TARGET} ]]; then
 fi
 
 if [[ -f "${ROOT_DIR}/target/${TARGET}.sh" ]]; then
-    #shellcheck disable=SC1090
+    #shellcheck disable=SC1091
     source "${ROOT_DIR}/target/${TARGET}.sh"
 else
     echo "Require customized ${ROOT_DIR}/target/${TARGET}.sh"

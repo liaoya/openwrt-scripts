@@ -1,5 +1,5 @@
 #!/bin/bash
-#shellcheck disable=SC1090,SC2034,SC2164
+#shellcheck disable=SC1091,SC2034,SC2164
 
 set -a -e -x
 
