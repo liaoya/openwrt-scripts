@@ -1,5 +1,5 @@
 #!/bin/bash
-#shellcheck disable=SC1091,SC2034,SC2164
+#shellcheck disable=SC1090,SC1091,SC2034,SC2164
 
 set -a -e -x
 
@@ -95,7 +95,7 @@ if [[ ${VERSION} =~ 19.07 || ${VERSION} =~ 18.06 || ${VERSION} =~ 17.01 ]]; then
         BASE_URL_PREFIX=http://mirrors.ustc.edu.cn/openwrt
         # BASE_URL_PREFIX=https://mirror.sjtu.edu.cn/openwrt
         # BASE_URL_PREFIX=https://mirrors.tuna.tsinghua.edu.cn/openwrt
-        # BASE_URL_PREFIX=https://mirrors.cloud.tencent.com/openwrt/
+        # BASE_URL_PREFIX=https://mirrors.cloud.tencent.com/openwrt
     else
         BASE_URL_PREFIX=http://downloads.openwrt.org
     fi
