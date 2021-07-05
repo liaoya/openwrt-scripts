@@ -41,6 +41,7 @@ function configure_passwall() {
 }
 
 function configure_ssr_plus() {
+    # shellcheck disable=SC2043
     for config in CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_ShadowsocksR_Server; do
         disable_option "${config}"
     done

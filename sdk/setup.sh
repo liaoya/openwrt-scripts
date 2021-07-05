@@ -84,7 +84,7 @@ fi
 check_param ROOT_DIR TARGET
 
 if [[ -f "${ROOT_DIR}/target/${TARGET}.sh" ]]; then
-    #shellcheck disable=SC1091
+    #shellcheck disable=SC1090
     source "${ROOT_DIR}/target/${TARGET}.sh"
 else
     echo "Require customized ${ROOT_DIR}/target/${TARGET}.sh"
