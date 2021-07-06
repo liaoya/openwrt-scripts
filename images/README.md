@@ -41,7 +41,7 @@ export PACKAGES="${PACKAGES:+$PACKAGES }luci-app-adbyby-plus luci-i18n-adbyby-pl
 luci-i18n-base-zh-cn luci-i18n-autoreboot-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn \
 luci-app-ddns luci-i18n-ddns-zh-cn \
 luci-app-passwall \
-luci-app-smartdns \
+luci-app-smartdns luci-i18n-smartdns-zh-cn \
 luci-app-ssr-plus luci-i18n-ssr-plus-zh-cn \
 luci-app-uhttpd luci-i18n-uhttpd-zh-cn \
 luci-app-vlmcsd luci-i18n-vlmcsd-zh-cn \
