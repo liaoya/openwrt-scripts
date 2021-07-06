@@ -112,6 +112,8 @@ else
     SDK_DIR=$(basename -s .tar.xz "${SDK_FILENAME}")
     SDK_DIR=${ROOT_DIR}/${SDK_DIR}
 fi
+#shellcheck disable=SC2046
+mkdir -p $(dirname "${SDK_DIR}")
 if [[ ${CLEAN} -gt 0 && -d "${SDK_DIR}" ]]; then rm -fr "${SDK_DIR}"; fi
 if [[ ! -d "${SDK_DIR}" ]]; then
     if [[ -n ${NAME} ]]; then

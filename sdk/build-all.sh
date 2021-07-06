@@ -24,13 +24,13 @@ function build() {
     done
 }
 
-bash "${THIS_DIR}"/setup.sh -d ~/Downloads/dl -n /work/openwrt/sdk/armvirt -t armvirt -c
+bash "${THIS_DIR}"/setup.sh -d /work/openwrt/dl -n /work/openwrt/sdk/armvirt -t armvirt "$@"
 (cd /work/openwrt/sdk/armvirt; build)
-bash "${THIS_DIR}"/setup.sh -t ~/Downloads/dl -n /work/openwrt/sdk/x64 -t x64 -c
+bash "${THIS_DIR}"/setup.sh -t /work/openwrt/dl -n /work/openwrt/sdk/x64 -t x64 "$@"
 (cd /work/openwrt/sdk/x64; build)
-bash "${THIS_DIR}"/setup.sh -d ~/Downloads/dl -n /work/openwrt/sdk/mt7621 -t mt7621 -c
+bash "${THIS_DIR}"/setup.sh -d /work/openwrt/dl -n /work/openwrt/sdk/mt7621 -t mt7621 "$@"
 (cd /work/openwrt/sdk/mt7621; build)
-bash "${THIS_DIR}"/setup.sh -d ~/Downloads/dl -n /work/openwrt/sdk/mt7620 -t mt7620 -c
+bash "${THIS_DIR}"/setup.sh -d /work/openwrt/dl -n /work/openwrt/sdk/mt7620 -t mt7620 "$@"
 (cd /work/openwrt/sdk/mt7620; build)
-bash "${THIS_DIR}"/setup.sh -d ~/Downloads/dl -n /work/openwrt/sdk/ar71xx -t ar71xx -c
+bash "${THIS_DIR}"/setup.sh -d /work/openwrt/dl -n /work/openwrt/sdk/ar71xx -t ar71xx "$@"
 (cd /work/openwrt/sdk/ar71xx; build)

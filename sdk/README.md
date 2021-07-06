@@ -24,11 +24,11 @@ I find some package build issue when build with SDK `18.06`
 
 Run `git config --global url."http://127.0.0.1:9080/".insteadOf https://` if `git-cache-http-server` installed
 
-- `bash build.sh -d ~/Downloads/dl -n /work/armvirt -t armvirt -m -c`
-- `bash build.sh -d ~/Downloads/dl -n /work/ar71xx -t ar71xx -m -c`
-- `bash build.sh -d ~/Downloads/dl -n /work/mt7621 -t mt7621 -m -c`
-- `bash build.sh -d ~/Downloads/dl -n /work/mt7620 -t mt7620 -m -c`
-- `bash build.sh -t ~/Downloads/dl -n /work/x64 -t x64 -m -c`
+- `bash build.sh -d /work/openwrt/dl -n /work/openwrt/sdk/armvirt -t armvirt -m -c`
+- `bash build.sh -d /work/openwrt/dl -n /work/openwrt/sdk/ar71xx -t ar71xx -m -c`
+- `bash build.sh -d /work/openwrt/dl -n /work/openwrt/sdk/mt7621 -t mt7621 -m -c`
+- `bash build.sh -d /work/openwrt/dl -n /work/openwrt/sdk/mt7620 -t mt7620 -m -c`
+- `bash build.sh -t /work/openwrt/dl -n /work/openwrt/sdk/x64 -t x64 -m -c`
 
 ## Handle Package conflicts
 
