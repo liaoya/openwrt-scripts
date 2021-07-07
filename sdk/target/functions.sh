@@ -72,7 +72,7 @@ function configure_vssr() {
         disable_option "${config}"
     done
 
-    for config in  CONFIG_PACKAGE_luci-app-vssr_INCLUDE_Kcptun \
+    for config in CONFIG_PACKAGE_luci-app-vssr_INCLUDE_Kcptun \
         CONFIG_PACKAGE_luci-app-vssr_INCLUDE_Trojan \
         CONFIG_PACKAGE_luci-app-vssr_INCLUDE_V2ray \
         CONFIG_PACKAGE_luci-app-vssr_INCLUDE_V2ray_plugin; do

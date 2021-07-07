@@ -30,10 +30,10 @@ Copy the personal ipk to a separate folder and pass it to `build.sh` with `-p`.
 
 ```bash
 export PACKAGES="-dnsmasq -wpad-mini \
-bash bind-dig ca-bundle ca-certificates coreutils-base64 curl dnsmasq-full dropbearconvert file fish \
+bash bind-dig ca-bundle ca-certificates coreutils-base64 curl dnsmasq-full dropbearconvert file \
 ip-full ipset iptables-mod-tproxy \
 libpthread \
-luci luci-theme-bootstrap luci-ssl \
+luci luci-theme-bootstrap luci-ssl-openssl \
 nano tcping tmux \
 uci wget wpad"
 
