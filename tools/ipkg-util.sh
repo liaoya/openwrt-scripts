@@ -88,7 +88,7 @@ for name in "${PACKAGES[@]}"; do
         fi
     done
 done
-PACKAGES=(${__PACKAGES[@]} shadowsocks-libev smartdns)
+PACKAGES=(${__PACKAGES[@]} shadowsocks-libev smartdns xray)
 unset __PACKAGES
 # echo ${PACKAGES[@]} | tr ' ' '\n'
 
