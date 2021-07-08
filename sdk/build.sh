@@ -163,11 +163,7 @@ sed -e 's|git.openwrt.org/openwrt/openwrt|github.com/openwrt/openwrt|g' \
     -e 's|git.openwrt.org/feed/telephony|github.com/openwrt/telephony|g' \
     -i "${SDK_DIR}"/feeds.conf.default
 echo "src-git xiaorouji https://github.com/xiaorouji/openwrt-passwall" >>"${SDK_DIR}"/feeds.conf.default
-if [[ ${VERSION} =~ 19.07 ]]; then
-    echo "src-git liuran001 https://github.com/liuran001/openwrt-packages;packages-19.07" >>"${SDK_DIR}"/feeds.conf.default
-else
-    echo "src-git liuran001 https://github.com/liuran001/openwrt-packages;packages" >>"${SDK_DIR}"/feeds.conf.default
-fi
+echo "src-git liuran001 https://github.com/liuran001/openwrt-packages;packages" >>"${SDK_DIR}"/feeds.conf.default
 
 pushd "${SDK_DIR}"
 mkdir -p staging_dir/host/bin
@@ -181,11 +177,10 @@ scripts/feeds clean
 rm -fr feeds/packages/net/kcptun
 # Fail to update node, need investigation
 # sed -i -e 's/PKG_VERSION:=.*/PKG_VERSION:=v12.15.0/g' -e 's/PKG_RELEASE:=.*/PKG_RELEASE:=1/g' feeds/packages/lang/node/Makefile
-# sed -i -e 's/PKG_VERSION:=.*/PKG_VERSION:=3.3.4/g' -e 's/PKG_RELEASE:=.*/PKG_RELEASE:=1/g' feeds/packages/net/shadowsocks-libev/Makefile
 # Refer to https://github.com/openwrt/packages/blob/master/net/shadowsocks-libev/Makefile
-sed -i -e 's/^PKG_VERSION:=.*/PKG_VERSION:=3.3.5/g' \
-    -e 's/^PKG_RELEASE:=.*/PKG_RELEASE:=1/g' \
-    -e 's/^PKG_HASH:=.*/PKG_HASH:=cfc8eded35360f4b67e18dc447b0c00cddb29cc57a3cec48b135e5fb87433488/g' feeds/packages/net/shadowsocks-libev/Makefile
+# sed -i -e 's/^PKG_VERSION:=.*/PKG_VERSION:=3.3.5/g' \
+#     -e 's/^PKG_RELEASE:=.*/PKG_RELEASE:=1/g' \
+#     -e 's/^PKG_HASH:=.*/PKG_HASH:=cfc8eded35360f4b67e18dc447b0c00cddb29cc57a3cec48b135e5fb87433488/g' feeds/packages/net/shadowsocks-libev/Makefile
 
 ./scripts/feeds update -i
 ./scripts/feeds install -a
