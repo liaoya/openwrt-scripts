@@ -13,74 +13,52 @@ function enable_option() {
 }
 
 # Passwall has been remove the source code
+# grep -i passwall .config | sed -e 's/=m//g' -e 's/=y//g' -e 's/^# //g' -e 's/ is not set//g' | sort
 function configure_passwall() {
-    return 0
     for config in CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Brook \
-        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_ShadowsocksR \
-        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_ShadowsocksR_Server; do
-        disable_option "${config}"
-    done
-
-    for config in CONFIG_PACKAGE_luci-app-passwall_INCLUDE_ChinaDNS_NG \
-        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_dns2socks \
-        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_haproxy \
-        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_ipt2socks \
-        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_kcptun \
+        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_ChinaDNS_NG \
+        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Haproxy \
         CONFIG_PACKAGE_luci-app-passwall_INCLUDE_NaiveProxy \
-        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_pdnsd \
-        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Shadowsocks \
-        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_ShadowsocksR \
-        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_ShadowsocksR_socks \
-        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Shadowsocks_socks \
-        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_simple-obfs \
-        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Trojan \
-        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_V2ray \
-        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_v2ray-plugin; do
-        enable_option "${config}"
+        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_ShadowsocksR_Libev_Server \
+        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Trojan_GO; do
+        disable_option "${config}"
     done
 }
 
+# grep -i app-ssr-plus .config | sed -e 's/=m//g' -e 's/=y//g' -e 's/^# //g' -e 's/ is not set//g' | sort
 function configure_ssr_plus() {
     # shellcheck disable=SC2043
-    for config in CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_ShadowsocksR_Server; do
+    for config in CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_NaiveProxy \
+        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks_Libev_Server \
+        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_ShadowsocksR_Libev_Server \
+        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks_Rust_Server \
+        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_ShadowsocksR_Server; do
         disable_option "${config}"
     done
 
     for config in CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Kcptun \
-        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_NaiveProxy \
-        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Redsocks2 \
-        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks \
-        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Simple_obfs \
-        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Trojan \
-        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_V2ray \
-        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_V2ray_plugin; do
+        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks_Libev_Client \
+        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_ShadowsocksR_Libev_Client \
+        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks_Rust_Client \
+        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Simple_Obfs \
+        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_V2ray_Plugin \
+        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Xray; do
         enable_option "${config}"
     done
 }
 
 function configure_v2ray() {
     if [[ -x $(readlink -f staging_dir/host/bin/upx) ]]; then
-        enable_option CONFIG_V2RAY_COMPRESS_UPX
+        enable_option CONFIG_V2RAY_CORE_COMPRESS_UPX
+        enable_option CONFIG_V2RAY_CTL_COMPRESS_UPX
     else
-        disable_option CONFIG_V2RAY_COMPRESS_UPX
+        disable_option CONFIG_V2RAY_CORE_COMPRESS_UPX
+        disable_option CONFIG_V2RAY_CTL_COMPRESS_UPX
     fi
 }
 
-function configure_vssr() {
-    for config in CONFIG_PACKAGE_luci-app-vssr-plus_INCLUDE_ShadowsocksR_Server \
-        CONFIG_PACKAGE_luci-app-vssr-plus_INCLUDE_ShadowsocksR_Socks; do
-        disable_option "${config}"
-    done
-
-    for config in CONFIG_PACKAGE_luci-app-vssr_INCLUDE_Kcptun \
-        CONFIG_PACKAGE_luci-app-vssr_INCLUDE_Trojan \
-        CONFIG_PACKAGE_luci-app-vssr_INCLUDE_V2ray \
-        CONFIG_PACKAGE_luci-app-vssr_INCLUDE_V2ray_plugin; do
-        enable_option "${config}"
-    done
-}
-
-function configure_vssr-plus() {
+# grep -i app-vssr-plus .config | sed -e 's/=m//g' -e 's/=y//g' -e 's/^# //g' -e 's/ is not set//g' | sort
+function configure_vssr_plus() {
     for config in CONFIG_PACKAGE_luci-app-vssr-plus_INCLUDE_ShadowsocksR_Server \
         CONFIG_PACKAGE_luci-app-vssr-plus_INCLUDE_ShadowsocksR_Socks; do
         disable_option "${config}"

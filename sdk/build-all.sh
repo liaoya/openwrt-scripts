@@ -24,6 +24,7 @@ function build() {
     done
 }
 
+unset -v PIP_REQUIRE_VIRTUALENV
 unset -v GOPROXY
 
 bash "${THIS_DIR}"/setup.sh -d /work/openwrt/dl -n /work/openwrt/sdk/armvirt -t armvirt "$@"
