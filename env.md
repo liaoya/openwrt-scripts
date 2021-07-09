@@ -19,4 +19,13 @@ rsync -r /work/openwrt/package root@10.113.69.101:/var/mirror/openwrt/
 
 # In the parent folder of openwrt
 rsync -r root@10.113.69.101:/var/mirror/openwrt/ .
+
+for _item in $(ls -t1 "$HOME/.vscode-server/bin" | sed 1d); do
+    rm -fr "$HOME/.vscode-server/bin/${_item}"
+done for _item in $(ls -t1 "$HOME/.vscode-server/bin" | sed 1d); do
+    rm -fr "$HOME/.vscode-server/bin/${_item}"
+done
+
+rsync --no-acls --no-perms --no-xattrs -r --exclude go-mod-cache /work/openwrt/dl /media/huifshen/WD/openwrt/
+rsync --no-acls --no-perms --no-xattrs -r /work/openwrt/package /media/huifshen/WD/openwrt/
 ```
