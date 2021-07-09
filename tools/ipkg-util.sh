@@ -119,12 +119,37 @@ fi
 # fi
 
 if [[ ${OPERATION} == "list" ]]; then
-    find "${SRC}/bin" -iname "*.ipk" | grep -v /'base/' | grep -v '/luci/' | grep -v '/routing/' | grep -v '/telephony/' | grep -v '/64/packages/'
+    while IFS= read -r -d '' pkg; do
+        _name=$(dirname "${pkg}")
+        _name=$(basename "${_name}")
+        _ignore=0
+        for official in base luci packages routing telephony; do
+            if [[ ${_name} == "${official}" ]]; then
+                _ignore=1
+            fi
+        done
+        if [[ ${_ignore} -eq 0 ]]; then
+            ls -1 "${pkg}"
+        fi
+    done < <(find "${SRC}/bin" -iname "*.ipk" -print0 | sort)
+    # find "${SRC}/bin" -iname "*.ipk" | grep -v /'base/' | grep -v '/luci/' | grep -v '/routing/' | grep -v '/telephony/' | grep -v '/64/packages/' | grep -v -e "${SRC}/bin/packages/.*/packages/.*"
 elif [[ ${OPERATION} == "copy" ]]; then
     if [[ ! -d ${DEST} ]]; then
         mkdir -p "${DEST}"
     fi
-    find "${SRC}/bin" -iname "*.ipk" | grep -v /'base/' | grep -v '/luci/' | grep -v '/routing/' | grep -v '/telephony/' | grep -v '/64/packages/' | xargs -I cp {} "${DEST}"
+    while IFS= read -r -d '' pkg; do
+        _name=$(dirname "${pkg}")
+        _name=$(basename "${_name}")
+        _ignore=0
+        for official in base luci packages routing telephony; do
+            if [[ ${_name} == "${official}" ]]; then
+                _ignore=1
+            fi
+        done
+        if [[ ${_ignore} -eq 0 ]]; then
+            cp "${pkg}" "${DEST}"/
+        fi
+    done < <(find "${SRC}/bin" -iname "*.ipk" -print0 | sort)
     (
         cd "${DEST}"
         ipkg-make-index.sh . >Packages && gzip -9nc Packages >Packages.gz
