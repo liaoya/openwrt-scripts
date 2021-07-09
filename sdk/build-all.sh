@@ -9,7 +9,7 @@ function build() {
     for src_dir in package/feeds/*; do
         [[ -d "${src_dir}" ]] || continue
         _build=1
-        for official in base luci packages routing telephony; do
+        for official in base freifunk luci packages routing telephony; do
             if [[ ${src_dir} == "package/feeds/$official" || ${src_dir} == "package/feeds/$official/" ]]; then
                 _build=0
                 break
