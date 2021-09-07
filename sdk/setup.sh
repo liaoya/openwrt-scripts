@@ -135,21 +135,14 @@ fi
 [[ -f "${SDK_DIR}"/feeds.conf.default.origin ]] && cp "${SDK_DIR}"/feeds.conf.default.origin "${SDK_DIR}"/feeds.conf.default
 
 # The preceding declare has high priority?
-# https://github.com/Lienol/openwrt-packages;packages-19.07
-if [[ ${VERSION} =~ 19.07 ]]; then
-    sed -e 's|git.openwrt.org/openwrt/openwrt|github.com/openwrt/openwrt|g' \
-        -e '/^src-git packages http/d' \
-        -e 's|git.openwrt.org/project/luci|github.com/openwrt/luci|g' \
-        -e 's|git.openwrt.org/feed/telephony|github.com/openwrt/telephony|g' \
-        -i "${SDK_DIR}"/feeds.conf.default
-    echo "src-git packages https://github.com/Lienol/openwrt-packages;19.07" >>"${SDK_DIR}"/feeds.conf.default
-else
-    sed -e 's|git.openwrt.org/openwrt/openwrt|github.com/openwrt/openwrt|g' \
-        -e 's|git.openwrt.org/feed/packages|github.com/openwrt/packages|g' \
-        -e 's|git.openwrt.org/project/luci|github.com/openwrt/luci|g' \
-        -e 's|git.openwrt.org/feed/telephony|github.com/openwrt/telephony|g' \
-        -i "${SDK_DIR}"/feeds.conf.default
-fi
+sed -e 's|git.openwrt.org/openwrt/openwrt|github.com/openwrt/openwrt|g' \
+    -e '/^src-git packages http/d' \
+    -e 's|git.openwrt.org/project/luci|github.com/openwrt/luci|g' \
+    -e 's|git.openwrt.org/feed/telephony|github.com/openwrt/telephony|g' \
+    -i "${SDK_DIR}"/feeds.conf.default
+# sed 's|git.openwrt.org/feed/packages|github.com/openwrt/packages|g' -i "${SDK_DIR}"/feeds.conf.default
+echo "src-git packages https://github.com/Lienol/openwrt-packages;21.02" >>"${SDK_DIR}"/feeds.conf.default
+
 echo "src-git Lienol https://github.com/Lienol/openwrt-package" >>"${SDK_DIR}"/feeds.conf.default
 echo "src-git xiaorouji https://github.com/xiaorouji/openwrt-passwall" >>"${SDK_DIR}"/feeds.conf.default
 echo "src-git fw876 https://github.com/fw876/helloworld" >>"${SDK_DIR}"/feeds.conf.default

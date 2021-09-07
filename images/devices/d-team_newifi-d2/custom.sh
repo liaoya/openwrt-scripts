@@ -11,7 +11,3 @@ if [[ -n ${BASE_URL_PREFIX} ]]; then
     BASE_URL="${BASE_URL_PREFIX}/releases/${VERSION}/targets/ramips/mt7621"
 fi
 
-PACKAGES=${PACKAGES:-""}
-if [[ ${VERSION} =~ 19.07 ]]; then
-    PACKAGES="${PACKAGES:+$PACKAGES }-wpad-basic luci-compat luci-lib-ipkg uhttpd-mod-ubus"
-fi

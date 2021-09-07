@@ -18,8 +18,6 @@ mkdir -p /work/github/{coolsnowwolf,Lienol,liaoya,pymumu}
 (cd /work/github/pymumu; git clone https://github.com/pymumu/smartdns.git)
 ```
 
-`988acf9daa2c80858c1fd8c097d0dffe49df858d` ssr-plus was remove again. `6c8c96cedf5b455f4eea2744aeca8d6be3fa46c2`
-
 I find some package build issue when build with SDK `18.06`
 
 Run `git config --global url."http://127.0.0.1:9080/".insteadOf https://` if `git-cache-http-server` installed

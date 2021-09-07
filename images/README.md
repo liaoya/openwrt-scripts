@@ -21,31 +21,46 @@ Run the following command to install the image build requirements for Ubuntu 18.
 Some examples, read `build.sh` for usage.
 
 - Arm Arch64: `bash build.sh -d armvirt -p /work/openwrt/package/21.02/armvirt`
-- WNDR4300V1: `bash build.sh -d WNDR4300V1 -p /work/openwrt/package/21.02/ar71xx`
+- WNDR4300V1: `bash build.sh -d netgear_wndr4300 -p /work/openwrt/package/21.02/ath79`
 - Newifi D2: `bash build.sh -d d-team_newifi-d2 -p /work/openwrt/package/21.02/mt7621`
 - X86: `bash build.sh -d x64 -p /work/openwrt/package/21.02/x64`
-- K2: `env PACKAGES="luci-app-vlmcsd luci-i18n-vlmcsd-zh-cn" bash build.sh -d phicomm_psg1218a -p /work/openwrt/package/21.02/mt7620`. It has only 8M Rom and 100Mb NIC, but its wireless signal is very good.
+- K2: `env PACKAGES="luci-app-wol luci-i18n-wol-zh-cn luci-app-vlmcsd luci-i18n-vlmcsd-zh-cn" bash build.sh -d phicomm_psg1218a -p /work/openwrt/package/21.02/mt7620`. It has only 8M Rom and 100Mb NIC, but its wireless signal is very good.
 
 Copy the personal ipk to a separate folder and pass it to `build.sh` with `-p`.
 
 ```bash
-export PACKAGES="-dnsmasq -wpad-mini \
+# The following is for wndr4300 only
+export PACKAGES="-dnsmasq -wpad-mini -wpad-basic -wpad-basic-wolfssl \
 bash bind-dig ca-bundle ca-certificates coreutils-base64 curl dnsmasq-full dropbearconvert file \
 ip-full ipset iptables-mod-tproxy \
 libpthread \
-luci luci-theme-bootstrap luci-ssl-openssl \
-nano tcping tmux \
-uci wget wpad"
+luci-app-uhttpd luci-i18n-uhttpd-zh-cn \
+luci-app-wol luci-i18n-wol-zh-cn \
+luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn \
+luci luci-compat luci-lib-ipkg luci-theme-bootstrap \
+nano tmux \
+uci uhttpd-mod-ubus wget wpad \
+luci-app-vlmcsd luci-i18n-vlmcsd-zh-cn"
+
+# I have to exclude libustream-wolfssl because luci-app-ssr-plus use libustream-openssl
+export PACKAGES="-dnsmasq -wpad-mini -wpad-basic -wpad-basic-wolfssl -libustream-wolfssl \
+bash bind-dig ca-bundle ca-certificates coreutils-base64 curl dnsmasq-full dropbearconvert file \
+ip-full ipset iptables-mod-tproxy \
+libpthread \
+luci-app-uhttpd luci-i18n-uhttpd-zh-cn \
+luci-app-wol luci-i18n-wol-zh-cn \
+luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn \
+luci luci-compat luci-lib-ipkg luci-theme-bootstrap \
+nano tmux \
+uci uhttpd-mod-ubus wget wpad"
 
 export PACKAGES="${PACKAGES:+$PACKAGES }luci-app-adbyby-plus luci-i18n-adbyby-plus-zh-cn \
-luci-i18n-base-zh-cn luci-i18n-autoreboot-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn \
 luci-app-ddns luci-i18n-ddns-zh-cn \
-luci-app-passwall \
+luci-app-passwall luci-i18n-passwall-zh-cn \
 luci-app-smartdns luci-i18n-smartdns-zh-cn \
 luci-app-ssr-plus luci-i18n-ssr-plus-zh-cn \
-luci-app-uhttpd luci-i18n-uhttpd-zh-cn \
 luci-app-vlmcsd luci-i18n-vlmcsd-zh-cn \
-luci-app-wol luci-i18n-wol-zh-cn"
+tcping"
 ```
 
 ## Shadowsocks

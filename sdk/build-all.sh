@@ -18,6 +18,11 @@ function build() {
         if [[ "${_build}" -gt 0 ]]; then
             for pkg in "${src_dir}"/*; do
                 [[ -d ${pkg} ]] || continue
+                for _skip in node-request openssl1.1; do
+                    if [[ ${_skip} == "${_skip}" ]]; then
+                        break
+                    fi
+                done
                 make -j"$(nproc)" "${pkg}"/compile || true
             done
         fi
@@ -47,7 +52,7 @@ bash "${THIS_DIR}"/setup.sh -d /work/openwrt/dl -n /work/openwrt/sdk/mt7620 -t m
     cd /work/openwrt/sdk/mt7620
     build
 )
-bash "${THIS_DIR}"/setup.sh -d /work/openwrt/dl -n /work/openwrt/sdk/ar71xx -t ar71xx "$@"
+bash "${THIS_DIR}"/setup.sh -d /work/openwrt/dl -n /work/openwrt/sdk/ath79 -t ath79 "$@"
 (
     cd /work/openwrt/sdk/ar71xx
     build

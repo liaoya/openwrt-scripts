@@ -14,6 +14,4 @@ luci luci-theme-bootstrap luci-ssl \
 nano tmux \
 uci wget wpad"
 PACKAGES="${PACKAGES:+$PACKAGES }luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn"
-if [[ ${VERSION} =~ 19.07 ]]; then
-    PACKAGES="${PACKAGES:+$PACKAGES }-wpad-basic luci-compat luci-lib-ipkg uhttpd-mod-ubus"
-fi
+PACKAGES="${PACKAGES:+$PACKAGES }-wpad-basic luci-compat luci-lib-ipkg uhttpd-mod-ubus"
