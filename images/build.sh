@@ -14,7 +14,7 @@ DEVICE=${OPENWRT_DEVICE:-""}
 REPOSITORY=${REPOSITORY:-""}
 IMAGE_DIR=${IMAGE_DIR:-/work/openwrt/imagebuilder}
 VARIANT=${OPENWRT_VARIANT:-"custom"}
-VERSION=${OPENWRT_VERSION:-"19.07.8"}
+VERSION=${OPENWRT_VERSION:-"18.06.9"}
 CLEAN=0
 MIRROR=0
 
@@ -90,7 +90,7 @@ if [[ -z ${DEVICE} ]]; then
     exit 1
 fi
 
-if [[ ${VERSION} =~ 19.07 || ${VERSION} =~ 18.06 || ${VERSION} =~ 17.01 ]]; then
+if [[ ${VERSION} =~ 18.06 ]]; then
     if [[ ${MIRROR} -eq 1 ]]; then
         BASE_URL_PREFIX=http://mirrors.ustc.edu.cn/openwrt
         # BASE_URL_PREFIX=https://mirror.sjtu.edu.cn/openwrt
