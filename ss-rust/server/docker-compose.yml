@@ -1,0 +1,18 @@
+services:
+  kcptun:
+    command: ["/bin/server", "-c", "/etc/kcptun.json"]
+    image: xtaci/kcptun:${KCPTUN_VERSION}
+    ports:
+      - ${KCPTUN_PORT}:29900/udp
+    restart: always
+    volumes:
+      - "./kcptun-server.json:/etc/kcptun.json"
+
+  ssserver-rust:
+    image: ghcr.io/shadowsocks/ssserver-rust:${SHADOWSOCKS_RUST_VERSION}
+    ports:
+      - "${SHADOWSOCK_PORT}:8388/tcp"
+      - "${SHADOWSOCK_PORT}:8388/udp"
+    restart: always
+    volumes:
+      - "./ssserver-rust.json:/etc/shadowsocks-rust/config.json"

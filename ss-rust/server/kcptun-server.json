@@ -1,0 +1,22 @@
+{
+  "acknodelay": false,
+  "crypt": "none",
+  "datashard": 10,
+  "dscp": 0,
+  "interval": 40,
+  "keepalive": 10,
+  "key": "",
+  "listen": ":29900",
+  "mode": "fast2",
+  "mtu": 1350,
+  "nc": 0,
+  "nocomp": true,
+  "nodelay": 0,
+  "parityshard": 3,
+  "quiet": true,
+  "rcvwnd": 1024,
+  "resend": 0,
+  "sndwnd": 1024,
+  "sockbuf": 8388608,
+  "target": "ssserver-rust:8388"
+}
