@@ -8,7 +8,7 @@ THIS_DIR=$(dirname "${THIS_FILE}")
 
 function print_usage() {
     cat <<EOF
-Usage: $(basename "${BASH_SOURCE[0]}") -h <clean|restart|start|stop> <client|server>
+Usage: $(basename "${BASH_SOURCE[0]}") -h <clean|restart|start|stop> <client|kcp|server>
 EOF
 }
 
@@ -35,6 +35,7 @@ source "${THIS_DIR}/env.sh"
 if [[ -f "$2/env.sh" ]]; then source "$2/env.sh"; fi
 if [[ $1 == clean ]]; then
     docker-compose -f "${2}/docker-compose.yml" down -v
+    [[ -x "${2}/clean.sh" ]] && "${2}/clean.sh"
 elif [[ $1 == restart ]]; then
     docker-compose -f "${2}/docker-compose.yml" restart
 elif [[ $1 == start ]]; then

@@ -1,8 +1,9 @@
 services:
-  kcptun:
+  kcptun-server:
     command: ["/bin/server", "-c", "/etc/kcptun.json"]
-    image: xtaci/kcptun:${KCPTUN_VERSION}
+    image: docker.io/xtaci/kcptun:${KCPTUN_VERSION}
     ports:
+      - 12948:12948/tcp
       - ${KCPTUN_PORT}:29900/udp
     restart: always
     volumes:
