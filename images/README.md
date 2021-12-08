@@ -32,26 +32,26 @@ Copy the personal ipk to a separate folder and pass it to `build.sh` with `-p`.
 # The following is for wndr4300 only
 export PACKAGES="-dnsmasq -wpad-mini -wpad-basic -wpad-basic-wolfssl \
 bash bind-dig ca-bundle ca-certificates coreutils-base64 curl dnsmasq-full dropbearconvert file \
-ip-full ipset iptables-mod-tproxy \
+htop ip-full ipset iptables-mod-tproxy \
 libpthread \
 luci-app-uhttpd luci-i18n-uhttpd-zh-cn \
 luci-app-wol luci-i18n-wol-zh-cn \
 luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn \
 luci luci-compat luci-lib-ipkg luci-theme-bootstrap \
-nano tmux \
+mtr nano tmux \
 uci uhttpd-mod-ubus wget wpad \
 luci-app-vlmcsd luci-i18n-vlmcsd-zh-cn"
 
 # I have to exclude libustream-wolfssl because luci-app-ssr-plus use libustream-openssl
 export PACKAGES="-dnsmasq -wpad-mini -wpad-basic -wpad-basic-wolfssl -libustream-wolfssl \
 bash bind-dig ca-bundle ca-certificates coreutils-base64 curl dnsmasq-full dropbearconvert file \
-ip-full ipset iptables-mod-tproxy \
+htop ip-full ipset iptables-mod-tproxy \
 libpthread \
 luci-app-uhttpd luci-i18n-uhttpd-zh-cn \
 luci-app-wol luci-i18n-wol-zh-cn \
 luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn \
 luci luci-compat luci-lib-ipkg luci-theme-bootstrap \
-nano tmux \
+mtr nano tmux \
 uci uhttpd-mod-ubus wget wpad"
 
 export PACKAGES="${PACKAGES:+$PACKAGES }luci-app-adbyby-plus luci-i18n-adbyby-plus-zh-cn \

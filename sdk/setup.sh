@@ -148,6 +148,7 @@ echo "src-git xiaorouji https://github.com/xiaorouji/openwrt-passwall" >>"${SDK_
 echo "src-git fw876 https://github.com/fw876/helloworld" >>"${SDK_DIR}"/feeds.conf.default
 echo "src-git kenzok8 https://github.com/kenzok8/openwrt-packages" >>"${SDK_DIR}"/feeds.conf.default
 echo "src-git small https://github.com/kenzok8/small" >>"${SDK_DIR}"/feeds.conf.default
+echo "src-git jell https://github.com/kenzok8/jell" >>"${SDK_DIR}"/feeds.conf.default
 echo "src-git liuran001 https://github.com/liuran001/openwrt-packages;packages" >>"${SDK_DIR}"/feeds.conf.default
 
 pushd "${SDK_DIR}"

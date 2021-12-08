@@ -5,7 +5,7 @@ set -e
 pkg_dir=$1
 
 if [ -z $pkg_dir ] || [ ! -d $pkg_dir ]; then
-    echo "Usage: ipkg-make-index <package_directory>" >&2
+    echo "Usage: $(basename ${BASH_SOURCE[0]}) <package_directory>" >&2
     exit 1
 fi
 

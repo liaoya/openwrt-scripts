@@ -16,7 +16,7 @@ uci set system.@system[0].cronloglevel=8
 uci set luci.main.lang=zh_cn
 uci set luci.themes=internal
 
-uci set network.lan.ipaddr='192.168.3.1'
+uci set network.lan.ipaddr='192.168.1.1'
 
 uci set wireless.radio0.country='CN'
 uci set wireless.radio0.disabled='0'
