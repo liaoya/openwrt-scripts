@@ -10,5 +10,5 @@
   "resend": 0,
   "sndwnd": 1024,
   "sockbuf": 8388608,
-  "remoteaddr": "$SHADOWSOCK_SERVER:${KCPTUN_PORT}"
+  "remoteaddr": "${SHADOWSOCK_SERVER}:${KCPTUN_PORT}"
 }
