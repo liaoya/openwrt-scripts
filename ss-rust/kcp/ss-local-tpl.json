@@ -7,7 +7,7 @@
       "address": "kcptun-client",
       "fast_open": false,
       "method": "aes-256-gcm",
-      "password": "$SHADOWSOCK_PASSWORD",
+      "password": "$SHADOWSOCKS_PASSWORD",
       "port": 4000
     }
   ]
