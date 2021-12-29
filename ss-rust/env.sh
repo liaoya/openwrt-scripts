@@ -28,7 +28,7 @@ else
     KCPTUN_VERSION=${KCPTUN_VERSION:-v20210624}
     export KCPTUN_VERSION
     SHADOWSOCKS_RUST_VERSION=${SHADOWSOCKS_RUST_VERSION:-$(curl -sL "https://api.github.com/repos/shadowsocks/shadowsocks-rust/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')}
-    SHADOWSOCKS_RUST_VERSION=${SHADOWSOCKS_RUST_VERSION:-v1.12.4}
+    SHADOWSOCKS_RUST_VERSION=${SHADOWSOCKS_RUST_VERSION:-v1.12.5}
     export SHADOWSOCKS_RUST_VERSION
 
     KCPTUN_PORT=${KCPTUN_PORT:-$((RANDOM % 30000 + 10000))}

@@ -16,7 +16,7 @@ uci changes
 uci commit
 ```
 
-## Mirrot
+## Mirror
 
 - USTC
   - `sed -i 's|downloads.openwrt.org|mirrors.ustc.edu.cn/lede|g' /etc/opkg/distfeeds.conf`

@@ -6,12 +6,22 @@ timedatectl set-timezone UTC
 # Make sudo work without warning
 echo $(hostname -I) $(hostname)  | tee -a /etc/hosts
 
-apt-get update -qq -y
-# apt-get upgrade -qq -y -o "Dpkg::Use-Pty=0"
-apt-get install -qq -y -o "Dpkg::Use-Pty=0" software-properties-common # for ppa
+apt update -qq -y
+# apt upgrade -qq -y -o "Dpkg::Use-Pty=0"
+apt install -qq -y -o "Dpkg::Use-Pty=0" software-properties-common # for ppa
 
 export APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=yes
+export DEBIAN_FRONTEND=noninteractive
 VERSION=$(echo "$(lsb_release -r | cut -d':' -f2 | tr -d '[:space:]') * 100 / 1" | bc)
+
+UBUNTU_MIRROR_SERVER=http://ftp.ucsb.edu
+UBUNTU_MIRROR_PATH=/pub/mirrors/linux/ubuntu
+[[ -f /etc/apt/sources.list.save ]] || cp -pr /etc/apt/sources.list /etc/apt/sources.list.save
+[[ -f /etc/apt/sources.list.save ]] && cp -pr /etc/apt/sources.list.save /etc/apt/sources.list
+sed -i -e "s%http://.*archive.ubuntu.com%$UBUNTU_MIRROR_SERVER$UBUNTU_MIRROR_PATH%" \
+    -e "s%http://security.ubuntu.com%$UBUNTU_MIRROR_SERVER$UBUNTU_MIRROR_PATH%" /etc/apt/sources.list
+sed -i -e 's/^deb-src/#deb-src/' /etc/apt/sources.list
+
 declare -a ppa_repos
 if [[ ${VERSION} -eq 1804 ]]; then
     # ppa:deadsnakes/ppa for various python
@@ -28,12 +38,14 @@ elif [[ ${VERSION} -eq 2004 ]]; then
     # ppa:mtvoid/ppa for emacs27
     # ppa:mjuhasz/backports for tmux 3.1b
     ppa_repos+=(ppa:savoury1/backports)
-    ppa_repos+=(ppa:deadsnakes/ppa ppa:mtvoid/ppa ppa:mjuhasz/backports ppa:pypy/ppa ppa:jonathonf/vim)
+    ppa_repos+=(ppa:fish-shell/release-3 ppa:jonathonf/vim ppa:kelebek333/xfce-4.16 ppa:mjuhasz/backports)
     for ppa in "${ppa_repos[@]}"; do add-apt-repository -y "$ppa"; done
 fi
-sudo apt update -qq
+apt update -qq -y
+apt upgrade -q -y
 
-apt-get install -qq -y -o "Dpkg::Use-Pty=0" certbot curl docker.io fish git gnupg jq moreutils nmon nano python3-distutils screen sshpass tig tmux vim
+apt install -qq -y -o "Dpkg::Use-Pty=0" certbot curl docker.io dos2unix fish git gnupg jq moreutils nmon nano sshpass tig tmux vim
+apt install -qq -y python3-distutils
 
 mkdir ~/.ssh
 chmod 700 ~/.ssh
@@ -45,6 +57,15 @@ echo "SystemMaxUse=100M" | sudo tee -a /etc/systemd/journald.conf
 sudo systemctl daemon-reload
 sudo systemctl restart systemd-journald.service
 sudo journalctl --disk-usage
+
+ufw default deny incoming
+ufw default allow outgoing
+
+ufw allow ssh
+ufw status
+# Make sure ssh is allowed
+ufw enable
+ufw status
 
 # create normal user
 SUDO_USER=
@@ -105,6 +126,25 @@ echo "net.ipv4.tcp_fastopen = 3" > "${SYSCTL_FILE}"
 ## Run with normal user
 
 ```bash
+sed -i -e "/# set PATH so it includes user's private bin if it exists/,+4d" ~/.profile
+cat <<'EOF' | tee -a ~/.profile
+# set PATH so it includes user's private bin if it exists
+if [ -d "$HOME/bin" ] && ! test "${PATH#*$HOME/bin}" != "$PATH"; then
+    PATH="$HOME/bin:$PATH"
+fi
+
+# set PATH so it includes user's private bin if it exists
+if [ -d "$HOME/.local/bin" ] && ! test "${PATH#*"$HOME"/.local/bin}" != "$PATH"; then
+    PATH="$HOME/.local/bin:$PATH"
+fi
+EOF
+
+mkdir -p ~/.bashrc.d ~/.bash_completion.d ~/.local/bin ~/Downloads ~/Documents
+cat <<'EOF' | tee -a ~/.bashrc
+[ -d ~/.bashrc.d ] && for _script in ~/.bashrc.d/*.sh; do [ -f "${_script}" ] && source "${_script}"; done
+[ -d ~/.bash_completion.d ] && for _script in ~/.bash_completion.d/*.sh; do [ -f "${_script}" ] && source "${_script}"; done
+EOF
+
 if ! grep -s -q "^pathmunge () {" "${HOME}/.bashrc"; then
     cat <<'EOF' >> ~/.bashrc
 pathmunge () {
