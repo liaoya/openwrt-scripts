@@ -12,8 +12,8 @@ services:
   ssserver-rust:
     image: ghcr.io/shadowsocks/ssserver-rust:${SHADOWSOCKS_RUST_VERSION}
     ports:
-      - "${SHADOWSOCK_PORT}:8388/tcp"
-      - "${SHADOWSOCK_PORT}:8388/udp"
+      - "${SHADOWSOCKS_PORT}:8388/tcp"
+      - "${SHADOWSOCKS_PORT}:8388/udp"
     restart: always
     volumes:
       - "./ssserver-rust.json:/etc/shadowsocks-rust/config.json"

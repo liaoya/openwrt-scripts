@@ -3,9 +3,9 @@
 THIS_FILE=$(readlink -f "${BASH_SOURCE[0]}")
 THIS_DIR=$(dirname "${THIS_FILE}")
 
-if [[ -z ${SHADOWSOCK_SERVER} ]]; then
+if [[ -z ${SHADOWSOCKS_SERVER} ]]; then
     #shellcheck disable=SC2016
-    echo 'Please assign ${SHADOWSOCK_SERVER}'
+    echo 'Please assign ${SHADOWSOCKS_SERVER}'
     exit 1
 fi
 

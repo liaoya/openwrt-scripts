@@ -138,9 +138,17 @@ fi
 if [[ ! -f "${CACHE_DIR}/${IMAGE_BUILDER_FILE}" ]]; then
     curl -sL "${BASE_URL}/${IMAGE_BUILDER_FILE}" -o "${CACHE_DIR}/${IMAGE_BUILDER_FILE}"
 fi
-IMAGE_BUILDER_DIR=$(basename -s .tar.xz "${IMAGE_BUILDER_FILE}")
-if [[ ${CLEAN} -gt 0 && -d "${IMAGE_BUILDER_DIR}" ]]; then rm -fr "${IMAGE_BUILDER_DIR}"; fi
-if [[ ! -d "${IMAGE_BUILDER_DIR}" ]]; then tar -xf "${CACHE_DIR}/${IMAGE_BUILDER_FILE}"; fi
+
+if [[ ! -d ${IMAGE_DIR} ]]; then
+    mkdir -p "${IMAGE_DIR}"
+fi
+IMAGE_BUILDER_DIR=${IMAGE_DIR}/$(basename -s .tar.xz "${IMAGE_BUILDER_FILENAME}")
+if [[ ${CLEAN} -gt 0 && -d ${IMAGE_BUILDER_DIR} ]]; then
+    rm -fr "${IMAGE_BUILDER_DIR}"
+fi
+if [[ ! -d "${IMAGE_BUILDER_DIR}" || -z $(ls -A "${IMAGE_BUILDER_DIR}") ]]; then
+    tar -C "${IMAGE_DIR}" -xf "${CACHE_DIR}/${IMAGE_BUILDER_FILENAME}"
+fi
 
 cd "${IMAGE_BUILDER_DIR}"
 if [[ -f repositories.conf.bak ]]; then
@@ -179,6 +187,23 @@ if [[ ${DEVICE} == "x64" || ${DEVICE} == "armvirt" ]]; then
     make image PACKAGES="${PACKAGES}" FILES="${ROOT_DIR}/custom" EXTRA_IMAGE_NAME="${VARIANT}"
 else
     make image PROFILE="${DEVICE}" PACKAGES="${PACKAGES}" FILES="${ROOT_DIR}/custom" EXTRA_IMAGE_NAME="${VARIANT}"
+fi
+
+# The following is only for x86 image
+if [[ $(command -v qemu-img) ]]; then
+    while IFS= read -r -d '' _gz_image; do
+        _prefix=$(dirname "${_gz_image}")
+        _img=${_prefix}/$(basename -s .gz "${_gz_image}")
+        _qcow2c=${_prefix}/$(basename -s .img.gz "${_gz_image}").qcow2c
+        if [[ ! -f "${_qcow2c}" ]]; then
+            if [[ ! -f "${_img}" ]]; then
+                gunzip -k "${_gz_image}"
+            fi
+            qemu-img convert -O qcow2 -c "${_img}" "${_qcow2c}"
+            rm -f "${_img}"
+            unset -v _prefix _img _qcow2c
+        fi
+    done < <(find bin/targets/x86/64 -iname '*-combined-ext4.img.gz' -print0)
 fi
 
 for item in "${ROOT_DIR}/custom/etc/chinadns_chnroute.txt" \
