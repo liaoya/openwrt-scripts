@@ -14,7 +14,7 @@ DEVICE=${OPENWRT_DEVICE:-""}
 REPOSITORY=${REPOSITORY:-""}
 IMAGE_DIR=${IMAGE_DIR:-/work/openwrt/imagebuilder}
 VARIANT=${OPENWRT_VARIANT:-"custom"}
-VERSION=${OPENWRT_VERSION:-"21.02.1"}
+VERSION=${OPENWRT_VERSION:-"21.02.2"}
 CLEAN=0
 MIRROR=0
 
@@ -142,15 +142,18 @@ fi
 if [[ ! -d ${IMAGE_DIR} ]]; then
     mkdir -p "${IMAGE_DIR}"
 fi
-IMAGE_BUILDER_DIR=${IMAGE_DIR}/$(basename -s .tar.xz "${IMAGE_BUILDER_FILENAME}")
+IMAGE_BUILDER_DIR=${IMAGE_DIR}/$(basename -s .tar.xz "${IMAGE_BUILDER_FILE}")
 if [[ ${CLEAN} -gt 0 && -d ${IMAGE_BUILDER_DIR} ]]; then
     rm -fr "${IMAGE_BUILDER_DIR}"
 fi
 if [[ ! -d "${IMAGE_BUILDER_DIR}" || -z $(ls -A "${IMAGE_BUILDER_DIR}") ]]; then
-    tar -C "${IMAGE_DIR}" -xf "${CACHE_DIR}/${IMAGE_BUILDER_FILENAME}"
+    tar -C "${IMAGE_DIR}" -xf "${CACHE_DIR}/${IMAGE_BUILDER_FILE}"
 fi
 
 cd "${IMAGE_BUILDER_DIR}"
+if [[ $(command -v pyenv) ]]; then
+    pyenv local 3.8.12
+fi
 if [[ -f repositories.conf.bak ]]; then
     cp -r repositories.conf.bak repositories.conf
 fi
@@ -190,7 +193,7 @@ else
 fi
 
 # The following is only for x86 image
-if [[ $(command -v qemu-img) ]]; then
+if [[ $(command -v qemu-img) && -d bin/targets/x86/64 ]]; then
     while IFS= read -r -d '' _gz_image; do
         _prefix=$(dirname "${_gz_image}")
         _img=${_prefix}/$(basename -s .gz "${_gz_image}")

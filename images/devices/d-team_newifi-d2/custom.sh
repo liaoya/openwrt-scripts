@@ -10,4 +10,3 @@ fi
 if [[ -n ${BASE_URL_PREFIX} ]]; then
     BASE_URL="${BASE_URL_PREFIX}/releases/${VERSION}/targets/ramips/mt7621"
 fi
-

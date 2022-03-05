@@ -19,7 +19,6 @@ PACKAGES="${PACKAGES:+$PACKAGES }luci-app-uhttpd luci-i18n-uhttpd-zh-cn"
 PACKAGES="${PACKAGES:+$PACKAGES }luci-app-wol luci-i18n-wol-zh-cn"
 PACKAGES="${PACKAGES:+$PACKAGES }luci-compat luci-lib-ipkg uhttpd-mod-ubus"
 
-
 pre_ops() {
     add_wireless_config
 }
