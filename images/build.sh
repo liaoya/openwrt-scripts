@@ -16,7 +16,6 @@ IMAGE_DIR=${IMAGE_DIR:-/work/openwrt/imagebuilder}
 VARIANT=${OPENWRT_VARIANT:-"custom"}
 VERSION=${OPENWRT_VERSION:-"21.02.2"}
 CLEAN=0
-MIRROR=0
 
 function _print_help() {
     cat <<EOF
@@ -30,11 +29,10 @@ OPTIONS
     -V, --version, OpenWRT VERSION
     -c, --clean, clean build
     -h, --help, show help
-    -m, --mirror, choose chinese openwrt mirror
 EOF
 }
 
-TEMP=$(getopt -o d:p:r:v:V:chm --long device:repository:,root:,variant:,version:,clean,help,mirror -- "$@")
+TEMP=$(getopt -o d:p:r:v:V:ch --long device:repository:,root:,variant:,version:,clean,help -- "$@")
 eval set -- "$TEMP"
 while true; do
     case "$1" in
@@ -70,9 +68,6 @@ while true; do
         _print_help
         exit 0
         ;;
-    -m | --mirror)
-        MIRROR=1
-        ;;
     --)
         shift
         break
@@ -91,7 +86,7 @@ if [[ -z ${DEVICE} ]]; then
 fi
 
 if [[ ${VERSION} =~ 21.02 ]]; then
-    if [[ ${MIRROR} -eq 1 ]]; then
+    if [[ $(timedatectl show | grep Timezone | cut -d= -f2) == Asia/Shanghai ]]; then
         BASE_URL_PREFIX=http://mirrors.ustc.edu.cn/openwrt
         # BASE_URL_PREFIX=https://mirror.sjtu.edu.cn/openwrt
         # BASE_URL_PREFIX=https://mirrors.tuna.tsinghua.edu.cn/openwrt
@@ -160,9 +155,7 @@ fi
 if [[ ! -f repositories.conf.bak ]]; then
     cp -r repositories.conf repositories.conf.bak
 fi
-if [[ ${MIRROR} -eq 1 && -n ${BASE_URL_PREFIX} ]]; then
-    sed -i -e "s|http://downloads.openwrt.org|${BASE_URL_PREFIX}|g" -e "s|https://downloads.openwrt.org|${BASE_URL_PREFIX}|g" repositories.conf
-fi
+sed -i -e "s|http://downloads.openwrt.org|${BASE_URL_PREFIX}|g" -e "s|https://downloads.openwrt.org|${BASE_URL_PREFIX}|g" repositories.conf
 if [[ -n ${REPOSITORY} && -d ${REPOSITORY} ]]; then
     REPOSITORY=$(readlink -f "${REPOSITORY}")
     if [[ -f ${REPOSITORY}/Packages.gz ]]; then

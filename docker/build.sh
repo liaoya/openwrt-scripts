@@ -8,13 +8,13 @@ function print_usage() {
 Usage: $(basename "${BASH_SOURCE[0]}") [OPTIONS]
 OPTIONS
     -h, show help.
+    -a, additional packages. ${PACKAGES:+The default is "${PACKAGES}"}
     -b, the bin directory binding for image output. ${BINDING:+The default is '"${BINDING}"'}
     -c, clean build. ${CLEAN:+The default is "${CLEAN}"}
     -d, the dl directory binding for package cache.
     -k, the directory for customized files. ${KUSTOMIZE:+The default is "${KUSTOMIZE}"}
-    -m, use chinese openwrt mirror, overwrited with \$OPENWRT_MIRROR_PATH. ${OPENWRT_MIRROR_PATH:+The current is "${OPENWRT_MIRROR_PATH}"}
     -n, the customize name. ${NAME:+The default is '"${NAME}"'}
-    -p, additional packages. ${PACKAGES:+The default is "${PACKAGES}"}
+    -p, the profile. ${NAME:+The default is '"${NAME}"'}
     -v, the openwrt version. ${VERSION:+The default is '"${VERSION}"'}
 EOF
 }
@@ -25,13 +25,17 @@ DL=${DL:-""}
 DOCKER_IMAGE=docker.io/openwrtorg/imagebuilder:x86-64
 KUSTOMIZE=${KUSTOMIZE:-""}
 NAME=${NAME:-default}
-OPENWRT_MIRROR_PATH=${OPENWRT_MIRROR_PATH:-http://mirrors.ustc.edu.cn/openwrt}
 PACKAGES=${PACKAGES:+${PACKAGES} }"kmod-dax kmod-dm" # kmod-dax kmod-dm is required for ventoy
+PROFILE=${PROFILE:-""}
 VERSION=${VERSION:-"21.02.2"}
 
 _cmd=""
+if [[ $(timedatectl show | grep Timezone | cut -d= -f2) == Asia/Shanghai ]]; then
+    OPENWRT_MIRROR_PATH=${OPENWRT_MIRROR_PATH:-http://mirrors.ustc.edu.cn/openwrt}
+    _cmd=${_cmd:+${_cmd}; }"sed -i -e \"s|http://downloads.openwrt.org|${OPENWRT_MIRROR_PATH}|g\" -e \"s|https://downloads.openwrt.org|${OPENWRT_MIRROR_PATH}|g\" repositories.conf"
+fi
 
-while getopts "hb:cd:k:mn:p:v:" OPTION; do
+while getopts "ha:b:cd:k:n:p:v:" OPTION; do
     case $OPTION in
     h)
         print_usage
@@ -39,6 +43,9 @@ while getopts "hb:cd:k:mn:p:v:" OPTION; do
         ;;
     c)
         CLEAN=1
+        ;;
+    a)
+        PACKAGES=PACKAGES="${PACKAGES:+$PACKAGES }${OPTARG}"
         ;;
     b)
         BINDING=${OPTARG}
@@ -49,14 +56,11 @@ while getopts "hb:cd:k:mn:p:v:" OPTION; do
     k)
         KUSTOMIZE=${OPTARG}
         ;;
-    m)
-        _cmd=${_cmd:+${_cmd}; }"sed -i -e \"s|http://downloads.openwrt.org|${OPENWRT_MIRROR_PATH}|g\" -e \"s|https://downloads.openwrt.org|${OPENWRT_MIRROR_PATH}|g\" repositories.conf"
-        ;;
     n)
         NAME=${OPTARG}
         ;;
     p)
-        PACKAGES=PACKAGES="${PACKAGES:+$PACKAGES }${OPTARG}"
+        PROFILE=${OPTARG}
         ;;
     v)
         VERSION=${OPTARG}
@@ -97,7 +101,7 @@ for item in http_proxy https_proxy no_proxy; do
     fi
 done
 
-_cmd=${_cmd:+${_cmd}; }"make image EXTRA_IMAGE_NAME=${NAME}"
+_cmd=${_cmd:+${_cmd}; }"make image ${PROFILE:+PROFILE=${PROFILE}} EXTRA_IMAGE_NAME=${NAME}"
 if [[ -n ${KUSTOMIZE} ]]; then
     _cmd="${_cmd} FILES=customize"
     #shellcheck disable=SC2086

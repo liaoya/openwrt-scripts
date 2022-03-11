@@ -2,7 +2,8 @@
 
 There're no image after `18.06.7` for `18.06` series
 
-- `docker.io/openwrtorg/imagebuilder:x86-64-21.02.1`
+- `docker.io/openwrtorg/imagebuilder:x86-64-21.02.2`
+- `docker.io/openwrtorg/imagebuilder:ramips-mt7621-21.02.2`
 - `docker.io/openwrtorg/imagebuilder:x86-64-19.07.8`
 - `docker.io/openwrtorg/imagebuilder:x86-64-18.06.7`
 

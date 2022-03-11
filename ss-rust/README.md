@@ -85,3 +85,14 @@ shadowsocks_port=27782
 shadowsocks_rust_version=v1.12.5
 shadowsocks_server=
 ```
+
+```bash
+# Open a port
+sudo ufw allow 8388
+
+# Show the status
+sudo ufw status numbered
+
+# delete a rule
+sudo ufw delete 4
+```
