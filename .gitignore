@@ -137,3 +137,5 @@ tags
 *-sdk-*.Linux-*/
 sha256sums*
 /sdk/lede
+.python-version
+.options

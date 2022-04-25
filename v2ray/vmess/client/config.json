@@ -1,0 +1,91 @@
+{
+  "inbounds": [
+    {
+      "listen": "0.0.0.0",
+      "port": 1081,
+      "protocol": "socks",
+      "settings": {
+        "udp": true
+      }
+    },
+    {
+      "listen": "0.0.0.0",
+      "port": "1080",
+      "protocol": "http"
+    }
+  ],
+  "log": {
+    "loglevel": "debug"
+  },
+  "outbounds": [
+    {
+      "protocol": "freedom",
+      "tag": "direct"
+    },
+    {
+      "protocol": "blackhole",
+      "tag": "block"
+    },
+    {
+      "protocol": "vmess",
+      "settings": {
+        "vnext": [
+          {
+            "address": "155.94.149.79",
+            "port": 37971,
+            "users": [
+              {
+                "alterId": 0,
+                "id": "f390df79-45a1-4964-af2f-6cd3c76fcaea",
+                "security": "auto"
+              }
+            ]
+          }
+        ]
+      },
+      "tag": "proxy"
+    }
+  ],
+  "routing": {
+    "domainStrategy": "IPOnDemand",
+    "rules": [
+      {
+        "domain": [
+          "geosite:category-ads-all"
+        ],
+        "outboundTag": "block",
+        "type": "field"
+      },
+      {
+        "domain": [
+          "geosite:geolocation-cn"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "ip": [
+          "geoip:private",
+          "geoip:cn",
+          "155.94.149.79"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "domain": [
+          "geosite:geolocation-!cn"
+        ],
+        "outboundTag": "proxy",
+        "type": "field"
+      },
+      {
+        "ip": [
+          "geoip:!cn"
+        ],
+        "outboundTag": "proxy",
+        "type": "field"
+      }
+    ]
+  }
+}
