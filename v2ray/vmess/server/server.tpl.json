@@ -17,6 +17,25 @@
           }
         ]
       }
+    },
+    {
+      "port": 0,
+      "protocol": "vmess",
+      "settings": {
+        "clients": [
+          {
+            "id": "",
+            "alterId": 0,
+            "security": "auto"
+          }
+        ]
+      },
+      "streamSettings": {
+          "network": "kcp",
+          "kcpSettings": {
+              "seed": ""
+          }
+      }
     }
   ],
   "outbounds": [

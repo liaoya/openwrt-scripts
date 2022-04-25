@@ -1,0 +1,4 @@
+.options
+client/config.json
+client/config-mkcp.json
+server/config.json

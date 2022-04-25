@@ -67,8 +67,7 @@
         "type": "field",
         "ip": [
           "geoip:private",
-          "geoip:cn",
-          "155.94.149.79"
+          "geoip:cn"
         ],
         "outboundTag": "direct"
       },

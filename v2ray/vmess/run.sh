@@ -35,10 +35,8 @@ fi
 source "${ROOT_DIR}/env.sh"
 if [[ -f "$2/env.sh" ]]; then source "$2/env.sh"; fi
 if [[ $1 == clean ]]; then
-    docker-compose -f "${2}/docker-compose.yml" down -v
-    if [[ -f "${2}"/config.json ]]; then
-        rm -f "${2}"/config.json
-    fi
+    docker-compose -f "${2}/docker-compose.yml" down -v || true
+    rm -f "${2}"/config.json "${2}"/config-*.json || true
     [[ -x "${2}/clean.sh" ]] && "${2}/clean.sh"
 elif [[ $1 == restart ]]; then
     docker-compose -f "${2}/docker-compose.yml" restart
