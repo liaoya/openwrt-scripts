@@ -1,22 +1,22 @@
 {
-  "log": {
-    "loglevel": "warning"
-  },
   "inbounds": [
-    {
-      "port": 1091,
-      "listen": "0.0.0.0",
-      "protocol": "socks",
-      "settings": {
-        "udp": true
-      }
-    },
     {
       "listen": "0.0.0.0",
       "port": "1090",
       "protocol": "http"
+    },
+    {
+      "listen": "0.0.0.0",
+      "port": 1091,
+      "protocol": "socks",
+      "settings": {
+        "udp": true
+      }
     }
   ],
+  "log": {
+    "loglevel": "warning"
+  },
   "outbounds": [
     {
       "protocol": "freedom",
@@ -27,7 +27,10 @@
       "tag": "block"
     },
     {
-      "tag": "proxy",
+      "mux": {
+        "enabled": true,
+        "concurrency": 4
+      },
       "protocol": "vmess",
       "settings": {
         "vnext": [
@@ -45,51 +48,59 @@
         ]
       },
       "streamSettings": {
-        "network": "kcp",
         "kcpSettings": {
-          "seed": ""
-        }
-      }
+          "downlinkCapacity": 200,
+          "header": {
+            "type": "none"
+          },
+          "readBufferSize": 50,
+          "seed": "",
+          "uplinkCapacity": 50,
+          "writeBufferSize": 50
+        },
+        "network": "kcp"
+      },
+      "tag": "proxy"
     }
   ],
   "routing": {
     "domainStrategy": "IPOnDemand",
     "rules": [
       {
-        "type": "field",
         "domain": [
           "geosite:category-ads-all"
         ],
-        "outboundTag": "block"
+        "outboundTag": "block",
+        "type": "field"
       },
       {
-        "type": "field",
         "domain": [
           "geosite:geolocation-cn"
         ],
-        "outboundTag": "direct"
+        "outboundTag": "direct",
+        "type": "field"
       },
       {
-        "type": "field",
         "ip": [
           "geoip:private",
           "geoip:cn"
         ],
-        "outboundTag": "direct"
+        "outboundTag": "direct",
+        "type": "field"
       },
       {
-        "type": "field",
         "domain": [
           "geosite:geolocation-!cn"
         ],
-        "outboundTag": "proxy"
+        "outboundTag": "proxy",
+        "type": "field"
       },
       {
-        "type": "field",
         "ip": [
           "geoip:!cn"
         ],
-        "outboundTag": "proxy"
+        "outboundTag": "proxy",
+        "type": "field"
       }
     ]
   }

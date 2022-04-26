@@ -1,22 +1,22 @@
 {
-  "log": {
-    "loglevel": "warning"
-  },
   "inbounds": [
-    {
-      "port": 1081,
-      "listen": "0.0.0.0",
-      "protocol": "socks",
-      "settings": {
-        "udp": true
-      }
-    },
     {
       "listen": "0.0.0.0",
       "port": "1080",
       "protocol": "http"
+    },
+    {
+      "listen": "0.0.0.0",
+      "port": 1081,
+      "protocol": "socks",
+      "settings": {
+        "udp": true
+      }
     }
   ],
+  "log": {
+    "loglevel": "warning"
+  },
   "outbounds": [
     {
       "protocol": "freedom",
@@ -27,7 +27,10 @@
       "tag": "block"
     },
     {
-      "tag": "proxy",
+      "mux": {
+        "enabled": true,
+        "concurrency": 4
+      },
       "protocol": "vmess",
       "settings": {
         "vnext": [
@@ -43,47 +46,48 @@
             ]
           }
         ]
-      }
+      },
+      "tag": "proxy"
     }
   ],
   "routing": {
     "domainStrategy": "IPOnDemand",
     "rules": [
       {
-        "type": "field",
         "domain": [
           "geosite:category-ads-all"
         ],
-        "outboundTag": "block"
+        "outboundTag": "block",
+        "type": "field"
       },
       {
-        "type": "field",
         "domain": [
           "geosite:geolocation-cn"
         ],
-        "outboundTag": "direct"
+        "outboundTag": "direct",
+        "type": "field"
       },
       {
-        "type": "field",
         "ip": [
           "geoip:private",
           "geoip:cn"
         ],
-        "outboundTag": "direct"
+        "outboundTag": "direct",
+        "type": "field"
       },
       {
-        "type": "field",
         "domain": [
           "geosite:geolocation-!cn"
         ],
-        "outboundTag": "proxy"
+        "outboundTag": "proxy",
+        "type": "field"
       },
       {
-        "type": "field",
         "ip": [
           "geoip:!cn"
         ],
-        "outboundTag": "proxy"
+        "outboundTag": "proxy",
+        "type": "field"
       }
     ]
   }
