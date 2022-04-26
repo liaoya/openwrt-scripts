@@ -131,6 +131,14 @@ if [[ -n ${DL_DIR} ]]; then
     if [[ ! -L "${SDK_DIR}/dl" ]]; then ln -s "${DL_DIR}" "${SDK_DIR}/dl"; fi
 fi
 
+if [[ $(command -v pyenv) ]]; then
+    if [[ ${VERSION} =~ 18.06 ]]; then
+        pyenv local 2.7.17
+    elif [[ ${VERSION} =~ 19.07 || ${VERSION} =~ 21.02 ]]; then
+        pyenv local 3.8.12
+    fi
+fi
+
 [[ -f "${SDK_DIR}"/feeds.conf.default.origin ]] || cp "${SDK_DIR}"/feeds.conf.default "${SDK_DIR}"/feeds.conf.default.origin
 [[ -f "${SDK_DIR}"/feeds.conf.default.origin ]] && cp "${SDK_DIR}"/feeds.conf.default.origin "${SDK_DIR}"/feeds.conf.default
 

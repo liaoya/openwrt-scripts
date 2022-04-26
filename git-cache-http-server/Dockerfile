@@ -1,12 +1,13 @@
-FROM node:lts-alpine
+FROM node:alpine3.12
+
+# hadolint ignore=DL3016
+RUN apk update -q --no-progress && \
+    apk add --no-cache --no-progress bash git
+
+RUN npm install -g npm && \
+    npm install -g git+https://git@github.com/jonasmalacofilho/git-cache-http-server.git
 
 ARG PORT=8080
-RUN apk update \
-    && apk add bash git \
-    rm -rf /var/lib/apt/lists/* && \
-    rm /var/cache/apk/* \
-    && npm install -g git+https://git@github.com/jonasmalacofilho/git-cache-http-server.git
-
 EXPOSE $PORT
 VOLUME /var/cache/git
 

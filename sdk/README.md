@@ -60,7 +60,6 @@ sed -i -e 's/PKG_VERSION:=.*/PKG_VERSION:=3.3.4/g' -e 's/PKG_RELEASE:=.*/PKG_REL
 ./scripts/feeds install -a
 ```
 
-
 ## Other Packages
 
 - <https://github.com/cnsilvan/luci-app-unblockneteasemusic>
