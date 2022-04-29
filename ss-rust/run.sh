@@ -31,17 +31,19 @@ if [[ $# -ne 2 ]] || [[ $1 != clean && $1 != restart && $1 != start && $1 != sto
     exit 1
 fi
 
+PROJECT=$(basename "${ROOT_DIR}")
+
 source "${THIS_DIR}/env.sh"
 if [[ -f "$2/env.sh" ]]; then source "$2/env.sh"; fi
 if [[ $1 == clean ]]; then
-    docker-compose -f "${2}/docker-compose.yml" down -v
+    docker-compose -p "${PROJECT}" -f "${2}/docker-compose.yml" down -v
     [[ -x "${2}/clean.sh" ]] && "${2}/clean.sh"
 elif [[ $1 == restart ]]; then
-    docker-compose -f "${2}/docker-compose.yml" restart
+    docker-compose -p "${PROJECT}" -f "${2}/docker-compose.yml" restart
 elif [[ $1 == start ]]; then
-    docker-compose -f "${2}/docker-compose.yml" up -d
+    docker-compose -p "${PROJECT}" -f "${2}/docker-compose.yml" up -d
 elif [[ $1 == stop ]]; then
-    docker-compose -f "${2}/docker-compose.yml" stop
+    docker-compose -p "${PROJECT}" -f "${2}/docker-compose.yml" stop
 else
     echo "Unknown opereation"
 fi

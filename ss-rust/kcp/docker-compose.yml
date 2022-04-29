@@ -1,3 +1,4 @@
+---
 services:
   kcptun-client:
     command: ["/bin/client", "-c", "/etc/kcptun.json"]

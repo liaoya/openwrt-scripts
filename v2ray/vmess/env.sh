@@ -4,20 +4,20 @@ _THIS_DIR=$(readlink -f "${BASH_SOURCE[0]}")
 _THIS_DIR=$(dirname "${_THIS_DIR}")
 
 if [[ -f "${_THIS_DIR}/.options" ]]; then
-    V2RAY_ALTERID=$(grep -w alterid "${_THIS_DIR}/.options" | cut -d"=" -f2)
-    V2RAY_PORT=$(grep -w port "${_THIS_DIR}/.options" | cut -d"=" -f2)
-    V2RAY_SERVER=$(grep -w server "${_THIS_DIR}/.options" | cut -d"=" -f2)
-    V2RAY_UUID=$(grep -w uuid "${_THIS_DIR}/.options" | cut -d"=" -f2)
-    V2RAY_MUX_CONCURRENCY=$(grep -w mux_concurrency "${_THIS_DIR}/.options" | cut -d"=" -f2)
+    V2RAY_ALTERID=$(grep -w V2RAY_ALTERID "${_THIS_DIR}/.options" | cut -d"=" -f2)
+    V2RAY_PORT=$(grep -w V2RAY_PORT "${_THIS_DIR}/.options" | cut -d"=" -f2)
+    V2RAY_SERVER=$(grep -w V2RAY_SERVER "${_THIS_DIR}/.options" | cut -d"=" -f2)
+    V2RAY_UUID=$(grep -w V2RAY_UUID "${_THIS_DIR}/.options" | cut -d"=" -f2)
+    V2RAY_MUX_CONCURRENCY=$(grep -w V2RAY_MUX_CONCURRENCY "${_THIS_DIR}/.options" | cut -d"=" -f2)
 
-    V2RAY_MKCP_ALTERID=$(grep -w mkcp_alterid "${_THIS_DIR}/.options" | cut -d"=" -f2)
-    V2RAY_MKCP_CLIENT_DOWN_CAPACITY=$(grep -w mkcp_client_down_capacity "${_THIS_DIR}/.options" | cut -d"=" -f2)
-    V2RAY_MKCP_CLIENT_UP_CAPACITY=$(grep -w mkcp_client_up_capacity "${_THIS_DIR}/.options" | cut -d"=" -f2)
-    V2RAY_MKCP_PASSWORD=$(grep -w mkcp_password "${_THIS_DIR}/.options" | cut -d"=" -f2)
+    V2RAY_MKCP_ALTERID=$(grep -w V2RAY_MKCP_ALTERID "${_THIS_DIR}/.options" | cut -d"=" -f2)
+    V2RAY_MKCP_CLIENT_DOWN_CAPACITY=$(grep -w V2RAY_MKCP_CLIENT_DOWN_CAPACITY "${_THIS_DIR}/.options" | cut -d"=" -f2)
+    V2RAY_MKCP_CLIENT_UP_CAPACITY=$(grep -w V2RAY_MKCP_CLIENT_UP_CAPACITY "${_THIS_DIR}/.options" | cut -d"=" -f2)
+    V2RAY_MKCP_PASSWORD=$(grep -w V2RAY_MKCP_PASSWORD "${_THIS_DIR}/.options" | cut -d"=" -f2)
     V2RAY_MKCP_PORT=$(grep -w mkcp_port "${_THIS_DIR}/.options" | cut -d"=" -f2)
-    V2RAY_MKCP_SERVER_DOWN_CAPACITY=$(grep -w mkcp_server_down_capacity "${_THIS_DIR}/.options" | cut -d"=" -f2)
-    V2RAY_MKCP_SERVER_UP_CAPACITY=$(grep -w mkcp_server_up_capacity "${_THIS_DIR}/.options" | cut -d"=" -f2)
-    V2RAY_MKCP_UUID=$(grep -w mkcp_uuid "${_THIS_DIR}/.options" | cut -d"=" -f2)
+    V2RAY_MKCP_SERVER_DOWN_CAPACITY=$(grep -w V2RAY_MKCP_SERVER_DOWN_CAPACITY "${_THIS_DIR}/.options" | cut -d"=" -f2)
+    V2RAY_MKCP_SERVER_UP_CAPACITY=$(grep -w V2RAY_MKCP_SERVER_UP_CAPACITY "${_THIS_DIR}/.options" | cut -d"=" -f2)
+    V2RAY_MKCP_UUID=$(grep -w V2RAY_MKCP_UUID "${_THIS_DIR}/.options" | cut -d"=" -f2)
 fi
 
 V2RAY_ALTERID=${V2RAY_ALTERID:-$((RANDOM % 70 + 30))}
@@ -36,20 +36,20 @@ V2RAY_MKCP_UUID=${V2RAY_MKCP_UUID:-$(cat /proc/sys/kernel/random/uuid)}
 V2RAY_MKCP_PASSWORD=""
 
 {
-    echo "alterid=${V2RAY_ALTERID}"
-    echo "port=${V2RAY_PORT}"
-    [[ -n ${V2RAY_SERVER} ]] && echo "server=${V2RAY_SERVER}"
-    echo "uuid=${V2RAY_UUID}"
-    echo "mux_concurrency=${V2RAY_MUX_CONCURRENCY}"
+    echo "V2RAY_ALTERID=${V2RAY_ALTERID}"
+    echo "V2RAY_PORT=${V2RAY_PORT}"
+    [[ -n ${V2RAY_SERVER} ]] && echo "V2RAY_SERVER=${V2RAY_SERVER}"
+    echo "V2RAY_UUID=${V2RAY_UUID}"
+    echo "V2RAY_MUX_CONCURRENCY=${V2RAY_MUX_CONCURRENCY}"
 
-    echo "mkcp_alterid=${V2RAY_MKCP_ALTERID}"
-    echo "mkcp_client_down_capacity=${V2RAY_MKCP_CLIENT_DOWN_CAPACITY}"
-    echo "mkcp_client_up_capacity=${V2RAY_MKCP_CLIENT_UP_CAPACITY}"
-    echo "mkcp_password=${V2RAY_MKCP_PASSWORD}"
-    echo "mkcp_port=${V2RAY_MKCP_PORT}"
-    echo "mkcp_server_down_capacity=${V2RAY_MKCP_SERVER_DOWN_CAPACITY}"
-    echo "mkcp_server_up_capacity=${V2RAY_MKCP_SERVER_UP_CAPACITY}"
-    echo "mkcp_uuid=${V2RAY_MKCP_UUID}"
+    echo "MKCP_ALTERID=${V2RAY_MKCP_ALTERID}"
+    echo "MKCP_CLIENT_DOWN_CAPACITY=${V2RAY_MKCP_CLIENT_DOWN_CAPACITY}"
+    echo "MKCP_CLIENT_UP_CAPACITY=${V2RAY_MKCP_CLIENT_UP_CAPACITY}"
+    echo "MKCP_PASSWORD=${V2RAY_MKCP_PASSWORD}"
+    echo "MKCP_PORT=${V2RAY_MKCP_PORT}"
+    echo "MKCP_SERVER_DOWN_CAPACITY=${V2RAY_MKCP_SERVER_DOWN_CAPACITY}"
+    echo "MKCP_SERVER_UP_CAPACITY=${V2RAY_MKCP_SERVER_UP_CAPACITY}"
+    echo "MKCP_UUID=${V2RAY_MKCP_UUID}"
 } | sort | tee "${_THIS_DIR}/.options"
 
 unset -v _THIS_DIR
