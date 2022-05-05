@@ -3,55 +3,36 @@
 _THIS_DIR=$(readlink -f "${BASH_SOURCE[0]}")
 _THIS_DIR=$(dirname "${_THIS_DIR}")
 
-if [[ -f "${_THIS_DIR}/.options" ]]; then
-    V2RAY_ALTERID=$(grep -w V2RAY_ALTERID "${_THIS_DIR}/.options" | cut -d"=" -f2)
-    V2RAY_PORT=$(grep -w V2RAY_PORT "${_THIS_DIR}/.options" | cut -d"=" -f2)
-    V2RAY_SERVER=$(grep -w V2RAY_SERVER "${_THIS_DIR}/.options" | cut -d"=" -f2)
-    V2RAY_UUID=$(grep -w V2RAY_UUID "${_THIS_DIR}/.options" | cut -d"=" -f2)
-    V2RAY_MUX_CONCURRENCY=$(grep -w V2RAY_MUX_CONCURRENCY "${_THIS_DIR}/.options" | cut -d"=" -f2)
+declare -A V2RAY
+export V2RAY
 
-    V2RAY_MKCP_ALTERID=$(grep -w V2RAY_MKCP_ALTERID "${_THIS_DIR}/.options" | cut -d"=" -f2)
-    V2RAY_MKCP_CLIENT_DOWN_CAPACITY=$(grep -w V2RAY_MKCP_CLIENT_DOWN_CAPACITY "${_THIS_DIR}/.options" | cut -d"=" -f2)
-    V2RAY_MKCP_CLIENT_UP_CAPACITY=$(grep -w V2RAY_MKCP_CLIENT_UP_CAPACITY "${_THIS_DIR}/.options" | cut -d"=" -f2)
-    V2RAY_MKCP_PASSWORD=$(grep -w V2RAY_MKCP_PASSWORD "${_THIS_DIR}/.options" | cut -d"=" -f2)
-    V2RAY_MKCP_PORT=$(grep -w mkcp_port "${_THIS_DIR}/.options" | cut -d"=" -f2)
-    V2RAY_MKCP_SERVER_DOWN_CAPACITY=$(grep -w V2RAY_MKCP_SERVER_DOWN_CAPACITY "${_THIS_DIR}/.options" | cut -d"=" -f2)
-    V2RAY_MKCP_SERVER_UP_CAPACITY=$(grep -w V2RAY_MKCP_SERVER_UP_CAPACITY "${_THIS_DIR}/.options" | cut -d"=" -f2)
-    V2RAY_MKCP_UUID=$(grep -w V2RAY_MKCP_UUID "${_THIS_DIR}/.options" | cut -d"=" -f2)
-fi
+function _read_param() {
+    local _default _name
+    _name=$1
+    _default=$2
+    V2RAY[${_name}]=$(grep -w -i "${_name,,}" "${_THIS_DIR}/.options" | cut -d'=' -f2)
+    V2RAY[${_name}]=${V2RAY[${_name}]:-${_default}}
+}
 
-V2RAY_ALTERID=${V2RAY_ALTERID:-$((RANDOM % 70 + 30))}
-V2RAY_PORT=${V2RAY_PORT:-$((RANDOM % 10000 + 30000))}
-V2RAY_UUID=${V2RAY_UUID:-$(cat /proc/sys/kernel/random/uuid)}
-V2RAY_MUX_CONCURRENCY=${V2RAY_MUX_CONCURRENCY:-0}
+_read_param ALTERID $((RANDOM % 70 + 30))
+_read_param PORT $((RANDOM % 10000 + 30000))
+_read_param UUID "$(cat /proc/sys/kernel/random/uuid)"
+_read_param MUX_CONCURRENCY 4
+_read_param SERVER 155.94.149.79
 
-V2RAY_MKCP_ALTERID=${V2RAY_MKCP_ALTERID:-$((RANDOM % 70 + 30))}
-V2RAY_MKCP_CLIENT_DOWN_CAPACITY=${V2RAY_MKCP_CLIENT_DOWN_CAPACITY:-200}
-V2RAY_MKCP_CLIENT_UP_CAPACITY=${V2RAY_MKCP_CLIENT_UP_CAPACITY:-50}
-V2RAY_MKCP_PASSWORD=${V2RAY_MKCP_PASSWORD:-$(tr -cd '[:alnum:]' < /dev/urandom | fold -w20 | head -n1)}
-V2RAY_MKCP_PORT=${V2RAY_MKCP_PORT:-$((RANDOM % 10000 + 30000))}
-V2RAY_MKCP_SERVER_DOWN_CAPACITY=${V2RAY_MKCP_SERVER_DOWN_CAPACITY:-200}
-V2RAY_MKCP_SERVER_UP_CAPACITY=${V2RAY_MKCP_SERVER_UP_CAPACITY:-200}
-V2RAY_MKCP_UUID=${V2RAY_MKCP_UUID:-$(cat /proc/sys/kernel/random/uuid)}
-V2RAY_MKCP_PASSWORD=""
+_read_param MKCP_ALTERID $((RANDOM % 70 + 30))
+_read_param MKCP_CLIENT_DOWN_CAPACITY 200
+_read_param MKCP_CLIENT_UP_CAPACITY 50
+_read_param MKCP_PASSWORD "$(tr -cd '[:alnum:]' < /dev/urandom | fold -w20 | head -n1)"
+_read_param MKCP_PORT $((RANDOM % 10000 + 30000))
+_read_param MKCP_SERVER_DOWN_CAPACITY 200
+_read_param MKCP_SERVER_UP_CAPACITY 200
+_read_param MKCP_UUID "$(cat /proc/sys/kernel/random/uuid)"
+_read_param MKCP_PASSWORD ""
 
-{
-    echo "V2RAY_ALTERID=${V2RAY_ALTERID}"
-    echo "V2RAY_PORT=${V2RAY_PORT}"
-    [[ -n ${V2RAY_SERVER} ]] && echo "V2RAY_SERVER=${V2RAY_SERVER}"
-    echo "V2RAY_UUID=${V2RAY_UUID}"
-    echo "V2RAY_MUX_CONCURRENCY=${V2RAY_MUX_CONCURRENCY}"
+rm -f "${_THIS_DIR}/.options"
 
-    echo "MKCP_ALTERID=${V2RAY_MKCP_ALTERID}"
-    echo "MKCP_CLIENT_DOWN_CAPACITY=${V2RAY_MKCP_CLIENT_DOWN_CAPACITY}"
-    echo "MKCP_CLIENT_UP_CAPACITY=${V2RAY_MKCP_CLIENT_UP_CAPACITY}"
-    echo "MKCP_PASSWORD=${V2RAY_MKCP_PASSWORD}"
-    echo "MKCP_PORT=${V2RAY_MKCP_PORT}"
-    echo "MKCP_SERVER_DOWN_CAPACITY=${V2RAY_MKCP_SERVER_DOWN_CAPACITY}"
-    echo "MKCP_SERVER_UP_CAPACITY=${V2RAY_MKCP_SERVER_UP_CAPACITY}"
-    echo "MKCP_UUID=${V2RAY_MKCP_UUID}"
-} | sort | tee "${_THIS_DIR}/.options"
+for _key in "${!V2RAY[@]}"; do echo "${_key^^}=${V2RAY[${_key}]}" >> "${_THIS_DIR}/.options"; done
+sort "${_THIS_DIR}/.options" | sponge "${_THIS_DIR}/.options"
 
 unset -v _THIS_DIR
-export V2RAY_ALTERID V2RAY_PORT V2RAY_SERVER V2RAY_UUID V2RAY_MUX_CONCURRENCY
-export V2RAY_MKCP_ALTERID V2RAY_MKCP_CLIENT_DOWN_CAPACITY V2RAY_MKCP_CLIENT_UP_CAPACITY V2RAY_MKCP_PASSWORD V2RAY_MKCP_PORT V2RAY_MKCP_SERVER_DOWN_CAPACITY V2RAY_MKCP_SERVER_UP_CAPACITY V2RAY_MKCP_UUID

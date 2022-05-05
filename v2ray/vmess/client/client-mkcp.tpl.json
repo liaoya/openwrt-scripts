@@ -15,7 +15,7 @@
     }
   ],
   "log": {
-    "loglevel": "warning"
+    "loglevel": "debug"
   },
   "outbounds": [
     {
