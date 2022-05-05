@@ -23,12 +23,13 @@ _read_param SERVER 155.94.149.79
 _read_param MKCP_ALTERID $((RANDOM % 70 + 30))
 _read_param MKCP_CLIENT_DOWN_CAPACITY 200
 _read_param MKCP_CLIENT_UP_CAPACITY 50
-_read_param MKCP_PASSWORD "$(tr -cd '[:alnum:]' < /dev/urandom | fold -w20 | head -n1)"
+_read_param MKCP_HEADER_TYPE none
+_read_param MKCP_PASSWORD "$(tr -cd '[:alnum:]' < /dev/urandom | fold -w15 | head -n1)"
+# _read_param MKCP_PASSWORD ""
 _read_param MKCP_PORT $((RANDOM % 10000 + 30000))
 _read_param MKCP_SERVER_DOWN_CAPACITY 200
 _read_param MKCP_SERVER_UP_CAPACITY 200
 _read_param MKCP_UUID "$(cat /proc/sys/kernel/random/uuid)"
-_read_param MKCP_PASSWORD ""
 
 rm -f "${_THIS_DIR}/.options"
 

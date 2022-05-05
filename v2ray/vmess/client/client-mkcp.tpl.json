@@ -53,10 +53,10 @@
           "header": {
             "type": "none"
           },
-          "readBufferSize": 50,
+          "readBufferSize": 5,
           "seed": "",
           "uplinkCapacity": 50,
-          "writeBufferSize": 50
+          "writeBufferSize": 5
         },
         "network": "kcp"
       },
