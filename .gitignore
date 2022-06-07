@@ -138,3 +138,5 @@ tags
 sha256sums*
 /sdk/lede
 .python-version
+xray-plugin
+xray-plugin_linux_amd64*

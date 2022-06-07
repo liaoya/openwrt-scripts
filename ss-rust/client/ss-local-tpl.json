@@ -8,6 +8,8 @@
       "fast_open": true,
       "method": "aes-256-gcm",
       "password": "$SHADOWSOCKS_PASSWORD",
+      "plugin_opts": "mode=grpc",
+      "plugin": "xray-plugin",
       "port": $SHADOWSOCKS_PORT,
       "timeout": 300
     }

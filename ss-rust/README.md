@@ -96,3 +96,5 @@ sudo ufw status numbered
 # delete a rule
 sudo ufw delete 4
 ```
+
+The kcp options are <https://hub.docker.com/r/horjulf/kcptun> or <https://hub.docker.com/r/playn/kcptun>.
