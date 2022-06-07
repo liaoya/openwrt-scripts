@@ -39,6 +39,7 @@ XRAY_PLUGIN_VERSION=${XRAY_PLUGIN_VERSION:-v1.5.7}
 if [[ ! -x "${THIS_DIR}/xray-plugin_linux_amd64" ]]; then
     curl -sL -o - "https://github.com/teddysun/xray-plugin/releases/download/${XRAY_PLUGIN_VERSION}/xray-plugin-linux-amd64-${XRAY_PLUGIN_VERSION}.tar.gz" | tar -C "${THIS_DIR}" -I gzip -xf -
     chmod a+x "${THIS_DIR}/xray-plugin_linux_amd64"
+    sudo chown "$(id -un):$(id -gn)" "${THIS_DIR}/xray-plugin_linux_amd64"
 fi
 
 KCPTUN_PORT=${KCPTUN_PORT:-$((RANDOM % 30000 + 10000))}

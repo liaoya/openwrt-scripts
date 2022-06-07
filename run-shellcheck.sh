@@ -27,7 +27,7 @@ function run_shellcheck() {
     fi
 }
 
-if [[ $(command -v git) ]]; then git clean -X -f; fi
+# if [[ $(command -v git) ]]; then git clean -X -f; fi
 
 if [[ $# -eq 0 ]]; then
     run_shellcheck "${THIS_DIR}"

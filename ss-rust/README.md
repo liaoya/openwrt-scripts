@@ -10,6 +10,7 @@ rm -f .options
 env KCPTUN_PORT= SHADOWSOCKS_PASSWORD= SHADOWSOCKS_PORT= bash run.sh start server
 
 env KCPTUN_PORT= SHADOWSOCKS_PASSWORD= SHADOWSOCKS_PORT= bash run.sh -p xray-plugin -m "mode=grpc" start server
+env KCPTUN_PORT= SHADOWSOCKS_PASSWORD= SHADOWSOCKS_PORT= SHADOWSOCKS_SERVER= SIP003_PLUGIN=xray-plugin SIP003_PLUGIN_OPTS=mode=grpc bash run.sh start server
 
 # stop and remove the container
 bash run.sh clean server
@@ -22,7 +23,7 @@ bash run.sh clean server
 rm -f .options
 
 # start the container
-env SHADOWSOCKS_PASSWORD= SHADOWSOCKS_PORT= SHADOWSOCKS_SERVER= bash run.sh start client
+env SHADOWSOCKS_PASSWORD= SHADOWSOCKS_PORT= SHADOWSOCKS_SERVER= bash run.sh -p xray-plugin -m "mode=grpc" start client
 
 # stop and remove the container
 bash run.sh clean client
@@ -35,7 +36,8 @@ bash run.sh clean client
 rm -f .options
 
 # start the container
-env KCPTUN_PORT= SHADOWSOCKS_PASSWORD= SHADOWSOCKS_PORT= SHADOWSOCKS_SERVER= bash run.sh start kcp
+env KCPTUN_PORT= SHADOWSOCKS_PASSWORD= SHADOWSOCKS_PORT= SHADOWSOCKS_SERVER= bash run.sh -p xray-plugin -m "mode=grpc" start kcp
+env KCPTUN_PORT= SHADOWSOCKS_PASSWORD= SHADOWSOCKS_PORT= SHADOWSOCKS_SERVER= SIP003_PLUGIN= SIP003_PLUGIN_OPTS= bash run.sh start kcp
 
 # stop and remove the container
 bash run.sh clean kcp
