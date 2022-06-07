@@ -16,6 +16,7 @@ function _check_param() {
 if [[ -f "${THIS_DIR}/.options" ]]; then
     KCPTUN_VERSION=$(grep -e "^kcptun_version=" "${THIS_DIR}/.options" | cut -d"=" -f2)
     SHADOWSOCKS_RUST_VERSION=$(grep -e "^shadowsocks_rust_version=" "${THIS_DIR}/.options" | cut -d"=" -f2)
+    XRAY_PLUGIN_VERSION=$(grep -e "^xray_plugin_version=" "${THIS_DIR}/.options" | cut -d"=" -f2)
 
     KCPTUN_PORT=$(grep -e "^kcptun_port=" "${THIS_DIR}/.options" | cut -d"=" -f2)
     SHADOWSOCKS_PASSWORD=$(grep -e "^shadowsocks_password=" "${THIS_DIR}/.options" | cut -d"=" -f2)
@@ -23,7 +24,8 @@ if [[ -f "${THIS_DIR}/.options" ]]; then
     if grep -s -q -e "^shadowsocks_server=" "${THIS_DIR}/.options"; then
         SHADOWSOCKS_SERVER=$(grep -e "^shadowsocks_server=" "${THIS_DIR}/.options" | cut -d"=" -f2)
     fi
-    XRAY_PLUGIN_VERSION=$(grep -e "^xray_plugin_version=" "${THIS_DIR}/.options" | cut -d"=" -f2)
+    SIP003_PLUGIN=$(grep -e "^sip003_plugin=" "${THIS_DIR}/.options" | cut -d"=" -f2)
+    SIP003_PLUGIN_OPTS=$(grep -e "^sip003_plugin_opts=" "${THIS_DIR}/.options" | cut -d"=" -f2-)
 fi
 # KCPTUN_VERSION=${KCPTUN_VERSION:-$(curl -s "https://api.github.com/repos/xtaci/kcptun/tags" | jq -r '.[0].name')}
 KCPTUN_VERSION=${KCPTUN_VERSION:-v20210624}
@@ -42,15 +44,17 @@ fi
 KCPTUN_PORT=${KCPTUN_PORT:-$((RANDOM % 30000 + 10000))}
 SHADOWSOCKS_PASSWORD=${SHADOWSOCKS_PASSWORD:-$(tr -cd '[:alnum:]' </dev/urandom | fold -w30 | head -n1)}
 SHADOWSOCKS_PORT=${SHADOWSOCKS_PORT:-$((RANDOM % 30000 + 10000))}
-{
-    echo "kcptun_port=${KCPTUN_PORT}"
-    echo "kcptun_version=${KCPTUN_VERSION}"
-    echo "shadowsocks_password=${SHADOWSOCKS_PASSWORD}"
-    echo "shadowsocks_port=${SHADOWSOCKS_PORT}"
-    echo "shadowsocks_rust_version=${SHADOWSOCKS_RUST_VERSION}"
-    [[ -n ${SHADOWSOCKS_SERVER} ]] && echo "shadowsocks_server=${SHADOWSOCKS_SERVER}"
-    ecgi "xray_plugin_version=${XRAY_PLUGIN_VERSION}"
-} | sort | tee "${THIS_DIR}/.options"
 
-_check_param KCPTUN_PORT KCPTUN_VERSION SHADOWSOCKS_PASSWORD SHADOWSOCKS_PORT SHADOWSOCKS_RUST_VERSION
+_check_param KCPTUN_PORT KCPTUN_VERSION SHADOWSOCKS_PASSWORD SHADOWSOCKS_PORT SHADOWSOCKS_RUST_VERSION XRAY_PLUGIN_VERSION
 export KCPTUN_PORT KCPTUN_VERSION SHADOWSOCKS_PASSWORD SHADOWSOCKS_PORT SHADOWSOCKS_RUST_VERSION XRAY_PLUGIN_VERSION
+if [[ ${SHADOWSOCKS_SERVER} ]]; then
+    export SHADOWSOCKS_SERVER
+fi
+if [[ -n ${SIP003_PLUGIN} ]]; then
+    export SIP003_PLUGIN
+fi
+if [[ -n ${SIP003_PLUGIN_OPTS} ]]; then
+    export SIP003_PLUGIN_OPTS
+fi
+
+unset -v THIS_DIR

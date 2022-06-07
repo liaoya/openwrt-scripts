@@ -24,7 +24,7 @@ _read_param MKCP_ALTERID $((RANDOM % 70 + 30))
 _read_param MKCP_CLIENT_DOWN_CAPACITY 200
 _read_param MKCP_CLIENT_UP_CAPACITY 50
 _read_param MKCP_HEADER_TYPE none
-_read_param MKCP_PASSWORD "$(tr -cd '[:alnum:]' < /dev/urandom | fold -w15 | head -n1)"
+_read_param MKCP_PASSWORD "$(tr -cd '[:alnum:]' </dev/urandom | fold -w15 | head -n1)"
 # _read_param MKCP_PASSWORD ""
 _read_param MKCP_PORT $((RANDOM % 10000 + 30000))
 _read_param MKCP_SERVER_DOWN_CAPACITY 200
@@ -33,7 +33,7 @@ _read_param MKCP_UUID "$(cat /proc/sys/kernel/random/uuid)"
 
 rm -f "${_THIS_DIR}/.options"
 
-for _key in "${!V2RAY[@]}"; do echo "${_key^^}=${V2RAY[${_key}]}" >> "${_THIS_DIR}/.options"; done
+for _key in "${!V2RAY[@]}"; do echo "${_key^^}=${V2RAY[${_key}]}" >>"${_THIS_DIR}/.options"; done
 sort "${_THIS_DIR}/.options" | sponge "${_THIS_DIR}/.options"
 
 unset -v _THIS_DIR

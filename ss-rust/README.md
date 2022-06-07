@@ -6,13 +6,10 @@
 # The following is optional
 rm -f .options
 
-# The following is optional
-export KCPTUN_PORT=29900
-export SHADOWSOCKS_PASSWORD=
-export SHADOWSOCKS_PORT=8388
-
 # start the container
-bash run.sh start server
+env KCPTUN_PORT= SHADOWSOCKS_PASSWORD= SHADOWSOCKS_PORT= bash run.sh start server
+
+env KCPTUN_PORT= SHADOWSOCKS_PASSWORD= SHADOWSOCKS_PORT= bash run.sh -p xray-plugin -m "mode=grpc" start server
 
 # stop and remove the container
 bash run.sh clean server
@@ -24,20 +21,11 @@ bash run.sh clean server
 # The following is optional
 rm -f .options
 
-# The following is optional
-export SHADOWSOCKS_PASSWORD=
-export SHADOWSOCKS_PORT=8388
-
-# The following is mandatory
-export SHADOWSOCKS_SERVER=
-
 # start the container
-bash run.sh start client
+env SHADOWSOCKS_PASSWORD= SHADOWSOCKS_PORT= SHADOWSOCKS_SERVER= bash run.sh start client
 
 # stop and remove the container
 bash run.sh clean client
-
-curl --proxy "http://localhost:1080" -Lv http://httpbin.org/get
 ```
 
 ## KCP client
@@ -46,44 +34,27 @@ curl --proxy "http://localhost:1080" -Lv http://httpbin.org/get
 # The following is optional
 rm -f .options
 
-# The following is optional
-export KCPTUN_PORT=29900
-export SHADOWSOCKS_PASSWORD=
-export SHADOWSOCKS_PORT=8388
-
-# The following is mandatory
-export SHADOWSOCKS_SERVER=
-
 # start the container
-bash run.sh start kcp
+env KCPTUN_PORT= SHADOWSOCKS_PASSWORD= SHADOWSOCKS_PORT= SHADOWSOCKS_SERVER= bash run.sh start kcp
 
 # stop and remove the container
 bash run.sh clean kcp
-
-curl --proxy "http://localhost:1080" -Lv http://httpbin.org/get
 ```
+
+Run `curl --proxy "http://localhost:1080" -Lv http://httpbin.org/get` test
 
 ## `.options` Examples
 
-The server examples
-
 ```text
-kcptun_port=30582
+kcptun_port=23399
 kcptun_version=v20210624
 shadowsocks_password=
-shadowsocks_port=27782
-shadowsocks_rust_version=v1.12.5
-```
-
-The client example
-
-```text
-kcptun_port=30582
-kcptun_version=v20210624
-shadowsocks_password=
-shadowsocks_port=27782
-shadowsocks_rust_version=v1.12.5
+shadowsocks_port=22314
+shadowsocks_rust_version=v1.14.3
 shadowsocks_server=
+#sip003_plugin_opts=mode=grpc
+#sip003_plugin=xray-plugin
+xray_plugin_version=v1.5.7
 ```
 
 ```bash

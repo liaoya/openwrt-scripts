@@ -16,7 +16,7 @@ if [[ ! -f "${_THIS_DIR}/config.json" ]]; then
         jq ".inbounds[1].streamSettings.kcpSettings.header.type=\"${V2RAY[MKCP_HEADER_TYPE]}\"" |
         jq ".inbounds[1].streamSettings.kcpSettings.seed=\"${V2RAY[MKCP_PASSWORD]}\"" |
         jq ".inbounds[1].streamSettings.kcpSettings.uplinkCapacity=${V2RAY[MKCP_SERVER_UP_CAPACITY]}" |
-        jq -S '.' > "${_THIS_DIR}/config.json"
+        jq -S '.' >"${_THIS_DIR}/config.json"
 fi
 
 export V2RAY_MKCP_PORT=${V2RAY[MKCP_PORT]}
