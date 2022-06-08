@@ -1,4 +1,12 @@
+---
 services:
+  kcptun-client:
+    command: ["/bin/client", "-c", "/etc/kcptun.json"]
+    image: xtaci/kcptun:${KCPTUN_VERSION}
+    restart: always
+    volumes:
+      - "./kcptun-client.json:/etc/kcptun.json"
+
   sslocal-rust:
     image: ghcr.io/shadowsocks/sslocal-rust:${SHADOWSOCKS_RUST_VERSION}
     ports:
@@ -6,4 +14,3 @@ services:
     restart: always
     volumes:
       - "./ss-local.json:/etc/shadowsocks-rust/config.json"
-      - "../xray-plugin_linux_amd64:/usr/local/bin/xray-plugin"

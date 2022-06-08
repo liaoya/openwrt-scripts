@@ -53,7 +53,7 @@ kcptun_version=v20210624
 shadowsocks_password=
 shadowsocks_port=22314
 shadowsocks_rust_version=v1.14.3
-shadowsocks_server=
+#shadowsocks_server=
 #sip003_plugin_opts=mode=grpc
 #sip003_plugin=xray-plugin
 xray_plugin_version=v1.5.7
@@ -69,5 +69,10 @@ sudo ufw status numbered
 # delete a rule
 sudo ufw delete 4
 ```
+
+## Reference
+
+- <https://github.com/teddysun/xray-plugin>
+- <https://github.com/shadowsocks/v2ray-plugin>
 
 The kcp options are <https://hub.docker.com/r/horjulf/kcptun> or <https://hub.docker.com/r/playn/kcptun>.

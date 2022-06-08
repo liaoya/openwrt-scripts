@@ -4,11 +4,11 @@
   "protocol": "http",
   "servers": [
     {
-      "address": "$SHADOWSOCKS_SERVER",
-      "fast_open": true,
+      "address": "",
+      "fast_open": false,
       "method": "aes-256-gcm",
-      "password": "$SHADOWSOCKS_PASSWORD",
-      "port": $SHADOWSOCKS_PORT,
+      "password": "",
+      "port": 0,
       "timeout": 300
     }
   ]

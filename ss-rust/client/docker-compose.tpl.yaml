@@ -1,0 +1,8 @@
+services:
+  sslocal-rust:
+    image: ghcr.io/shadowsocks/sslocal-rust:${SHADOWSOCKS_RUST_VERSION}
+    ports:
+      - "1080:1080/tcp"
+    restart: always
+    volumes:
+      - "./ss-local.json:/etc/shadowsocks-rust/config.json"

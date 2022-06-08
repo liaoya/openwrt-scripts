@@ -10,7 +10,7 @@ function _read_param() {
     local _default _name
     _name=$1
     _default=$2
-    V2RAY[${_name}]=$(grep -w -i "${_name,,}" "${_THIS_DIR}/.options" | cut -d'=' -f2)
+    V2RAY[${_name}]=$(grep -w -i "${_name,,}" "${_THIS_DIR}/.options" | cut -d'=' -f2-)
     V2RAY[${_name}]=${V2RAY[${_name}]:-${_default}}
 }
 

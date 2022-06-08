@@ -17,4 +17,3 @@ services:
     restart: always
     volumes:
       - "./ssserver-rust.json:/etc/shadowsocks-rust/config.json"
-      - "../xray-plugin_linux_amd64:/usr/local/bin/xray-plugin"
