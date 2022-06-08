@@ -7,6 +7,16 @@ ROOT_DIR=$(readlink -f "${BASH_SOURCE[0]}")
 ROOT_DIR=$(dirname "${ROOT_DIR}")
 export ROOT_DIR
 
+function _check_command() {
+    while (($#)); do
+        if [[ -z $(command -v "${1}") ]]; then
+            echo "Command ${1} is required"
+            return 1
+        fi
+        shift
+    done
+}
+
 function print_usage() {
     cat <<EOF
 Usage: $(basename "${BASH_SOURCE[0]}") options <clean|restart|start|stop> <client|kcp|server>
@@ -14,6 +24,8 @@ Usage: $(basename "${BASH_SOURCE[0]}") options <clean|restart|start|stop> <clien
   -p, SIP003_PLUGIN: Shadowsocks sip003 plugin. ${SHADOWSOCKS[SIP003_PLUGIN_OPTS]:+The default is ${SHADOWSOCKS[SIP003_PLUGIN_OPTS]}}
 EOF
 }
+
+_check_command docker docker-compose jq yq
 
 declare -A SHADOWSOCKS
 export SHADOWSOCKS

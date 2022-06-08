@@ -16,7 +16,7 @@ if [[ ! -f "${_THIS_DIR}/ssserver-rust.json" ]]; then
     jq --arg value "${SHADOWSOCKS[SHADOWSOCKS_PASSWORD]}" '.password=$value' "${_THIS_DIR}/ssserver-rust.tpl.json" | tee "${_THIS_DIR}/ssserver-rust.json"
     if [[ -n ${SHADOWSOCKS[SIP003_PLUGIN]} ]]; then
         jq --arg value "${SHADOWSOCKS[SIP003_PLUGIN]}" '. + {plugin: $value}' "${_THIS_DIR}/ssserver-rust.json" |
-            jq --arg value "${SHADOWSOCKS[SIP003_PLUGIN_OPTS]}" '. + {plugin_opts: $value}' |
+            jq --arg value "server${SHADOWSOCKS[SIP003_PLUGIN_OPTS]:+;${SHADOWSOCKS[SIP003_PLUGIN_OPTS]}}" '. + {plugin_opts: $value}' |
             jq -S . | sponge "${_THIS_DIR}/ssserver-rust.json"
     fi
 fi
