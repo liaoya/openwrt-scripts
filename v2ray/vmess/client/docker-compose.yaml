@@ -2,7 +2,7 @@ version: "3"
 
 services:
   v2ray:
-    image: docker.io/teddysun/v2ray:5.0.3
+    image: docker.io/teddysun/v2ray:5.0.6
     ports:
       - 1080:1080
       - 1081:1081
@@ -11,7 +11,7 @@ services:
       - "./config.json:/etc/v2ray/config.json"
 
   v2ray-mkcp:
-    image: docker.io/teddysun/v2ray:5.0.3
+    image: docker.io/teddysun/v2ray:5.0.6
     ports:
       - 1090:1090
       - 1091:1091
