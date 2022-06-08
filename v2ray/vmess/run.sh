@@ -37,15 +37,15 @@ PROJECT=$(basename "${ROOT_DIR}")
 source "${ROOT_DIR}/env.sh"
 if [[ -f "$2/env.sh" ]]; then source "$2/env.sh"; fi
 if [[ $1 == clean ]]; then
-    docker-compose -p "${PROJECT}" -f "${2}/docker-compose.yml" down -v || true
+    docker-compose -p "${PROJECT}" -f "${2}/docker-compose.yaml" down -v || true
     rm -f "${2}"/config.json "${2}"/config-*.json || true
     [[ -x "${2}/clean.sh" ]] && "${2}/clean.sh"
 elif [[ $1 == restart ]]; then
-    docker-compose -p "${PROJECT}" -f "${2}/docker-compose.yml" restart
+    docker-compose -p "${PROJECT}" -f "${2}/docker-compose.yaml" restart
 elif [[ $1 == start ]]; then
-    docker-compose -p "${PROJECT}" -f "${2}/docker-compose.yml" up -d
+    docker-compose -p "${PROJECT}" -f "${2}/docker-compose.yaml" up -d
 elif [[ $1 == stop ]]; then
-    docker-compose -p "${PROJECT}" -f "${2}/docker-compose.yml" stop
+    docker-compose -p "${PROJECT}" -f "${2}/docker-compose.yaml" stop
 else
     echo "Unknown opereation"
 fi

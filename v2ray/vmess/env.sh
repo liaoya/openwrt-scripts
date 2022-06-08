@@ -1,39 +1,45 @@
 #!/bin/bash
 
-_THIS_DIR=$(readlink -f "${BASH_SOURCE[0]}")
-_THIS_DIR=$(dirname "${_THIS_DIR}")
-
 declare -A V2RAY
 export V2RAY
 
 function _read_param() {
-    local _default _name
-    _name=$1
-    _default=$2
-    V2RAY[${_name}]=$(grep -w -i "${_name,,}" "${_THIS_DIR}/.options" | cut -d'=' -f2-)
-    V2RAY[${_name}]=${V2RAY[${_name}]:-${_default}}
+    local _lower _upper
+    _lower=${1,,}
+    _upper=${1^^}
+    if [[ -f "${ROOT_DIR}/.options" ]]; then
+        V2RAY[${_upper}]=$(grep -i "^${_lower}=" "${ROOT_DIR}/.options" | cut -d'=' -f2-)
+    fi
+    if [[ -n ${!_upper} ]]; then
+        V2RAY[${_upper}]=${V2RAY[${_upper}]:-${!_upper}}
+    fi
+    if [[ $# -gt 1 ]]; then
+        V2RAY[${_upper}]=${V2RAY[${_upper}]:-${2}}
+    fi
+    V2RAY[${_upper}]=${V2RAY[${_upper}]:-""}
 }
 
-_read_param ALTERID $((RANDOM % 70 + 30))
-_read_param PORT $((RANDOM % 10000 + 30000))
-_read_param UUID "$(cat /proc/sys/kernel/random/uuid)"
-_read_param MUX_CONCURRENCY 4
-_read_param SERVER 155.94.149.79
+_read_param alterid $((RANDOM % 70 + 30))
+_read_param port $((RANDOM % 10000 + 30000))
+_read_param uuid "$(cat /proc/sys/kernel/random/uuid)"
+_read_param mux_concurrency 4
+_read_param server ""
 
-_read_param MKCP_ALTERID $((RANDOM % 70 + 30))
-_read_param MKCP_CLIENT_DOWN_CAPACITY 200
-_read_param MKCP_CLIENT_UP_CAPACITY 50
-_read_param MKCP_HEADER_TYPE none
-_read_param MKCP_PASSWORD "$(tr -cd '[:alnum:]' </dev/urandom | fold -w15 | head -n1)"
+_read_param mkcp_alterid $((RANDOM % 70 + 30))
+_read_param mkcp_client_down_capacity 200
+_read_param mkcp_client_up_capacity 50
+_read_param mkcp_header_type none
+_read_param mkcp_password "$(tr -cd '[:alnum:]' </dev/urandom | fold -w15 | head -n1)"
 # _read_param MKCP_PASSWORD ""
-_read_param MKCP_PORT $((RANDOM % 10000 + 30000))
-_read_param MKCP_SERVER_DOWN_CAPACITY 200
-_read_param MKCP_SERVER_UP_CAPACITY 200
-_read_param MKCP_UUID "$(cat /proc/sys/kernel/random/uuid)"
+_read_param mkcp_port $((RANDOM % 10000 + 30000))
+_read_param mkcp_server_down_capacity 200
+_read_param mkcp_server_up_capacity 200
+_read_param mkcp_uuid "$(cat /proc/sys/kernel/random/uuid)"
 
-rm -f "${_THIS_DIR}/.options"
-
-for _key in "${!V2RAY[@]}"; do echo "${_key^^}=${V2RAY[${_key}]}" >>"${_THIS_DIR}/.options"; done
-sort "${_THIS_DIR}/.options" | sponge "${_THIS_DIR}/.options"
-
-unset -v _THIS_DIR
+grep -e "^#" "${ROOT_DIR}/.options" | sponge "${ROOT_DIR}/.options"
+for _key in "${!V2RAY[@]}"; do
+    if [[ -n ${V2RAY[${_key}]} ]]; then
+        echo "${_key,,}=${V2RAY[${_key}]}" >>"${ROOT_DIR}/.options"
+    fi
+done
+sort "${ROOT_DIR}/.options" | sponge "${ROOT_DIR}/.options"

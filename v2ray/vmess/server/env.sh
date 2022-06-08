@@ -3,6 +3,14 @@
 _THIS_DIR=$(readlink -f "${BASH_SOURCE[0]}")
 _THIS_DIR=$(dirname "${_THIS_DIR}")
 
+export V2RAY_MKCP_PORT=${V2RAY[MKCP_PORT]}
+export V2RAY_PORT=${V2RAY[PORT]}
+
+if [[ ! -f "${_THIS_DIR}/docker-compose.yaml" ]]; then
+    envsubst "$(env | sort | sed -e 's/=.*//' -e 's/^/\$/g')" <"${_THIS_DIR}/docker-compose.tpl.yaml" | tee "${_THIS_DIR}/docker-compose.yaml"
+fi
+
+
 if [[ ! -f "${_THIS_DIR}/config.json" ]]; then
     #shellcheck disable=SC2002
     cat "${_THIS_DIR}/server.tpl.json" |
@@ -18,8 +26,5 @@ if [[ ! -f "${_THIS_DIR}/config.json" ]]; then
         jq ".inbounds[1].streamSettings.kcpSettings.uplinkCapacity=${V2RAY[MKCP_SERVER_UP_CAPACITY]}" |
         jq -S '.' >"${_THIS_DIR}/config.json"
 fi
-
-export V2RAY_MKCP_PORT=${V2RAY[MKCP_PORT]}
-export V2RAY_PORT=${V2RAY[PORT]}
 
 unset -v _THIS_DIR
