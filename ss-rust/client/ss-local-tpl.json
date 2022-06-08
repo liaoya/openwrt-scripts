@@ -5,7 +5,7 @@
   "servers": [
     {
       "address": "",
-      "fast_open": false,
+      "fast_open": true,
       "method": "aes-256-gcm",
       "password": "",
       "port": 0,
