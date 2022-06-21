@@ -29,7 +29,7 @@ function _read_param() {
 # KCPTUN_VERSION=${KCPTUN_VERSION:-$(curl -s "https://api.github.com/repos/xtaci/kcptun/tags" | jq -r '.[0].name')}
 KCPTUN_VERSION=${KCPTUN_VERSION:-v20210624}
 SHADOWSOCKS_RUST_VERSION=${SHADOWSOCKS_RUST_VERSION:-$(curl -sL "https://api.github.com/repos/shadowsocks/shadowsocks-rust/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')}
-SHADOWSOCKS_RUST_VERSION=${SHADOWSOCKS_RUST_VERSION:-v1.12.5}
+SHADOWSOCKS_RUST_VERSION=${SHADOWSOCKS_RUST_VERSION:-v1.14.3}
 V2RAY_PLUGIN_VERSION=${V2RAY_PLUGIN_VERSION:-$(curl -s "https://api.github.com/repos/shadowsocks/v2ray-plugin/releases/latest" | jq -r '.tag_name')}
 V2RAY_PLUGIN_VERSION=${V2RAY_PLUGIN_VERSION:-v1.3.1}
 XRAY_PLUGIN_VERSION=${XRAY_PLUGIN_VERSION:-$(curl -s "https://api.github.com/repos/teddysun/xray-plugin/tags" | jq -r '.[0].name')}

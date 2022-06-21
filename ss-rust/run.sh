@@ -3,6 +3,8 @@
 
 set -aex
 
+export PS4='+(${BASH_SOURCE[0]}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+
 ROOT_DIR=$(readlink -f "${BASH_SOURCE[0]}")
 ROOT_DIR=$(dirname "${ROOT_DIR}")
 export ROOT_DIR

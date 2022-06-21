@@ -9,14 +9,14 @@ services:
     build:
       context: .
       args:
-        - http_proxy=http://10.245.249.145:1080
-        - https_proxy=http://10.245.249.145:1080
+        - http_proxy=http://10.245.91.190:1080
+        - https_proxy=http://10.245.91.190:1080
         - no_proxy=localhost,127.0.0.1,calix.local,calix.dev,edu.cn,mirrors.aliyun.com,registry.npm.taobao.org,mirrors.tencent.com
         # - npm_config_registry=https://registry.npm.taobao.org
     environment:
       - NODE_ENV=production
-      - http_proxy=http://10.245.249.145:1080
-      - https_proxy=http://10.245.249.145:1080
+      - http_proxy=http://10.245.91.190:1080
+      - https_proxy=http://10.245.91.190:1080
       - no_proxy=localhost,127.0.0.1,calix.local,calix.dev
     ports:
       - "9080:8080"

@@ -1,5 +1,7 @@
 # README
 
+User OpenWRT docker image to build firmware
+
 There're no image after `18.06.7` for `18.06` series
 
 - `docker.io/openwrtorg/imagebuilder:x86-64-21.02.2`
@@ -20,8 +22,8 @@ uci wget wpad"
 export PACKAGES
 
 # Use cache server
-export http_proxy=http://10.245.249.145:3128
-export https_proxy=http://10.245.249.145:3128
+export http_proxy=http://10.245.91.190:3128
+export https_proxy=http://10.245.91.190:3128
 export no_proxy=localhost,127.0.0.1,calix.local,calix.dev
 
 bash build.sh -m -b bin-18.06.7 -v 18.06.7

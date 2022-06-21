@@ -27,7 +27,7 @@ KUSTOMIZE=${KUSTOMIZE:-""}
 NAME=${NAME:-default}
 PACKAGES=${PACKAGES:+${PACKAGES} }"kmod-dax kmod-dm" # kmod-dax kmod-dm is required for ventoy
 PROFILE=${PROFILE:-""}
-VERSION=${VERSION:-"21.02.2"}
+VERSION=${VERSION:-"21.02.3"}
 
 _cmd=""
 if [[ $(timedatectl show | grep Timezone | cut -d= -f2) == Asia/Shanghai ]]; then

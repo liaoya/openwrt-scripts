@@ -13,7 +13,7 @@ BASE_URL_PREFIX=${BASE_URL_PREFIX:-""}
 DL_DIR=${DL_DIR:-""}
 NAME=${NAME:-""}
 TARGET=${TARGET:-""}
-VERSION=${VERSION:-"21.02.1"}
+VERSION=${VERSION:-"21.02.3"}
 CLEAN=0
 MIRROR=0
 
@@ -135,7 +135,7 @@ if [[ $(command -v pyenv) ]]; then
     if [[ ${VERSION} =~ 18.06 ]]; then
         pyenv local 2.7.17
     elif [[ ${VERSION} =~ 19.07 || ${VERSION} =~ 21.02 ]]; then
-        pyenv local 3.8.12
+        pyenv local 3.8.13
     fi
 fi
 
