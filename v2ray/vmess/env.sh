@@ -29,8 +29,8 @@ _read_param mkcp_alterid $((RANDOM % 70 + 30))
 _read_param mkcp_client_down_capacity 200
 _read_param mkcp_client_up_capacity 50
 _read_param mkcp_header_type none
-_read_param mkcp_password "$(tr -cd '[:alnum:]' </dev/urandom | fold -w15 | head -n1)"
-# _read_param MKCP_PASSWORD ""
+_read_param mkcp_seed "$(tr -cd '[:alnum:]' </dev/urandom | fold -w15 | head -n1)"
+# _read_param mkcp_seed ""
 _read_param mkcp_port $((RANDOM % 10000 + 30000))
 _read_param mkcp_server_down_capacity 200
 _read_param mkcp_server_up_capacity 200

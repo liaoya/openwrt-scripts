@@ -22,7 +22,7 @@ if [[ ! -f "${_THIS_DIR}/config.json" ]]; then
         jq ".inbounds[1].settings.clients[0].id=\"${V2RAY[MKCP_UUID]}\"" |
         jq ".inbounds[1].streamSettings.kcpSettings.downlinkCapacity=${V2RAY[MKCP_SERVER_DOWN_CAPACITY]}" |
         jq ".inbounds[1].streamSettings.kcpSettings.header.type=\"${V2RAY[MKCP_HEADER_TYPE]}\"" |
-        jq ".inbounds[1].streamSettings.kcpSettings.seed=\"${V2RAY[MKCP_PASSWORD]}\"" |
+        jq ".inbounds[1].streamSettings.kcpSettings.seed=\"${V2RAY[MKCP_SEED]}\"" |
         jq ".inbounds[1].streamSettings.kcpSettings.uplinkCapacity=${V2RAY[MKCP_SERVER_UP_CAPACITY]}" |
         jq -S '.' >"${_THIS_DIR}/config.json"
 fi

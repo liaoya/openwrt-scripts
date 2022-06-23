@@ -23,7 +23,7 @@ if [[ ! -f "${_THIS_DIR}/config-mkcp.json" ]]; then
         jq ".outbounds[2].settings.vnext[0].users[0].id=\"${V2RAY[MKCP_UUID]}\"" |
         jq ".outbounds[2].streamSettings.kcpSettings.downlinkCapacity=${V2RAY[MKCP_CLIENT_DOWN_CAPACITY]}" |
         jq ".outbounds[2].streamSettings.kcpSettings.header.type=\"${V2RAY[MKCP_HEADER_TYPE]}\"" |
-        jq ".outbounds[2].streamSettings.kcpSettings.seed=\"${V2RAY[MKCP_PASSWORD]}\"" |
+        jq ".outbounds[2].streamSettings.kcpSettings.seed=\"${V2RAY[MKCP_SEED]}\"" |
         jq ".outbounds[2].streamSettings.kcpSettings.uplinkCapacity=${V2RAY[MKCP_CLIENT_UP_CAPACITY]}" |
         jq -S '.' >"${_THIS_DIR}/config-mkcp.json"
     if [[ ${V2RAY[MUX_CONCURRENCY]} -eq 0 ]]; then
