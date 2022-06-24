@@ -147,7 +147,7 @@ fi
 
 cd "${IMAGE_BUILDER_DIR}"
 if [[ $(command -v pyenv) ]]; then
-    pyenv local 3.8.12
+    pyenv local 3.8.13
 fi
 if [[ -f repositories.conf.bak ]]; then
     cp -r repositories.conf.bak repositories.conf

@@ -6,12 +6,11 @@ function print_usage() {
     #shellcheck disable=SC2016
     cat <<EOF
 Usage: $(basename "${BASH_SOURCE[0]}") [OPTIONS]
-OPTIONS
     -h, show help.
     -a, additional packages. ${PACKAGES:+The default is "${PACKAGES}"}
-    -b, the bin directory binding for image output. ${BINDING:+The default is '"${BINDING}"'}
+    -b, the bin directory binding for image output. ${BIN_DIR:+The default is '"${BIN_DIR}"'}
     -c, clean build. ${CLEAN:+The default is "${CLEAN}"}
-    -d, the dl directory binding for package cache.
+    -d, the dl directory binding for package cache. ${DL_DIR:+The default is '"${DL_DIR}"'}
     -k, the directory for customized files. ${KUSTOMIZE:+The default is "${KUSTOMIZE}"}
     -n, the customize name. ${NAME:+The default is '"${NAME}"'}
     -p, the profile. ${NAME:+The default is '"${NAME}"'}
@@ -19,9 +18,9 @@ OPTIONS
 EOF
 }
 
-BINDING=${BINDING:-"$PWD/bin"}
+BIN_DIR=${BIN_DIR:-"$PWD/bin"}
 CLEAN=0
-DL=${DL:-""}
+DL_DIR=${DL_DIR:-""}
 DOCKER_IMAGE=docker.io/openwrtorg/imagebuilder:x86-64
 KUSTOMIZE=${KUSTOMIZE:-""}
 NAME=${NAME:-default}
@@ -48,10 +47,10 @@ while getopts "ha:b:cd:k:n:p:v:" OPTION; do
         PACKAGES=PACKAGES="${PACKAGES:+$PACKAGES }${OPTARG}"
         ;;
     b)
-        BINDING=${OPTARG}
+        BIN_DIR=${OPTARG}
         ;;
     d)
-        DL=${OPTARG}
+        DL_DIR=${OPTARG}
         ;;
     k)
         KUSTOMIZE=${OPTARG}
@@ -73,31 +72,31 @@ while getopts "ha:b:cd:k:n:p:v:" OPTION; do
 done
 
 if [[ ${CLEAN} -gt 0 ]]; then
-    if [[ -d "${BINDING}" ]]; then
-        rm -fr "${BINDING}"
+    if [[ -d "${BIN_DIR}" ]]; then
+        rm -fr "${BIN_DIR}"
     fi
-    if [[ -n ${DL} && -d "${DL}" ]]; then
-        rm -fr "${DL}"
+    if [[ -n ${DL_DIR} && -d "${DL_DIR}" ]]; then
+        rm -fr "${DL_DIR}"
     fi
 fi
-if [[ ! -d ${BINDING} ]]; then
-    mkdir -p "${BINDING}"
+if [[ ! -d ${BIN_DIR} ]]; then
+    mkdir -p "${BIN_DIR}"
 fi
 
-docker_cmd="docker run --rm -t"
+
 #shellcheck disable=SC2086
-docker_cmd=${docker_cmd:+${docker_cmd} }"-u build:$(id -gn) --group-add $(id -gn) -v $(readlink -f ${BINDING}):/home/build/openwrt/bin"
-if [[ -n ${DL} ]]; then
-    if [[ -d "${DL}" ]]; then
-        mkdir -p "${DL}"
+DOCKER_OPTS=(--rm -it -u "$(id -u):$(id -g)" -v "$(readlink -f ${BIN_DIR}):/home/build/openwrt/bin")
+if [[ -n ${DL_DIR} ]]; then
+    if [[ -d "${DL_DIR}" ]]; then
+        mkdir -p "${DL_DIR}"
     fi
     #shellcheck disable=SC2086
-    docker_cmd=${docker_cmd:+${docker_cmd} }"-v $(readlink -f ${DL}):/home/build/openwrt/dl"
+    DOCKER_OPTS+=(-v "$(readlink -f ${DL_DIR}):/home/build/openwrt/dl")
 fi
 
 for item in http_proxy https_proxy no_proxy; do
     if [[ -n ${!item} ]]; then
-        docker_cmd=${docker_cmd:+${docker_cmd} }"--env ${item}=${!item}"
+        DOCKER_OPTS+=(--env "${item}=${!item}")
     fi
 done
 
@@ -105,7 +104,7 @@ _cmd=${_cmd:+${_cmd}; }"make image ${PROFILE:+PROFILE=${PROFILE}} EXTRA_IMAGE_NA
 if [[ -n ${KUSTOMIZE} ]]; then
     _cmd="${_cmd} FILES=customize"
     #shellcheck disable=SC2086
-    docker_cmd=${docker_cmd:+${docker_cmd} }"-v $(readlink -f ${KUSTOMIZE}):/home/build/openwrt/customize"
+    DOCKER_OPTS+=(-v "$(readlink -f ${KUSTOMIZE})":/home/build/openwrt/customize)
 fi
 if [[ -n ${PACKAGES} ]]; then
     _cmd="${_cmd} PACKAGES=\"${PACKAGES}\""
@@ -114,10 +113,11 @@ if [[ -n ${CONFIG_TARGET_KERNEL_PARTSIZE} ]]; then
     _cmd="${_cmd} CONFIG_TARGET_KERNEL_PARTSIZE=${CONFIG_TARGET_KERNEL_PARTSIZE}"
 fi
 if [[ -n ${CONFIG_TARGET_ROOTFS_PARTSIZE} ]]; then
-    _cmd="${_cmd} CONFIG_TARGET_ROOTFS_PARTSIZE=${CONFIG_TARGET_ROOTFS_PARTSIZE}"
+   _cmd="${_cmd} CONFIG_TARGET_ROOTFS_PARTSIZE=${CONFIG_TARGET_ROOTFS_PARTSIZE}"
 fi
 
-eval "${docker_cmd} ${DOCKER_IMAGE}-${VERSION} bash -c '${_cmd}'"
+docker run "${DOCKER_OPTS[@]}" "${DOCKER_IMAGE}-${VERSION}" bash -c "${_cmd}"
+exit 0
 
 # qemu-img convert to make the image as thin provision, do not compress it any more to make backing file across pool
 if [[ $(command -v qemu-img) ]]; then
@@ -134,5 +134,5 @@ if [[ $(command -v qemu-img) ]]; then
         qemu-img convert -c -O qcow2 "${_img}" "${_qcow}"
         qemu-img convert -O qcow2 "${_qcow}" "${_img}" # Ventoy use img
         unset -v _prefix _img _qcow
-    done < <(find "${BINDING}/targets/x86/64" -iname "*-combined*.img.gz" | grep -v efi | sort)
+    done < <(find "${BIN_DIR}/targets/x86/64" -iname "*-combined*.img.gz" | grep -v efi | sort)
 fi
