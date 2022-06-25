@@ -34,7 +34,7 @@ if [[ ! -f "${_THIS_DIR}/ss-local.json" ]]; then
         jq -S . |
         tee "${_THIS_DIR}/ss-local.json"
     if [[ -n ${SHADOWSOCKS[SIP003_PLUGIN]} ]]; then
-            jq . "${_THIS_DIR}/ss-local.json" |
+        jq . "${_THIS_DIR}/ss-local.json" |
             jq --arg value "${SHADOWSOCKS[SIP003_PLUGIN]}" '.servers[0] |= . + {plugin: $value}' |
             jq --arg value "${SHADOWSOCKS[SIP003_PLUGIN_OPTS]}" '.servers[0] |= . + {plugin_opts: $value}' |
             jq -S . |

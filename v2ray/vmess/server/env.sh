@@ -10,7 +10,6 @@ if [[ ! -f "${_THIS_DIR}/docker-compose.yaml" ]]; then
     envsubst "$(env | sort | sed -e 's/=.*//' -e 's/^/\$/g')" <"${_THIS_DIR}/docker-compose.tpl.yaml" | tee "${_THIS_DIR}/docker-compose.yaml"
 fi
 
-
 if [[ ! -f "${_THIS_DIR}/config.json" ]]; then
     #shellcheck disable=SC2002
     cat "${_THIS_DIR}/server.tpl.json" |

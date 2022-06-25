@@ -7,26 +7,25 @@ function print_usage() {
     cat <<EOF
 Usage: $(basename "${BASH_SOURCE[0]}") [OPTIONS]
     -h, show help.
-    -a, additional packages. ${PACKAGES:+The default is "${PACKAGES}"}
-    -b, the bin directory binding for image output. ${BIN_DIR:+The default is '"${BIN_DIR}"'}
+    -a PACKAGES, additional packages. ${PACKAGES:+The default is "${PACKAGES}"}
+    -b BIN_DIR, the bin directory binding for image output. ${BIN_DIR:+The default is '"${BIN_DIR}"'}
     -c, clean build. ${CLEAN:+The default is "${CLEAN}"}
-    -d, the dl directory binding for package cache. ${DL_DIR:+The default is '"${DL_DIR}"'}
-    -k, the directory for customized files. ${KUSTOMIZE:+The default is "${KUSTOMIZE}"}
-    -n, the customize name. ${NAME:+The default is '"${NAME}"'}
-    -p, the profile. ${NAME:+The default is '"${NAME}"'}
-    -v, the openwrt version. ${VERSION:+The default is '"${VERSION}"'}
+    -d DL_DIR, the dl directory binding for package cache. ${DL_DIR:+The default is '"${DL_DIR}"'}
+    -i DOCKER_IMAGE, the docker image. ${DOCKER_IMAGE:+The default is '"${DOCKER_IMAGE}"'}
+    -k KUSTOMIZE, the directory for customized files. ${KUSTOMIZE:+The default is "${KUSTOMIZE}"}
+    -n NAME, the customize name. ${NAME:+The default is '"${NAME}"'}
+    -p PROFILE, the profile. ${PROFILE:+The default is '"${PROFILE}"'}
 EOF
 }
 
 BIN_DIR=${BIN_DIR:-"$PWD/bin"}
 CLEAN=0
 DL_DIR=${DL_DIR:-""}
-DOCKER_IMAGE=docker.io/openwrtorg/imagebuilder:x86-64
+DOCKER_IMAGE=${DOCKER_IMAGE:-docker.io/openwrtorg/imagebuilder:x86-64-21.02.3}
 KUSTOMIZE=${KUSTOMIZE:-""}
 NAME=${NAME:-default}
-PACKAGES=${PACKAGES:+${PACKAGES} }"kmod-dax kmod-dm" # kmod-dax kmod-dm is required for ventoy
+PACKAGES=${PACKAGES:-""}
 PROFILE=${PROFILE:-""}
-VERSION=${VERSION:-"21.02.3"}
 
 _cmd=""
 if [[ $(timedatectl show | grep Timezone | cut -d= -f2) == Asia/Shanghai ]]; then
@@ -34,7 +33,7 @@ if [[ $(timedatectl show | grep Timezone | cut -d= -f2) == Asia/Shanghai ]]; the
     _cmd=${_cmd:+${_cmd}; }"sed -i -e \"s|http://downloads.openwrt.org|${OPENWRT_MIRROR_PATH}|g\" -e \"s|https://downloads.openwrt.org|${OPENWRT_MIRROR_PATH}|g\" repositories.conf"
 fi
 
-while getopts "ha:b:cd:k:n:p:v:" OPTION; do
+while getopts "ha:b:cd:i:k:n:p:" OPTION; do
     case $OPTION in
     h)
         print_usage
@@ -52,6 +51,9 @@ while getopts "ha:b:cd:k:n:p:v:" OPTION; do
     d)
         DL_DIR=${OPTARG}
         ;;
+    i)
+        DOCKER_IMAGE=${OPTARG}
+        ;;
     k)
         KUSTOMIZE=${OPTARG}
         ;;
@@ -60,9 +62,6 @@ while getopts "ha:b:cd:k:n:p:v:" OPTION; do
         ;;
     p)
         PROFILE=${OPTARG}
-        ;;
-    v)
-        VERSION=${OPTARG}
         ;;
     *)
         print_usage
@@ -82,7 +81,6 @@ fi
 if [[ ! -d ${BIN_DIR} ]]; then
     mkdir -p "${BIN_DIR}"
 fi
-
 
 #shellcheck disable=SC2086
 DOCKER_OPTS=(--rm -it -u "$(id -u):$(id -g)" -v "$(readlink -f ${BIN_DIR}):/home/build/openwrt/bin")
@@ -113,26 +111,25 @@ if [[ -n ${CONFIG_TARGET_KERNEL_PARTSIZE} ]]; then
     _cmd="${_cmd} CONFIG_TARGET_KERNEL_PARTSIZE=${CONFIG_TARGET_KERNEL_PARTSIZE}"
 fi
 if [[ -n ${CONFIG_TARGET_ROOTFS_PARTSIZE} ]]; then
-   _cmd="${_cmd} CONFIG_TARGET_ROOTFS_PARTSIZE=${CONFIG_TARGET_ROOTFS_PARTSIZE}"
+    _cmd="${_cmd} CONFIG_TARGET_ROOTFS_PARTSIZE=${CONFIG_TARGET_ROOTFS_PARTSIZE}"
 fi
 
-docker run "${DOCKER_OPTS[@]}" "${DOCKER_IMAGE}-${VERSION}" bash -c "${_cmd}"
-exit 0
+docker run "${DOCKER_OPTS[@]}" "${DOCKER_IMAGE}" bash -c "${_cmd}"
 
 # qemu-img convert to make the image as thin provision, do not compress it any more to make backing file across pool
-if [[ $(command -v qemu-img) ]]; then
-    while IFS= read -r _gz_image; do
-        _prefix=$(dirname "${_gz_image}")
-        _img=${_prefix}/$(basename -s .gz "${_gz_image}")
-        _qcow=${_prefix}/$(basename -s .img.gz "${_gz_image}").qcow2c
-        if [[ -f "${_qcow}" ]]; then
-            continue
-        fi
-        if [[ ! -f "${_img}" ]]; then
-            gunzip -k "${_gz_image}" || true
-        fi
-        qemu-img convert -c -O qcow2 "${_img}" "${_qcow}"
-        qemu-img convert -O qcow2 "${_qcow}" "${_img}" # Ventoy use img
-        unset -v _prefix _img _qcow
-    done < <(find "${BIN_DIR}/targets/x86/64" -iname "*-combined*.img.gz" | grep -v efi | sort)
-fi
+# if [[ $(command -v qemu-img) ]]; then
+#     while IFS= read -r _gz_image; do
+#         _prefix=$(dirname "${_gz_image}")
+#         _img=${_prefix}/$(basename -s .gz "${_gz_image}")
+#         _qcow=${_prefix}/$(basename -s .img.gz "${_gz_image}").qcow2c
+#         if [[ -f "${_qcow}" ]]; then
+#             continue
+#         fi
+#         if [[ ! -f "${_img}" ]]; then
+#             gunzip -k "${_gz_image}" || true
+#         fi
+#         qemu-img convert -c -O qcow2 "${_img}" "${_qcow}"
+#         qemu-img convert -O qcow2 "${_qcow}" "${_img}" # Ventoy use img
+#         unset -v _prefix _img _qcow
+#     done < <(find "${BIN_DIR}/targets/x86/64" -iname "*-combined*.img.gz" | grep -v efi | sort)
+# fi
