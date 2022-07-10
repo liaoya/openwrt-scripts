@@ -5,6 +5,8 @@ User OpenWRT docker image to build firmware
 There're no image after `18.06.7` for `18.06` series
 
 - `docker.io/openwrtorg/imagebuilder:x86-64-21.02.3`
+- `docker.io/openwrtorg/imagebuilder:armvirt-64-21.02.3`
+- `docker.io/openwrtorg/imagebuilder:ath79-nand-21.02.3`
 - `docker.io/openwrtorg/imagebuilder:ramips-mt7621-21.02.3`
 - `docker.io/openwrtorg/imagebuilder:x86-64-19.07.8`
 - `docker.io/openwrtorg/imagebuilder:x86-64-18.06.7`
@@ -33,6 +35,10 @@ bash build.sh -b bin-21.02.3 -v 21.02.3
 
 mkdir newifi-d2-21.02.3
 bash build.sh -b newifi-d2-21.02.3 -i docker.io/openwrtorg/imagebuilder:ramips-mt7621-21.02.3 -p d-team_newifi-d2
+
+mkdir wndr4300-21.02.3
+bash build.sh -b wndr4300-21.02.3 -i docker.io/openwrtorg/imagebuilder:ath79-nand-21.02.3
+bash build.sh -b wndr4300-21.02.3 -i docker.io/openwrtorg/imagebuilder:ath79-nand-21.02.3 -p netgear_wndr4300
 
 env CONFIG_TARGET_KERNEL_PARTSIZE=16 CONFIG_TARGET_ROOTFS_PARTSIZE=128 ./build.sh -b bin-19.07.8 -v 19.07.8
 ```

@@ -98,7 +98,11 @@ for item in http_proxy https_proxy no_proxy; do
     fi
 done
 
-_cmd=${_cmd:+${_cmd}; }"make image ${PROFILE:+PROFILE=${PROFILE}} EXTRA_IMAGE_NAME=${NAME}"
+if [[ -n ${PROFILE} ]]; then
+    _cmd=${_cmd:+${_cmd}; }"make image ${PROFILE:+PROFILE=${PROFILE}} EXTRA_IMAGE_NAME=${NAME}"
+else
+    _cmd=${_cmd:+${_cmd}; }" bash"
+fi
 if [[ -n ${KUSTOMIZE} ]]; then
     _cmd="${_cmd} FILES=customize"
     #shellcheck disable=SC2086
