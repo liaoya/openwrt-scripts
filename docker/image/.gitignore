@@ -3,4 +3,5 @@
 # Except this file
 !.gitignore
 !build.sh
+!config/
 !README.md
