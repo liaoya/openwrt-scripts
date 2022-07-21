@@ -1,6 +1,6 @@
 #!/bin/sh
 
-uci -q batch << EOI
+uci -q batch <<EOI
 set system.@system[0].conloglevel='5'
 set system.@system[0].cronloglevel='8'
 set system.@system[0].hostname='openwrt'
@@ -25,7 +25,7 @@ EOI
 while uci -q delete dropbear.@dropbear[0]; do :; done
 uci commit dropbear
 
-uci -q batch << EOI
+uci -q batch <<EOI
 add dropbear dropbear
 set dropbear.@dropbear[-1].PasswordAuth='on'
 set dropbear.@dropbear[-1].Port='22'
@@ -33,7 +33,7 @@ set dropbear.@dropbear[-1].Interface='lan'
 commit dropbear
 EOI
 
-cat << EOF | tee /etc/dropbear/authorized_keys
+cat <<EOF | tee /etc/dropbear/authorized_keys
 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA6NF8iallvQVp22WDkTkyrtvp9eWW6A8YVr+kz4TjGYe7gHzIw+niNltGEFHzD8+v1I2YJ6oXevct1YeS0o9HZyN1Q9qgCgzUFtdOKLv6IedplqoPkcmF0aYet2PkEDo3MlTBckFXPITAMzF8dJSIFo9D8HfdOV0IAdx4O7PtixWKn5y2hMNG0zQPyUecp4pzC6kivAIhyfHilFR61RGL+GPXQ2MWZWFYbAGjyiYJnAmCP3NOTd0jMZEnDkbUvxhMmBYSdETk1rRgm+R4LOzFUGaHqHDLKLX+FIPKcF96hrucXzcWyLbIbEgE98OHlnVYCzRdK8jlqm8tehUc9c9WhQ== vagrant insecure public key
 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCrrRHaBXXcSCEqKCHLpm2z5EnmyaaukSN/sf6xNPMdX0jQcjr735GlTpaFJ7QG8PnmQiWT+OkrDVtXeFi6SKso3hXekASO8L69xKU48GVeUrTjvE1dnq822SMyLDDjGDN0nuhGrbzX7jX1ZssB07QXguHug+xnQXERr5yFRVKGOLbkLIY1qHvAy76/tVlQEo68b324g2TltV2L3mZtMsf5lI/465rWlCJZBqqI3kGKFV4RFpFS2wNpwTwyFkCpiI81LdAfUsS3Gx41Da2pmEGfaUubiwghlrtGHhcczMLwwktujngE499LNGiH9i+5I/gTsIz7Z2Qq3IpLaA4EFDsE16SwINJem6vvF4i5lUGy+vxqKAOBiAh/LH09YNjlGx9ZqFELaQBafExdSoX/MhJtPya+RzaG4T1O3nDdVOSMh3hikLFv5L7qTqUZMqjcGSKjzyxbHr8PO+PLheKJS2Cipp+e7Ym/HC5QQ/vkptolZHDbGugHBibiewirFOdHCOM= tom.shen@calix.com
 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCbf0n/J8xFPekUKnfhKQJ+jrpqP9+v67qe0HDpQv+wsyuSjPCh5nQxXJ7wvJ3mG5K38PxZqbeeppLaK/qitOWGs1eZYDMjg8G8Y1nWFmTqWOH1M7q0JxX5PQOqo0angGLRk8wsKqSIsT4KDAzCCLudYp4RP3VqeKkYWgjb2izmFNR3jYmGNo2JPsPkaWPxSOA/5UUNyGWPT1Pkga6bCn3oEP57FASE4JHAf7KhdaEL9gysLLY1/wMl/Rs4PpJdepJ4K3B5WY7KqVqBjmTJmM6tUOzam0JEF4iwAFc3fUXynWj6BmTQD+ERPykr9W72S/o6PdgLd1BKDiXZ/p4tx4h3 tshen@remote

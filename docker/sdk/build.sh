@@ -2,135 +2,135 @@
 
 set -e
 
-function print_usage() {
-    #shellcheck disable=SC2016
-    cat <<EOF
-Usage: $(basename "${BASH_SOURCE[0]}") [OPTIONS]
-    -h, show help.
-    -b, the bin directory binding for image output. ${BIN_DIR:+The default is '"${BIN_DIR}"'}
-    -c, clean build. ${CLEAN:+The default is "${CLEAN}"}
-    -d, the dl directory binding for package cache. ${DL_DIR:+The default is '"${DL_DIR}"'}
-    -k, the directory for customized files. ${KUSTOMIZE:+The default is "${KUSTOMIZE}"}
-    -n, the customize name. ${NAME:+The default is '"${NAME}"'}
-    -p, the profile. ${NAME:+The default is '"${NAME}"'}
-    -v, the openwrt version. ${VERSION:+The default is '"${VERSION}"'}
-EOF
+function _check_param() {
+    while (($#)); do
+        if [[ -z ${!1} ]]; then
+            echo "\${$1} is required"
+            return 1
+        fi
+        shift 1
+    done
 }
 
-BIN_DIR=${BIN_DIR:-"$PWD/bin"}
-CLEAN=0
-DL_DIR=${DL_DIR:-""}
-DOCKER_IMAGE=docker.io/openwrtorg/imagebuilder:x86-64
-KUSTOMIZE=${KUSTOMIZE:-""}
-NAME=${NAME:-default}
-PACKAGES=${PACKAGES:+${PACKAGES} }"kmod-dax kmod-dm" # kmod-dax kmod-dm is required for ventoy
-PROFILE=${PROFILE:-""}
-VERSION=${VERSION:-"21.02.3"}
+function disable_option() {
+    local config=$1
+    sed -i "s/${config}=y/# ${config} is not set/g" .config
+}
 
-_cmd=""
-if [[ $(timedatectl show | grep Timezone | cut -d= -f2) == Asia/Shanghai ]]; then
-    OPENWRT_MIRROR_PATH=${OPENWRT_MIRROR_PATH:-http://mirrors.ustc.edu.cn/openwrt}
-    _cmd=${_cmd:+${_cmd}; }"sed -i -e \"s|http://downloads.openwrt.org|${OPENWRT_MIRROR_PATH}|g\" -e \"s|https://downloads.openwrt.org|${OPENWRT_MIRROR_PATH}|g\" repositories.conf"
-fi
+function enable_option() {
+    local config=$1
+    sed -i "s/# ${config} is not set/${config}=y/g" .config
+}
 
-while getopts "ha:b:cd:k:n:p:v:" OPTION; do
-    case $OPTION in
-    h)
-        print_usage
-        exit 0
-        ;;
-    c)
-        CLEAN=1
-        ;;
-    a)
-        PACKAGES=PACKAGES="${PACKAGES:+$PACKAGES }${OPTARG}"
-        ;;
-    b)
-        BIN_DIR=${OPTARG}
-        ;;
-    d)
-        DL_DIR=${OPTARG}
-        ;;
-    k)
-        KUSTOMIZE=${OPTARG}
-        ;;
-    n)
-        NAME=${OPTARG}
-        ;;
-    p)
-        PROFILE=${OPTARG}
-        ;;
-    v)
-        VERSION=${OPTARG}
-        ;;
-    *)
-        print_usage
-        exit 1
-        ;;
-    esac
-done
+# Passwall has been remove the source code
+# grep -i passwall .config | sed -e 's/=m//g' -e 's/=y//g' -e 's/^# //g' -e 's/ is not set//g' | sort
+function configure_passwall() {
+    for config in CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Brook \
+        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_ChinaDNS_NG \
+        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Haproxy \
+        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_NaiveProxy \
+        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_ShadowsocksR_Libev_Server \
+        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Trojan_GO; do
+        disable_option "${config}"
+    done
+}
 
-if [[ ${CLEAN} -gt 0 ]]; then
-    if [[ -d "${BIN_DIR}" ]]; then
-        rm -fr "${BIN_DIR}"
+# grep -i app-ssr-plus .config | sed -e 's/=m//g' -e 's/=y//g' -e 's/^# //g' -e 's/ is not set//g' | sort
+function configure_ssr_plus() {
+    # shellcheck disable=SC2043
+    for config in CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_NaiveProxy \
+        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks_Libev_Server \
+        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_ShadowsocksR_Libev_Server \
+        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks_Rust_Server \
+        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_ShadowsocksR_Server; do
+        disable_option "${config}"
+    done
+
+    for config in CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Kcptun \
+        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks_Libev_Client \
+        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_ShadowsocksR_Libev_Client \
+        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks_Rust_Client \
+        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Simple_Obfs \
+        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_V2ray_Plugin \
+        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Xray; do
+        enable_option "${config}"
+    done
+}
+
+function configure_v2ray() {
+    if [[ -x $(readlink -f staging_dir/host/bin/upx) ]]; then
+        enable_option CONFIG_V2RAY_CORE_COMPRESS_UPX
+        enable_option CONFIG_V2RAY_CTL_COMPRESS_UPX
+    else
+        disable_option CONFIG_V2RAY_CORE_COMPRESS_UPX
+        disable_option CONFIG_V2RAY_CTL_COMPRESS_UPX
     fi
-    if [[ -n ${DL_DIR} && -d "${DL_DIR}" ]]; then
-        rm -fr "${DL_DIR}"
-    fi
-fi
-if [[ ! -d ${BIN_DIR} ]]; then
-    mkdir -p "${BIN_DIR}"
-fi
+}
 
-docker_cmd="docker run --rm -t"
-#shellcheck disable=SC2086
-docker_cmd=${docker_cmd:+${docker_cmd} }"-u build:$(id -gn) --group-add $(id -gn) -v $(readlink -f ${BIN_DIR}):/home/build/openwrt/bin"
-if [[ -n ${DL_DIR} ]]; then
-    if [[ -d "${DL_DIR}" ]]; then
-        mkdir -p "${DL_DIR}"
-    fi
-    #shellcheck disable=SC2086
-    docker_cmd=${docker_cmd:+${docker_cmd} }"-v $(readlink -f ${DL_DIR}):/home/build/openwrt/dl"
-fi
+# grep -i app-vssr-plus .config | sed -e 's/=m//g' -e 's/=y//g' -e 's/^# //g' -e 's/ is not set//g' | sort
+function configure_vssr_plus() {
+    for config in CONFIG_PACKAGE_luci-app-vssr-plus_INCLUDE_ShadowsocksR_Server \
+        CONFIG_PACKAGE_luci-app-vssr-plus_INCLUDE_ShadowsocksR_Socks; do
+        disable_option "${config}"
+    done
+}
 
-for item in http_proxy https_proxy no_proxy; do
-    if [[ -n ${!item} ]]; then
-        docker_cmd=${docker_cmd:+${docker_cmd} }"--env ${item}=${!item}"
-    fi
-done
-
-_cmd=${_cmd:+${_cmd}; }"make image ${PROFILE:+PROFILE=${PROFILE}} EXTRA_IMAGE_NAME=${NAME}"
-if [[ -n ${KUSTOMIZE} ]]; then
-    _cmd="${_cmd} FILES=customize"
-    #shellcheck disable=SC2086
-    docker_cmd=${docker_cmd:+${docker_cmd} }"-v $(readlink -f ${KUSTOMIZE}):/home/build/openwrt/customize"
-fi
-if [[ -n ${PACKAGES} ]]; then
-    _cmd="${_cmd} PACKAGES=\"${PACKAGES}\""
-fi
-if [[ -n ${CONFIG_TARGET_KERNEL_PARTSIZE} ]]; then
-    _cmd="${_cmd} CONFIG_TARGET_KERNEL_PARTSIZE=${CONFIG_TARGET_KERNEL_PARTSIZE}"
-fi
-if [[ -n ${CONFIG_TARGET_ROOTFS_PARTSIZE} ]]; then
-    _cmd="${_cmd} CONFIG_TARGET_ROOTFS_PARTSIZE=${CONFIG_TARGET_ROOTFS_PARTSIZE}"
-fi
-
-eval "${docker_cmd} ${DOCKER_IMAGE}-${VERSION} bash -c '${_cmd}'"
-
-# qemu-img convert to make the image as thin provision, do not compress it any more to make backing file across pool
-if [[ $(command -v qemu-img) ]]; then
-    while IFS= read -r _gz_image; do
-        _prefix=$(dirname "${_gz_image}")
-        _img=${_prefix}/$(basename -s .gz "${_gz_image}")
-        _qcow=${_prefix}/$(basename -s .img.gz "${_gz_image}").qcow2c
-        if [[ -f "${_qcow}" ]]; then
-            continue
+function build() {
+    for src_dir in package/feeds/*; do
+        [[ -d "${src_dir}" ]] || continue
+        _build=1
+        for official in base freifunk luci packages routing telephony; do
+            if [[ ${src_dir} == "package/feeds/$official" || ${src_dir} == "package/feeds/$official/" ]]; then
+                _build=0
+                break
+            fi
+        done
+        if [[ "${_build}" -gt 0 ]]; then
+            for pkg in "${src_dir}"/*; do
+                [[ -d ${pkg} ]] || continue
+                for _skip in node-request openssl1.1; do
+                    if [[ ${_skip} == "${_skip}" ]]; then
+                        break
+                    fi
+                done
+                make -j"$(nproc)" "${pkg}"/compile || true
+            done
         fi
-        if [[ ! -f "${_img}" ]]; then
-            gunzip -k "${_gz_image}" || true
-        fi
-        qemu-img convert -c -O qcow2 "${_img}" "${_qcow}"
-        qemu-img convert -O qcow2 "${_qcow}" "${_img}" # Ventoy use img
-        unset -v _prefix _img _qcow
-    done < <(find "${BIN_DIR}/targets/x86/64" -iname "*-combined*.img.gz" | grep -v efi | sort)
+    done
+}
+
+_check_param MAJOR_VERSION
+
+if [[ -n ${GIT_PROXY} ]]; then
+    git config --global url."${GIT_PROXY}".insteadOf https://
 fi
+
+sed -e 's|git.openwrt.org/openwrt/openwrt|github.com/openwrt/openwrt|g' \
+    -e 's|git.openwrt.org/project/luci|github.com/openwrt/luci|g' \
+    -e 's|git.openwrt.org/feed/telephony|github.com/openwrt/telephony|g' \
+    -i feeds.conf.default
+# Change the package definition
+sed -e '/^src-git packages http/d' -i feeds.conf.default
+echo "src-git packages https://github.com/Lienol/openwrt-packages;${MAJOR_VERSION}" >>feeds.conf.default
+{
+    echo "src-git Lienol https://github.com/Lienol/openwrt-package"
+    echo "src-git xiaorouji https://github.com/xiaorouji/openwrt-passwall"
+    echo "src-git fw876 https://github.com/fw876/helloworld"
+    echo "src-git kenzok8 https://github.com/kenzok8/openwrt-packages"
+    echo "src-git small https://github.com/kenzok8/small"
+    echo "src-git jell https://github.com/kenzok8/jell"
+    echo "src-git liuran001 https://github.com/liuran001/openwrt-packages;packages"
+} >>feeds.conf.default
+
+scripts/feeds clean
+./scripts/feeds update -a
+./scripts/feeds install -a
+rm -fr .config ./tmp
+make defconfig
+
+configure_passwall
+configure_ssr_plus
+configure_v2ray
+configure_vssr_plus
+
+build

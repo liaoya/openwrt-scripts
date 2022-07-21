@@ -34,7 +34,7 @@ bash -x build.sh -p ath79-nand -P netgear_wndr4300 -v 21.02.3 -t /work/openwrt/p
 bash -x build.sh -p ramips-mt7621 -P d-team_newifi-d2 -v 21.02.3 -t /work/openwrt/package/21.02/mt7621 -c
 
 bash -x build.sh -p ramips-mt7621 -P d-team_newifi-d2 -v 19.07.9 -c
-bash -x build.sh -p ath79-nand -P netgear_wndr4300 -v 19.07.9 -c
+bash -x build.sh -p ath79-nand -P WNDR4300V1 -v 19.07.9 -c
 ```
 
 ## Backup

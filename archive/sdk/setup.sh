@@ -174,4 +174,4 @@ make defconfig
 
 if [[ $(command -v pre_ops) ]]; then pre_ops; fi
 
-make -j"$(nproc)" package/feeds/luci/luci-base/compile
+make -j package/feeds/luci/luci-base/compile

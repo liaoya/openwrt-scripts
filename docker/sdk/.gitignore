@@ -1,0 +1,6 @@
+# Ignore everything in this directory
+*
+!.gitignore
+!build.sh
+!README.md
+!run.sh

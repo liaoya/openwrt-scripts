@@ -58,6 +58,8 @@ rm -fr feeds/packages/net/kcptun
 sed -i -e 's/PKG_VERSION:=.*/PKG_VERSION:=3.3.4/g' -e 's/PKG_RELEASE:=.*/PKG_RELEASE:=1/g' feeds/packages/net/shadowsocks-libev/Makefile
 ./scripts/feeds update -i
 ./scripts/feeds install -a
+rm -fr .config ./tmp
+make defconfig
 ```
 
 ## Other Packages
