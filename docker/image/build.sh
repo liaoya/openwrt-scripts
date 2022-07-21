@@ -6,7 +6,18 @@ function print_usage() {
     #shellcheck disable=SC2016
     cat <<EOF
 Usage: $(basename "${BASH_SOURCE[0]}") [OPTIONS]
-    -h, show help.
+OPTIONS
+    -h, --help
+        Display help text and exit. No other output is generated.
+    --packages packages
+        Addtional package. E.g. "-wpad-mini -wpad-basic -wpad-basic-wolfssl -dnsmasq dnsmasq-full". ${package:+The default is '"${package}"'}
+    --platform platform
+        OpenWRT platform, e.g. armvirt-64, ath79-nand, ramips-mt7621, x86-64. ${platform:+The default is '"${platform}"'}
+    -p, --profile profilename
+        override the default target profile. The name maybe different for different OpenWRT version. ${profilename:+The default is '"${profilename}"'}
+    -v, --version version
+        OpenWRT version. ${version:+The default is '"${version}"'}
+
     -a PACKAGES, additional packages. ${PACKAGES:+The default is "${PACKAGES}"}
     -b BIN_DIR, the bin directory binding for image output. ${BIN_DIR:+The default is '"${BIN_DIR}"'}
     -c, clean build. ${CLEAN:+The default is "${CLEAN}"}
@@ -118,7 +129,7 @@ if [[ -n ${CONFIG_TARGET_ROOTFS_PARTSIZE} ]]; then
     _cmd="${_cmd} CONFIG_TARGET_ROOTFS_PARTSIZE=${CONFIG_TARGET_ROOTFS_PARTSIZE}"
 fi
 
-docker run "${DOCKER_OPTS[@]}" "${DOCKER_IMAGE}" bash -c "${_cmd}"
+echo docker run "${DOCKER_OPTS[@]}" "${DOCKER_IMAGE}" bash -c "${_cmd}"
 
 # qemu-img convert to make the image as thin provision, do not compress it any more to make backing file across pool
 # if [[ $(command -v qemu-img) ]]; then
