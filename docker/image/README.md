@@ -11,10 +11,38 @@ There're no image after `18.06.7` for `18.06` series
 - `docker.io/openwrtorg/imagebuilder:x86-64-19.07.8`
 - `docker.io/openwrtorg/imagebuilder:x86-64-18.06.7`
 
+```bash
+# The package must be declare external
+PACKAGES="${PACKAGES:+$PACKAGES }-dnsmasq -wpad-mini -wpad-basic -wpad-basic-wolfssl dnsmasq-full wpad"
+PACKAGES="${PACKAGES:+$PACKAGES }atop bash bind-dig coreutils-base64 curl diffutils dropbearconvert fdisk file \
+ip-full ipset \
+lscpu \
+luci luci-theme-bootstrap \
+nano pciutils procps-ng-pkill tcpdump tmux \
+uci wget"
+export PACKAGES
+
+bash -x build.sh -p x86-64 -v 21.02.3 --dryrun
+
+bash -x build.sh -p x86-64 -v 21.02.3 -c
+bash -x build.sh -p ath79-nand -P netgear_wndr4300 -v 21.02.3 -c
+bash -x build.sh -p ramips-mt7621 -P d-team_newifi-d2 -v 21.02.3 -c
+
+PACKAGES="${PACKAGES:+$PACKAGES }luci-app-vlmcsd vlmcsd"
+bash -x build.sh -p x86-64 -v 21.02.3 -t /work/openwrt/package/21.02/x64 -c
+bash -x build.sh -p ath79-nand -P netgear_wndr4300 -v 21.02.3 -t /work/openwrt/package/21.02/ath79 -c
+bash -x build.sh -p ramips-mt7621 -P d-team_newifi-d2 -v 21.02.3 -t /work/openwrt/package/21.02/mt7621 -c
+
+bash -x build.sh -p ramips-mt7621 -P d-team_newifi-d2 -v 19.07.9 -c
+bash -x build.sh -p ath79-nand -P netgear_wndr4300 -v 19.07.9 -c
+```
+
+## Backup
+
 The command to build
 
 ```bash
-packages="-dnsmasq -wpad-mini -wpad-basic -wpad-basic-wolfssl dnsmasq-full wpad \
+PACKAGES="-dnsmasq -wpad-mini -wpad-basic -wpad-basic-wolfssl dnsmasq-full wpad \
 atop bash bind-dig coreutils-base64 curl diffutils dropbearconvert fdisk file \
 ip-full ipset \
 lscpu \
@@ -34,37 +62,7 @@ docker run --rm -it -u "$(id -u):$(id -g)" \
     -v "$(readlink -f ${bin_dir}):/home/build/openwrt/bin" \
     -v "$PWD/config/${major_version}/${platform}/${profilename}:/home/build/openwrt/custom" \
     -v "${thirdparty}:/home/build/openwrt/thirdparty" \
-    docker.io/openwrtorg/imagebuilder:x86-64-21.02.3 bash -c "sed -i -e 's|https://downloads.openwrt.org|http://mirrors.ustc.edu.cn/openwrt|g' -e 's|http://downloads.openwrt.org|http://mirrors.ustc.edu.cn/openwrt|g' -e 's|# src custom file:///usr/src/openwrt/bin/x86/packages|src custom file:///home/build/openwrt/thirdparty|g' -e 's/^option check_signature$/# &/' repositories.conf; make image PROFILE=${profilename} PACKAGES='${packages}' FILES=/home/build/openwrt/custom"
-```
-
-```bash
-PACKAGES="${PACKAGES:+$PACKAGES }-wpad-mini -wpad-basic -wpad-basic-wolfssl -dnsmasq"
-PACKAGES="${PACKAGES:+$PACKAGES }atop bash bind-dig coreutils-base64 curl diffutils dnsmasq-full dropbearconvert fdisk file \
-ip-full ipset \
-lscpu \
-luci luci-theme-bootstrap \
-nano pciutils procps-ng-pkill tcpdump tmux \
-uci wget wpad"
-export PACKAGES
-
-# Use cache server
-export http_proxy=http://10.245.91.190:3128
-export https_proxy=http://10.245.91.190:3128
-export no_proxy=localhost,127.0.0.1,calix.local,calix.dev
-
-# kmod-dax kmod-dm for x86 is required for ventoy
-PACKAGES=${PACKAGES:+${PACKAGES} }"kmod-dax kmod-dm"
-
-bash build.sh -b bin-21.02.3 -v 21.02.3
-
-mkdir newifi-d2-21.02.3
-bash build.sh -b newifi-d2-21.02.3 -i docker.io/openwrtorg/imagebuilder:ramips-mt7621-21.02.3 -p d-team_newifi-d2
-
-mkdir wndr4300-21.02.3
-bash build.sh -b wndr4300-21.02.3 -i docker.io/openwrtorg/imagebuilder:ath79-nand-21.02.3
-bash build.sh -b wndr4300-21.02.3 -i docker.io/openwrtorg/imagebuilder:ath79-nand-21.02.3 -p netgear_wndr4300
-
-env CONFIG_TARGET_KERNEL_PARTSIZE=16 CONFIG_TARGET_ROOTFS_PARTSIZE=128 ./build.sh -b bin-19.07.8 -v 19.07.8
+    docker.io/openwrtorg/imagebuilder:x86-64-21.02.3 bash -c "sed -i -e 's|https://downloads.openwrt.org|http://mirrors.ustc.edu.cn/openwrt|g' -e 's|http://downloads.openwrt.org|http://mirrors.ustc.edu.cn/openwrt|g' -e 's|# src custom file:///usr/src/openwrt/bin/x86/packages|src custom file:///home/build/openwrt/thirdparty|g' -e 's/^option check_signature$/# &/' repositories.conf; make image PROFILE=${profilename} PACKAGES='${PACKAGES}' FILES=/home/build/openwrt/custom"
 ```
 
 ```text
