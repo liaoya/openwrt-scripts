@@ -72,16 +72,29 @@ if [[ ${CLEAN} -gt 0 && -d "${BIN_DIR}" ]]; then rm -fr "${BIN_DIR}"; fi
 if [[ ! -d ${BIN_DIR} ]]; then mkdir -p "${BIN_DIR}"; fi
 if [[ ! -d "${DL_DIR}" ]]; then mkdir -p "${DL_DIR}"; fi
 
-DOCKER_OPTS=(--rm -it -u "$(id -u):$(id -g)" -v "${BIN_DIR}:/home/build/openwrt/bin" -v "${DL_DIR}:/home/build/openwrt/dl" -v "${THIS_DIR}/build.sh:/home/build/openwrt/build.sh")
+DOCKER_OPTS=(--rm -it -u "$(id -u):$(id -g)" -v "${BIN_DIR}:/home/build/openwrt/bin" -v "${DL_DIR}:/home/build/openwrt/dl")
+for script in build.sh checkout.sh config.sh; do
+    DOCKER_OPTS+=(-v "${THIS_DIR}/${script}:/home/build/${script}")
+done
+if [[ -n ${GIT_PROXY} ]]; then
+    cat <<EOF | tee "${THIS_DIR}/.gitconfig"
+[url "${GIT_PROXY}"]
+        insteadOf = https://
+EOF
+    DOCKER_OPTS+=(-v "${THIS_DIR}/.gitconfig:/home/build/.gitconfig")
+fi
 DOCKER_OPTS+=(--env "MAJOR_VERSION=${MAJOR_VERSION}")
-for item in http_proxy https_proxy no_proxy HTTP_PROXY HTTPS_PROXY NO_PROXY GIT_PROXY; do
+for item in http_proxy https_proxy no_proxy HTTP_PROXY HTTPS_PROXY NO_PROXY; do
     if [[ -n ${!item} ]]; then
         DOCKER_OPTS+=(--env "${item}=${!item}")
     fi
 done
+if [[ $(timedatectl show | grep Timezone | cut -d= -f2) == Asia/Shanghai ]]; then
+    DOCKER_OPTS+=(--env "DEBIAN_MIRROR=http://mirrors.ustc.edu.cn")
+fi
 
 if [[ ${DRYRUN:-0} -eq 0 ]]; then
-    docker run "${DOCKER_OPTS[@]}" "${DOCKER_IMAGE}" ./build.sh
+    docker run "${DOCKER_OPTS[@]}" "${DOCKER_IMAGE}" bash -c '$HOME/checkout.sh; $HOME/config.sh; $HOME/build.sh'
 else
     docker run "${DOCKER_OPTS[@]}" "${DOCKER_IMAGE}" bash
 fi

@@ -14,9 +14,15 @@ docker run --rm -it -u $(id -u):$(id -g) -v $PWD/bin:/home/build/openwrt/bin doc
 
 ```bash
 export GIT_PROXY=http://192.168.1.202:9080/
+# export GIT_PROXY=http://10.245.91.190:9080/
 bash -x run.sh -p x86-64
 bash -x run.sh -p ramips-mt7621
 bash -x run.sh -p ath79-nand
+```
+
+```bash
+find package/feeds/ -iname luci-app-ssr*
+make -j package/feeds/fw876/luci-app-ssr-plus/compile
 ```
 
 ```bash

@@ -2,5 +2,7 @@
 *
 !.gitignore
 !build.sh
+!checkout.sh
+!config.sh
 !README.md
 !run.sh
