@@ -20,7 +20,7 @@ function build() {
                         break
                     fi
                 done
-                make -j"$(nproc)" "${pkg}"/compile || true
+                make -j "${pkg}"/compile || true
             done
         fi
     done

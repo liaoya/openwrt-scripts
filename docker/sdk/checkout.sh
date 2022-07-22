@@ -32,7 +32,7 @@ echo "src-git packages https://github.com/Lienol/openwrt-packages;${MAJOR_VERSIO
     echo "src-git xiaorouji https://github.com/xiaorouji/openwrt-passwall"
     echo "src-git fw876 https://github.com/fw876/helloworld"
     echo "src-git kenzok8 https://github.com/kenzok8/openwrt-packages"
-    echo "src-git small https://github.com/kenzok8/small"
+    echo "src-git small-package https://github.com/kenzok8/small-package"
     echo "src-git jell https://github.com/kenzok8/jell"
     echo "src-git liuran001 https://github.com/liuran001/openwrt-packages;packages"
 } >>feeds.conf.default

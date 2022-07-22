@@ -23,6 +23,11 @@ bash -x run.sh -p ath79-nand
 ```bash
 find package/feeds/ -iname luci-app-ssr*
 make -j package/feeds/fw876/luci-app-ssr-plus/compile
+
+make -j package/feeds/kenzok8/luci-app-bypass/compile
+make -j package/feeds/kenzok8/luci-app-passwall/compile
+make -j package/feeds/kenzok8/luci-app-passwall2/compile
+make -j package/feeds/kenzok8/luci-app-vssr/compile
 ```
 
 ```bash
