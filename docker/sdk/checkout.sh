@@ -12,13 +12,24 @@ function _check_param() {
     done
 }
 
+function _add_feed() {
+    while (($#)); do
+        if ! grep -s -q "src-git $1" feeds.conf.default; then
+            echo "src-git $1 $2" >>feeds.conf.default
+        fi
+        shift 2
+    done
+}
+
 _check_param MAJOR_VERSION
 if [[ -n ${DEBIAN_MIRROR} ]]; then
     sudo sed -i -e "s|http://deb.debian.org|${DEBIAN_MIRROR}|g" -e "s|https://deb.debian.org|${DEBIAN_MIRROR}|g" -e "s|http://security.debian.org|${DEBIAN_MIRROR}|g" -e "s|https://security.debian.org|${DEBIAN_MIRROR}|g" /etc/apt/sources.list
 fi
 sudo apt update -yq
-sudo apt install upx-ucl
-ln -s "$(command -v upx)" staging_dir/host/bin/upx
+sudo apt install -yq upx-ucl
+if [[ ! -L staging_dir/host/bin/upx ]]; then
+    ln -s "$(command -v upx)" staging_dir/host/bin/upx
+fi
 
 sed -e 's|git.openwrt.org/openwrt/openwrt|github.com/openwrt/openwrt|g' \
     -e 's|git.openwrt.org/project/luci|github.com/openwrt/luci|g' \
@@ -26,21 +37,21 @@ sed -e 's|git.openwrt.org/openwrt/openwrt|github.com/openwrt/openwrt|g' \
     -i feeds.conf.default
 # Change the package definition
 sed -e '/^src-git packages http/d' -i feeds.conf.default
-echo "src-git packages https://github.com/Lienol/openwrt-packages;${MAJOR_VERSION}" >>feeds.conf.default
-{
-    echo "src-git Lienol https://github.com/Lienol/openwrt-package"
-    echo "src-git xiaorouji https://github.com/xiaorouji/openwrt-passwall"
-    echo "src-git fw876 https://github.com/fw876/helloworld"
-    echo "src-git kenzok8 https://github.com/kenzok8/openwrt-packages"
-    echo "src-git small-package https://github.com/kenzok8/small-package"
-    echo "src-git jell https://github.com/kenzok8/jell"
-    echo "src-git liuran001 https://github.com/liuran001/openwrt-packages;packages"
-} >>feeds.conf.default
+_add_feed packages "https://github.com/Lienol/openwrt-packages;${MAJOR_VERSION}"
 
-scripts/feeds clean
-./scripts/feeds update -a
-./scripts/feeds install -a
-rm -fr .config ./tmp
-make defconfig
+# Add the third party repo
+_add_feed Lienol https://github.com/Lienol/openwrt-package
+_add_feed xiaorouji https://github.com/xiaorouji/openwrt-passwall
+_add_feed fw876 https://github.com/fw876/helloworld
+_add_feed kenzok8 https://github.com/kenzok8/openwrt-packages
+_add_feed small https://github.com/kenzok8/small-package
+_add_feed jell https://github.com/kenzok8/jell
+_add_feed liuran001 "https://github.com/liuran001/openwrt-packages;packages"
+
+scripts/feeds clean || true
+./scripts/feeds update -a || true
+./scripts/feeds install -a || true
+rm -fr .config ./tmp || true
+make defconfig || true
 
 make -j package/feeds/luci/luci-base/compile
