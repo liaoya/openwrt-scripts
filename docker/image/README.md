@@ -17,21 +17,25 @@ PACKAGES="${PACKAGES:+$PACKAGES }-dnsmasq -wpad-mini -wpad-basic -wpad-basic-wol
 PACKAGES="${PACKAGES:+$PACKAGES }atop bash bind-dig coreutils-base64 curl diffutils dropbearconvert fdisk file \
 ip-full ipset \
 lscpu \
-luci luci-theme-bootstrap \
+luci-app-wol luci-i18n-wol-zh-cn \
+luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn \
+luci luci-compat luci-lib-ipkg luci-theme-bootstrap \
 nano pciutils procps-ng-pkill tcpdump tmux \
 uci wget"
 export PACKAGES
 
-bash -x build.sh -p x86-64 -v 21.02.3 --dryrun
+bash -x build.sh -p x86-64 --dryrun
 
-bash -x build.sh -p x86-64 -v 21.02.3 -c
-bash -x build.sh -p ath79-nand -P netgear_wndr4300 -v 21.02.3 -c
-bash -x build.sh -p ramips-mt7621 -P d-team_newifi-d2 -v 21.02.3 -c
+bash -x build.sh -p x86-64 -c
+bash -x build.sh -p ath79-nand -P netgear_wndr4300 -c
+bash -x build.sh -p ramips-mt7621 -P d-team_newifi-d2 -c
 
 PACKAGES="${PACKAGES:+$PACKAGES }luci-app-vlmcsd vlmcsd"
-bash -x build.sh -p x86-64 -v 21.02.3 -t /work/openwrt/package/21.02/x64 -c
-bash -x build.sh -p ath79-nand -P netgear_wndr4300 -v 21.02.3 -t /work/openwrt/package/21.02/ath79 -c
-bash -x build.sh -p ramips-mt7621 -P d-team_newifi-d2 -v 21.02.3 -t /work/openwrt/package/21.02/mt7621 -c
+bash -x build.sh -p x86-64 -t /work/openwrt/package/21.02/x64 -c
+bash -x build.sh -p ath79-nand -P netgear_wndr4300 -t /work/openwrt/package/21.02/ath79 -c
+bash -x build.sh -p ramips-mt7621 -P d-team_newifi-d2 -t /work/openwrt/package/21.02/mt7621 -c
+
+env PACKAGES="bash nano luci-app-wol luci-i18n-wol-zh-cn luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn luci luci-compat luci-lib-ipkg luci-theme-bootstrap luci-app-vlmcsd vlmcsd" bash -x build.sh -p ramips-mt7621 -P phicomm_k2p -t /work/openwrt/package/21.02/mt7621 -c
 
 bash -x build.sh -p ramips-mt7621 -P d-team_newifi-d2 -v 19.07.9 -c
 bash -x build.sh -p ath79-nand -P WNDR4300V1 -v 19.07.9 -c

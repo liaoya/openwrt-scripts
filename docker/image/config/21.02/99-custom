@@ -43,4 +43,7 @@ if ! grep -s -q "net.ipv4.tcp_fastopen=3" /etc/sysctl.conf; then
     echo "net.ipv4.tcp_fastopen=3" | tee -a /etc/sysctl.conf
 fi
 
-sed -i -e 's/set timeout="5"/set timeout="1"/g' /boot/grub/grub.cfg
+# The following is only work for x86 openwrt
+if [ -f /boot/grub/grub.cfg ]; then
+    sed -i -e 's/set timeout="5"/set timeout="1"/g' /boot/grub/grub.cfg
+fi

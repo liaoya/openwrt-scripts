@@ -30,6 +30,8 @@ function _check_param() {
     done
 }
 
+version=21.02.3
+
 function _print_help() {
     #shellcheck disable=SC2016
     cat <<EOF
