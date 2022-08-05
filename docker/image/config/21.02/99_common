@@ -41,6 +41,9 @@ ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCrrRHaBXXcSCEqKCHLpm2z5EnmyaaukSN/sf6xNPMd
 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCbf0n/J8xFPekUKnfhKQJ+jrpqP9+v67qe0HDpQv+wsyuSjPCh5nQxXJ7wvJ3mG5K38PxZqbeeppLaK/qitOWGs1eZYDMjg8G8Y1nWFmTqWOH1M7q0JxX5PQOqo0angGLRk8wsKqSIsT4KDAzCCLudYp4RP3VqeKkYWgjb2izmFNR3jYmGNo2JPsPkaWPxSOA/5UUNyGWPT1Pkga6bCn3oEP57FASE4JHAf7KhdaEL9gysLLY1/wMl/Rs4PpJdepJ4K3B5WY7KqVqBjmTJmM6tUOzam0JEF4iwAFc3fUXynWj6BmTQD+ERPykr9W72S/o6PdgLd1BKDiXZ/p4tx4h3 tshen@remote
 EOF
 
+sed -i -e 's|https://downloads.openwrt.org|http://mirrors.ustc.edu.cn/openwrt|g' -e 's|http://downloads.openwrt.org|http://mirrors.ustc.edu.cn/openwrt|g' /etc/opkg/distfeeds.conf
+# sed -i -e 's|http://mirrors.ustc.edu.cn/openwrt|http://downloads.openwrt.org|g' /etc/opkg/distfeeds.conf
+
 if ! grep -s -q "net.ipv4.tcp_fastopen=3" /etc/sysctl.conf; then
     echo "net.ipv4.tcp_fastopen=3" | tee -a /etc/sysctl.conf
 fi
