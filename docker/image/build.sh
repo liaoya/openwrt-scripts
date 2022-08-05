@@ -130,7 +130,7 @@ fi
 if [[ -z ${files} ]]; then
     files=${THIS_DIR}/config/${major_version}/${platform}/${profile}
     if [[ ! -d "${files}" ]]; then
-        files=""
+        mkdir -p "${files}"
     fi
 fi
 
@@ -150,10 +150,10 @@ if [[ -n ${bindir} ]]; then
     docker_opts+=(-v "${bindir}:/home/build/openwrt/bin")
 fi
 if [[ -d ${files} ]]; then
-    if [[ -f "${THIS_DIR}/config/${major_version}/99-custom" ]]; then
+    if [[ -f "${THIS_DIR}/config/${major_version}/99_common" ]]; then
         mkdir -p "${files}/etc/uci-defaults"
-        cp "${THIS_DIR}/config/${major_version}/99-custom" "${files}/etc/uci-defaults/"
-        _add_exit_hook "rm -f ${files}/etc/uci-defaults/99-custom"
+        cp "${THIS_DIR}/config/${major_version}/99_common" "${files}/etc/uci-defaults/"
+        _add_exit_hook "rm -f ${files}/etc/uci-defaults/99_common"
     fi
     docker_opts+=(-v "${files}:/home/build/openwrt/custom")
 fi
