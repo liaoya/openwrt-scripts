@@ -23,6 +23,7 @@ luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn \
 luci luci-compat luci-lib-ipkg luci-theme-bootstrap \
 nano pciutils procps-ng-pkill tcpdump tmux \
 uci wget"
+PACKAGES="${PACKAGES:+$PACKAGES }luci-app-vlmcsd luci-i18n-vlmcsd-zh-cn vlmcsd"
 export PACKAGES
 
 bash -x build.sh -p x86-64 --dryrun
@@ -31,7 +32,6 @@ bash -x build.sh -p x86-64 -c
 bash -x build.sh -p ath79-nand -P netgear_wndr4300 -c
 bash -x build.sh -p ramips-mt7621 -P d-team_newifi-d2 -c
 
-PACKAGES="${PACKAGES:+$PACKAGES }luci-app-vlmcsd luci-i18n-vlmcsd-zh-cn vlmcsd"
 bash -x build.sh -p x86-64 -t /work/openwrt/package/21.02/x64 -c
 bash -x build.sh -p ath79-nand -P netgear_wndr4300 -t /work/openwrt/package/21.02/ath79 -c
 bash -x build.sh -p ramips-mt7621 -P d-team_newifi-d2 -t /work/openwrt/package/21.02/mt7621 -c

@@ -127,6 +127,11 @@ if [[ -z ${bindir} ]]; then
     fi
     if [[ ! -d ${bindir} ]]; then mkdir -p "${bindir}"; fi
 fi
+
+docker_image_name=docker.io/openwrtorg/imagebuilder:${platform}-${version}
+docker image pull "${docker_image_name}"
+
+# comment the below and do not provide files to disable search files
 if [[ -z ${files} ]]; then
     files=${THIS_DIR}/config/${major_version}/${platform}/${profile}
     if [[ ! -d "${files}" ]]; then
@@ -134,8 +139,6 @@ if [[ -z ${files} ]]; then
     fi
 fi
 
-docker_image_name=docker.io/openwrtorg/imagebuilder:${platform}-${version}
-docker image pull "${docker_image_name}"
 docker_opts=(--rm -it -u "$(id -u):$(id -g)")
 if [[ $(timedatectl show | grep Timezone | cut -d= -f2) == Asia/Shanghai ]]; then
     OPENWRT_MIRROR_PATH=${OPENWRT_MIRROR_PATH:-http://mirrors.ustc.edu.cn/openwrt}

@@ -53,4 +53,30 @@ if [ -f /boot/grub/grub.cfg ]; then
     sed -i -e 's/set timeout="5"/set timeout="1"/g' /boot/grub/grub.cfg
 fi
 
+cat <<'EOF' | tee /usr/bin/switch-gw.sh
+#!/bin/sh
+
+set -x
+
+if [ $# -eq 1 ]; then
+    gateway=$1
+    dns=$1
+elif [ $# -eq 2 ]; then
+    gateway=$1
+    dns=$2
+else
+    echo 'OPTIONS <gateway> [dns]'
+    exit 1
+fi
+uci delete dhcp.lan.dhcp_option
+uci add_list dhcp.lan.dhcp_option="3,$gateway"
+uci add_list dhcp.lan.dhcp_option="6,$dns"
+uci commit
+uci changes
+uci commit dhcp
+/etc/init.d/dnsmasq restart
+EOF
+
+chmod a+x /usr/bin/switch-gw.sh
+
 exit 0
