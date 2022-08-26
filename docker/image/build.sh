@@ -1,4 +1,5 @@
 #!/bin/bash
+#shellcheck disable=SC2312
 
 set -e
 
@@ -61,7 +62,7 @@ EOF
 }
 
 TEMP=$(getopt -o b:d:f:n:p:P:t:v:hc --long bindir:,disableservice:,files:,name:,platform:,profile:,thirdparty:,version:,help,clean,dryrun -- "$@")
-eval set -- "$TEMP"
+eval set -- "${TEMP}"
 while true; do
     shift_step=2
     case "$1" in

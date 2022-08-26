@@ -1,4 +1,5 @@
 #!/bin/bash
+#shellcheck disable=SC2312
 
 set -e
 
@@ -33,7 +34,7 @@ DL_DIR=${DL_DIR:-/work/openwrt/dl}
 VERSION=${VERSION:-"21.02.3"}
 
 while getopts "hb:cd:p:rv:" OPTION; do
-    case $OPTION in
+    case ${OPTION} in
     h)
         _print_help
         exit 0

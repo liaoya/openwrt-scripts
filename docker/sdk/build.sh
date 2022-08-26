@@ -7,7 +7,7 @@ function build() {
         [[ -d "${src_dir}" ]] || continue
         _build=1
         for official in base freifunk luci packages routing telephony; do
-            if [[ ${src_dir} == "package/feeds/$official" || ${src_dir} == "package/feeds/$official/" ]]; then
+            if [[ ${src_dir} == "package/feeds/${official}" || ${src_dir} == "package/feeds/${official}/" ]]; then
                 _build=0
                 break
             fi
