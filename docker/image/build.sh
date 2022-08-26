@@ -128,15 +128,18 @@ if [[ -z ${bindir} ]]; then
     fi
     if [[ ! -d ${bindir} ]]; then mkdir -p "${bindir}"; fi
 fi
-if [[ -z ${files} ]]; then
-    files=${THIS_DIR}/config/${major_version}/${platform}/${profile}
-    if [[ ! -d "${files}" ]]; then
-        files=""
-    fi
-fi
 
 docker_image_name=docker.io/openwrtorg/imagebuilder:${platform}-${version}
 docker image pull "${docker_image_name}"
+
+# comment the below and do not provide files to disable search files
+if [[ -z ${files} ]]; then
+    files=${THIS_DIR}/config/${major_version}/${platform}/${profile}
+    if [[ ! -d "${files}" ]]; then
+        mkdir -p "${files}"
+    fi
+fi
+
 docker_opts=(--rm -it -u "$(id -u):$(id -g)")
 if [[ $(timedatectl show | grep Timezone | cut -d= -f2) == Asia/Shanghai ]]; then
     OPENWRT_MIRROR_PATH=${OPENWRT_MIRROR_PATH:-http://mirrors.ustc.edu.cn/openwrt}
@@ -151,10 +154,10 @@ if [[ -n ${bindir} ]]; then
     docker_opts+=(-v "${bindir}:/home/build/openwrt/bin")
 fi
 if [[ -d ${files} ]]; then
-    if [[ -f "${THIS_DIR}/config/${major_version}/99-custom" ]]; then
+    if [[ -f "${THIS_DIR}/config/${major_version}/99_common" ]]; then
         mkdir -p "${files}/etc/uci-defaults"
-        cp "${THIS_DIR}/config/${major_version}/99-custom" "${files}/etc/uci-defaults/"
-        _add_exit_hook "rm -f ${files}/etc/uci-defaults/99-custom"
+        cp "${THIS_DIR}/config/${major_version}/99_common" "${files}/etc/uci-defaults/"
+        _add_exit_hook "rm -f ${files}/etc/uci-defaults/99_common"
     fi
     docker_opts+=(-v "${files}:/home/build/openwrt/custom")
 fi

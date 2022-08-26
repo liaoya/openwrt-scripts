@@ -19,11 +19,11 @@ uci commit
 ## Mirror
 
 - USTC
-  - `sed -i 's|downloads.openwrt.org|mirrors.ustc.edu.cn/lede|g' /etc/opkg/distfeeds.conf`
-  - `sed -i 's|mirrors.ustc.edu.cn/lede|downloads.openwrt.org|g' /etc/opkg/distfeeds.conf`
+  - `sed -i 's|downloads.openwrt.org|mirrors.ustc.edu.cn/openwrt|g' /etc/opkg/distfeeds.conf`
+  - `sed -i 's|mirrors.ustc.edu.cn/lede|downloads.openwrt.org|g' 's|mirrors.ustc.edu.cn/openwrt|downloads.openwrt.org|g' /etc/opkg/distfeeds.conf`
 - tsinghua
-  - `sed -i 's/downloads.openwrt.org/mirrors.tuna.tsinghua.edu.cn\/lede/g' /etc/opkg/distfeeds.conf`
-  - `sed -i 's/mirrors.tuna.tsinghua.edu.cn\/lede/downloads.openwrt.org/g' /etc/opkg/distfeeds.conf`
+  - `sed -i 's/downloads.openwrt.org/mirrors.tuna.tsinghua.edu.cn\/openwrt/g' /etc/opkg/distfeeds.conf`
+  - `sed -i 's/mirrors.tuna.tsinghua.edu.cn\/openwrt/downloads.openwrt.org/g' /etc/opkg/distfeeds.conf`
 
 ## V2ray
 
@@ -34,22 +34,6 @@ echo "src/gz kuoruan_universal http://openwrt.kuoruan.net/packages/releases/all"
 opkg update
 opkg install luci-app-v2ray
 opkg install luci-i18n-v2ray-zh-cn
-```
-
-## vlmcsd
-
-## Docker build
-
-```bash
-docker pull -q openwrtorg/sdk:armvirt-64-19.07.3
-
-docker pull -q openwrtorg/imagebuilder:armvirt-64-19.07.3
-```
-
-- <https://github.com/openwrt/docker>
-
-```bash
-sudo apt-get install build-essential libncurses5-dev libncursesw5-dev zlib1g-dev gawk git gettext libssl-dev xsltproc wget unzip python
 ```
 
 ## AD Block
