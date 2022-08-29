@@ -1,4 +1,5 @@
 #!/bin/bash
+#shellcheck disable=SC2312
 
 set -e
 

@@ -17,3 +17,9 @@ ipkg-make-index.sh . > Packages && gzip -9nc Packages > Packages.gz
 ./ipkg-util.sh -s /work/openwrt/sdk/mt7621 -d /work/openwrt/package/21.02/mt7621/ -o copy
 ./ipkg-util.sh -s /work/openwrt/sdk/x64 -d /work/openwrt/package/21.02/x64/ -o copy
 ```
+
+```bash
+./ipkg-util-docker.sh -s ../docker/sdk/ath79-nand-21.02.3-bin -d /work/openwrt/package/21.02/ath79/ -o copy
+./ipkg-util-docker.sh -s ../docker/sdk/ramips-mt7621-21.02.3-bin -d /work/openwrt/package/21.02/mt7621/ -o copy
+./ipkg-util-docker.sh -s ../docker/sdk/x86-64-21.02.3-bin -d /work/openwrt/package/21.02/x64/ -o copy
+```

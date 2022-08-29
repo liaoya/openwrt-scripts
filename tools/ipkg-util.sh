@@ -1,5 +1,5 @@
 #!/bin/bash
-#shellcheck disable=SC2206
+#shellcheck disable=SC2206,SC2312
 
 set -e
 
@@ -19,7 +19,7 @@ EOF
 }
 
 TEMP=$(getopt -o d:ho:s: --long dest:,help,operation:,src: -- "$@")
-eval set -- "$TEMP"
+eval set -- "${TEMP}"
 while true; do
     case "$1" in
     -d | --dest)
@@ -64,7 +64,7 @@ for src_dir in "${SRC}"/package/feeds/*; do
     [[ -d "${src_dir}" ]] || continue
     _build=1
     for official in base freifunk luci packages routing telephony; do
-        if [[ ${src_dir} == "${SRC}/package/feeds/$official" || ${src_dir} == "${SRC}/package/feeds/$official/" ]]; then
+        if [[ ${src_dir} == "${SRC}/package/feeds/${official}" || ${src_dir} == "${SRC}/package/feeds/${official}/" ]]; then
             _build=0
             break
         fi
@@ -99,7 +99,7 @@ if [[ ${OPERATION} == "list" ]]; then
     for name in "${PACKAGES[@]}"; do
         while IFS= read -r -d '' pkg; do
             ls -1 "${pkg}"
-        done < <(find "${SRC}/bin" -iname "*$name*.ipk" -print0)
+        done < <(find "${SRC}/bin" -iname "*${name}*.ipk" -print0)
     done
 elif [[ ${OPERATION} == "copy" ]]; then
     if [[ ! -d ${DEST} ]]; then
@@ -109,7 +109,7 @@ elif [[ ${OPERATION} == "copy" ]]; then
     for name in "${PACKAGES[@]}"; do
         while IFS= read -r -d '' pkg; do
             cp -pr "${pkg}" "${DEST}"
-        done < <(find "${SRC}/bin" -iname "*$name*.ipk" -print0)
+        done < <(find "${SRC}/bin" -iname "*${name}*.ipk" -print0)
     done
     (
         cd "${DEST}"
