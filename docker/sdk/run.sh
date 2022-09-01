@@ -64,25 +64,24 @@ while getopts "hb:cd:p:rv:" OPTION; do
     esac
 done
 
-_check_param DL_DIR PLATFORM VERSION
+_check_param PLATFORM VERSION
 MAJOR_VERSION=$(echo "${VERSION}" | cut -d. -f1,2)
 DOCKER_IMAGE=docker.io/openwrtorg/sdk:${PLATFORM}-${VERSION}
 docker image pull "${DOCKER_IMAGE}"
 if [[ -z ${BIN_DIR} ]]; then BIN_DIR=${THIS_DIR}/${PLATFORM}-${VERSION}-bin; fi
 if [[ ${CLEAN} -gt 0 && -d "${BIN_DIR}" ]]; then rm -fr "${BIN_DIR}"; fi
-if [[ ! -d ${BIN_DIR} ]]; then mkdir -p "${BIN_DIR}"; fi
-if [[ ! -d "${DL_DIR}" ]]; then mkdir -p "${DL_DIR}"; fi
+if [[ ! -d "${BIN_DIR}" ]]; then mkdir -p "${BIN_DIR}"; fi
 
-DOCKER_OPTS=(--rm -it -u "$(id -u):$(id -g)" -v "${BIN_DIR}:/home/build/openwrt/bin" -v "${DL_DIR}:/home/build/openwrt/dl")
+DOCKER_OPTS=(--rm -it -u "$(id -u):$(id -g)" -v "${BIN_DIR}:/home/build/openwrt/bin")
+if [[ -d "${DL_DIR}" ]]; then
+    DOCKER_OPTS+=(-v "${DL_DIR}:/home/build/openwrt/dl")
+fi
+
 for script in build.sh checkout.sh config.sh; do
     DOCKER_OPTS+=(-v "${THIS_DIR}/${script}:/home/build/${script}")
 done
 if [[ -n ${GIT_PROXY} ]]; then
-    cat <<EOF | tee "${THIS_DIR}/.gitconfig"
-[url "${GIT_PROXY}"]
-        insteadOf = https://
-EOF
-    DOCKER_OPTS+=(-v "${THIS_DIR}/.gitconfig:/home/build/.gitconfig")
+    DOCKER_OPTS+=(--env GIT_PROXY="${GIT_PROXY}")
 fi
 DOCKER_OPTS+=(--env "MAJOR_VERSION=${MAJOR_VERSION}")
 for item in http_proxy https_proxy no_proxy HTTP_PROXY HTTPS_PROXY NO_PROXY; do
@@ -91,7 +90,7 @@ for item in http_proxy https_proxy no_proxy HTTP_PROXY HTTPS_PROXY NO_PROXY; do
     fi
 done
 if [[ $(timedatectl show | grep Timezone | cut -d= -f2) == Asia/Shanghai ]]; then
-    DOCKER_OPTS+=(--env "DEBIAN_MIRROR=http://mirrors.ustc.edu.cn")
+    DOCKER_OPTS+=(--env DEBIAN_MIRROR=http://mirrors.ustc.edu.cn)
 fi
 
 if [[ ${DRYRUN:-0} -eq 0 ]]; then

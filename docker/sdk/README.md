@@ -18,6 +18,8 @@ export GIT_PROXY=http://192.168.1.202:9080/
 bash -x run.sh -p x86-64
 bash -x run.sh -p ramips-mt7621
 bash -x run.sh -p ath79-nand
+
+bash -x run.sh -p ramips-mt7620 -r
 ```
 
 ```bash
@@ -28,6 +30,9 @@ make -j package/feeds/kenzok8/luci-app-bypass/compile
 make -j package/feeds/kenzok8/luci-app-passwall/compile
 make -j package/feeds/kenzok8/luci-app-passwall2/compile
 make -j package/feeds/kenzok8/luci-app-vssr/compile
+
+find package/feeds/ -iname "*vlmcsd*"
+make -j package/feeds/jell/luci-app-vlmcsd/compile package/feeds/jell/vlmcsd/compile
 ```
 
 ```bash

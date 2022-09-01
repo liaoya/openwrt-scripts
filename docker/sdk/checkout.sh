@@ -31,6 +31,12 @@ sudo apt install -yq upx-ucl
 if [[ ! -L staging_dir/host/bin/upx ]]; then
     ln -s "$(command -v upx)" staging_dir/host/bin/upx
 fi
+if [[ -n ${GIT_PROXY} ]]; then
+    cat <<EOF | tee /home/build/.gitconfig
+[url "${GIT_PROXY}"]
+        insteadOf = https://
+EOF
+fi
 
 sed -e 's|git.openwrt.org/openwrt/openwrt|github.com/openwrt/openwrt|g' \
     -e 's|git.openwrt.org/project/luci|github.com/openwrt/luci|g' \
