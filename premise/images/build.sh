@@ -9,7 +9,7 @@ CACHE_DIR="${HOME}/.cache/openwrt"
 mkdir -p "${CACHE_DIR}"
 
 BASE_URL=${BASE_URL:-""}
-BASE_URL_PREFIX=${BASE_URL_PREFIX:-""}
+OPENWRT_MIRROR_PATH=${OPENWRT_MIRROR_PATH:-""}
 DEVICE=${OPENWRT_DEVICE:-""}
 REPOSITORY=${REPOSITORY:-""}
 IMAGE_DIR=${IMAGE_DIR:-/work/openwrt/imagebuilder}
@@ -30,6 +30,17 @@ OPTIONS
     -c, --clean, clean build
     -h, --help, show help
 EOF
+}
+
+PACKAGES=${PACKAGES:-""}
+
+function _add_package() {
+    while (($#)); do
+        if [[ ${PACKAGES} != *"${1}"* ]]; then
+            PACKAGES="${PACKAGES:+${PACKAGES} }${1}"
+        fi
+        shift
+    done
 }
 
 TEMP=$(getopt -o d:p:r:v:V:ch --long device:repository:,root:,variant:,version:,clean,help -- "$@")
@@ -85,20 +96,13 @@ if [[ -z ${DEVICE} ]]; then
     exit 1
 fi
 
-if [[ ${VERSION} =~ 21.02 ]]; then
-    if [[ $(timedatectl show | grep Timezone | cut -d= -f2) == Asia/Shanghai ]]; then
-        BASE_URL_PREFIX=http://mirrors.ustc.edu.cn/openwrt
-        # BASE_URL_PREFIX=https://mirror.sjtu.edu.cn/openwrt
-        # BASE_URL_PREFIX=https://mirrors.tuna.tsinghua.edu.cn/openwrt
-        # BASE_URL_PREFIX=https://mirrors.cloud.tencent.com/openwrt
-    else
-        BASE_URL_PREFIX=http://downloads.openwrt.org
-    fi
+if [[ $(timedatectl show | grep Timezone | cut -d= -f2) == Asia/Shanghai ]]; then
+    OPENWRT_MIRROR_PATH=http://mirrors.ustc.edu.cn/openwrt
+    # OPENWRT_MIRROR_PATH=https://mirror.sjtu.edu.cn/openwrt
+    # OPENWRT_MIRROR_PATH=https://mirrors.tuna.tsinghua.edu.cn/openwrt
+    # OPENWRT_MIRROR_PATH=https://mirrors.cloud.tencent.com/openwrt
 else
-    if [[ -z ${BASE_URL} ]]; then
-        echo "Please provide \$BASE_URL"
-        exit 1
-    fi
+    OPENWRT_MIRROR_PATH=http://downloads.openwrt.org
 fi
 
 if [[ -f "${ROOT_DIR}/devices/${DEVICE}.sh" ]]; then
@@ -107,6 +111,11 @@ elif [[ -f "${ROOT_DIR}/devices/${DEVICE}/${VARIANT}.sh" ]]; then
     source "${ROOT_DIR}/devices/${DEVICE}/${VARIANT}.sh"
 else
     echo "Require customized ${ROOT_DIR}/devices/${DEVICE}.sh or ${ROOT_DIR}/devices/${DEVICE}/${VARIANT}.sh"
+    exit 1
+fi
+
+if [[ -z ${BASE_URL} ]]; then
+    echo "Please provide \$BASE_URL"
     exit 1
 fi
 
@@ -155,7 +164,7 @@ fi
 if [[ ! -f repositories.conf.bak ]]; then
     cp -r repositories.conf repositories.conf.bak
 fi
-sed -i -e "s|http://downloads.openwrt.org|${BASE_URL_PREFIX}|g" -e "s|https://downloads.openwrt.org|${BASE_URL_PREFIX}|g" repositories.conf
+sed -i -e "s|http://downloads.openwrt.org|${OPENWRT_MIRROR_PATH}|g" -e "s|https://downloads.openwrt.org|${OPENWRT_MIRROR_PATH}|g" repositories.conf
 if [[ -n ${REPOSITORY} && -d ${REPOSITORY} ]]; then
     REPOSITORY=$(readlink -f "${REPOSITORY}")
     if [[ -f ${REPOSITORY}/Packages.gz ]]; then
@@ -164,7 +173,6 @@ if [[ -n ${REPOSITORY} && -d ${REPOSITORY} ]]; then
         sed -i 's/^option check_signature$/# &/' repositories.conf
     else
         _PACKAGES=$(for pkg in "${REPOSITORY}"/*.ipk; do basename "$pkg" | cut -d'_' -f1; done | paste -sd " " -)
-        PACKAGES=${PACKAGES:-""}
         PACKAGES="${PACKAGES:+$PACKAGES }${_PACKAGES}"
         unset -n _PACKAGES
         [[ -d packages ]] || mkdir -p packages
@@ -195,8 +203,8 @@ if [[ $(command -v qemu-img) && -d bin/targets/x86/64 ]]; then
             if [[ ! -f "${_img}" ]]; then
                 gunzip -k "${_gz_image}"
             fi
-            qemu-img convert -O qcow2 -c "${_img}" "${_qcow2c}"
-            rm -f "${_img}"
+            qemu-img convert -c -O qcow2 "${_img}" "${_qcow2c}"
+            qemu-img convert -O qcow2 "${_qcow2c}" "${_img}" # Ventoy use img
             unset -v _prefix _img _qcow2c
         fi
     done < <(find bin/targets/x86/64 -iname '*-combined-ext4.img.gz' -print0)

@@ -12,7 +12,7 @@ function pre_ops() {
     configure_vssr_plus
 }
 
-if [[ -n ${BASE_URL_PREFIX} ]]; then
+if [[ -n ${OPENWRT_MIRROR_PATH} ]]; then
     #shellcheck disable=SC2034
-    BASE_URL=${BASE_URL_PREFIX}/releases/${VERSION}/targets/rockchip/armv8
+    BASE_URL=${OPENWRT_MIRROR_PATH}/releases/${VERSION}/targets/ramips/mt7620
 fi

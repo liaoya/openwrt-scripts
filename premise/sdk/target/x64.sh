@@ -9,10 +9,9 @@ function pre_ops() {
     configure_passwall
     configure_ssr_plus
     configure_v2ray
-    configure_vssr_plus
 }
 
-if [[ -n ${BASE_URL_PREFIX} ]]; then
+if [[ -n ${OPENWRT_MIRROR_PATH} ]]; then
     #shellcheck disable=SC2034
-    BASE_URL=${BASE_URL_PREFIX}/releases/${VERSION}/targets/ath79/nand
+    BASE_URL=${OPENWRT_MIRROR_PATH}/releases/${VERSION}/targets/x86/64
 fi

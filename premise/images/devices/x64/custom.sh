@@ -1,14 +1,23 @@
 #!/bin/bash
 
-if [[ -n ${BASE_URL_PREFIX} ]]; then
+if [[ -n ${OPENWRT_MIRROR_PATH} ]]; then
     #shellcheck disable=SC2034
-    BASE_URL="${BASE_URL_PREFIX}/releases/${VERSION}/targets/x86/64"
+    BASE_URL="${OPENWRT_MIRROR_PATH}/releases/${VERSION}/targets/x86/64"
 fi
 
 PACKAGES=${PACKAGES:-""}
+_add_package -dnsmasq -wpad-mini -wpad-basic
 if [[ ${VERSION} =~ 19.07 ]]; then
-    PACKAGES="${PACKAGES:+$PACKAGES }-wpad-basic luci-compat luci-lib-ipkg uhttpd-mod-ubus"
+    _add_package luci-compat luci-lib-ipkg uhttpd-mod-ubus
 fi
+if [[ ${VERSION} =~ 21.02 ]] || [[ ${VERSION} =~ 22.03 ]]; then
+    _add_package -wpad-basic-wolfssl
+fi
+_add_package kmod-dax kmod-dm
+_add_package bind-dig ca-bundle ca-certificates coreutils-base64 curl diffutils dropbearconvert fdisk file
+_add_package ip-full ipset iptables-mod-tproxy
+_add_package luci luci-compat luci-lib-ipkg luci-theme-bootstrap
+_add_package nano tmux
 
 curl -sLO "${BASE_URL}/sha256sums"
 SHA256_VALUE=$(grep imagebuilder sha256sums | cut -d' ' -f1)

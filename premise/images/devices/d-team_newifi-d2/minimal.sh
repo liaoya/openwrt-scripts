@@ -7,8 +7,8 @@ if [[ -f "${THIS_DIR}/functions.sh" ]]; then
     source "${THIS_DIR}/functions.sh"
 fi
 
-if [[ -n ${BASE_URL_PREFIX} ]]; then
-    BASE_URL="${BASE_URL_PREFIX}/releases/${VERSION}/targets/ramips/mt7621"
+if [[ -n ${OPENWRT_MIRROR_PATH} ]]; then
+    BASE_URL="${OPENWRT_MIRROR_PATH}/releases/${VERSION}/targets/ramips/mt7621"
 fi
 
 export PACKAGES="-dnsmasq -wpad-mini -wpad-basic -wpad-basic-wolfssl \

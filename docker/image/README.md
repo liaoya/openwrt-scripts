@@ -4,12 +4,15 @@ User OpenWRT docker image to build firmware
 
 There're no image after `18.06.7` for `18.06` series
 
-- `docker.io/openwrtorg/imagebuilder:x86-64-21.02.3`
-- `docker.io/openwrtorg/imagebuilder:armvirt-64-21.02.3`
-- `docker.io/openwrtorg/imagebuilder:ath79-nand-21.02.3`
-- `docker.io/openwrtorg/imagebuilder:ramips-mt7621-21.02.3`
-- `docker.io/openwrtorg/imagebuilder:ramips-mt7620-21.02.3`
-- `docker.io/openwrtorg/imagebuilder:x86-64-19.07.8`
+- `21.02`
+  - `docker.io/openwrtorg/imagebuilder:x86-64-21.02.3`
+  - `docker.io/openwrtorg/imagebuilder:armvirt-64-21.02.3`
+  - `docker.io/openwrtorg/imagebuilder:ath79-nand-21.02.3`
+  - `docker.io/openwrtorg/imagebuilder:ramips-mt7621-21.02.3`
+  - `docker.io/openwrtorg/imagebuilder:ramips-mt7620-21.02.3`
+- `19.07`
+  - `docker.io/openwrtorg/imagebuilder:x86-64-19.07.9`
+- `18.06`
 - `docker.io/openwrtorg/imagebuilder:x86-64-18.06.7`
 
 ```bash

@@ -9,7 +9,7 @@ CACHE_DIR="${HOME}/.cache/openwrt"
 mkdir -p "${CACHE_DIR}"
 
 BASE_URL=${BASE_URL:-""}
-BASE_URL_PREFIX=${BASE_URL_PREFIX:-""}
+OPENWRT_MIRROR_PATH=${OPENWRT_MIRROR_PATH:-""}
 BUILD=0
 DL_DIR=${DL_DIR:-""}
 LEAN_DIR=${LEAN_DIR:-/work/github/coolsnowwolf/lede}
@@ -89,12 +89,12 @@ done
 
 if [[ ${VERSION} =~ 19.07 || ${VERSION} =~ 18.06 || ${VERSION} =~ 17.01 ]]; then
     if [[ ${MIRROR} -eq 1 ]]; then
-        BASE_URL_PREFIX=http://mirrors.ustc.edu.cn/openwrt
-        # BASE_URL_PREFIX=https://mirror.sjtu.edu.cn/openwrt
-        # BASE_URL_PREFIX=https://mirrors.tuna.tsinghua.edu.cn/openwrt
-        # BASE_URL_PREFIX=https://mirrors.cloud.tencent.com/openwrt/
+        OPENWRT_MIRROR_PATH=http://mirrors.ustc.edu.cn/openwrt
+        # OPENWRT_MIRROR_PATH=https://mirror.sjtu.edu.cn/openwrt
+        # OPENWRT_MIRROR_PATH=https://mirrors.tuna.tsinghua.edu.cn/openwrt
+        # OPENWRT_MIRROR_PATH=https://mirrors.cloud.tencent.com/openwrt/
     else
-        BASE_URL_PREFIX=http://downloads.openwrt.org
+        OPENWRT_MIRROR_PATH=http://downloads.openwrt.org
     fi
 else
     if [[ -z ${BASE_URL} ]]; then

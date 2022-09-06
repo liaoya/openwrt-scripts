@@ -1,8 +1,8 @@
 #!/bin/bash
 #shellcheck disable=SC2034
 
-if [[ -n ${BASE_URL_PREFIX} ]]; then
-    BASE_URL=${BASE_URL_PREFIX}/releases/${VERSION}/targets/armvirt/64
+if [[ -n ${OPENWRT_MIRROR_PATH} ]]; then
+    BASE_URL=${OPENWRT_MIRROR_PATH}/releases/${VERSION}/targets/armvirt/64
 fi
 
 PACKAGES=${PACKAGES:-""}
