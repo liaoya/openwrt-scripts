@@ -4,16 +4,22 @@ User OpenWRT docker image to build firmware
 
 There're no image after `18.06.7` for `18.06` series
 
+- `22.03`
+  - `docker.io/openwrtorg/imagebuilder:x86-64-openwrt-22.03`
+  - `docker.io/openwrtorg/imagebuilder:armvirt-64-openwrt-22.03`
+  - `docker.io/openwrtorg/imagebuilder:ath79-nand-openwrt-22.03`
+  - `docker.io/openwrtorg/imagebuilder:ramips-mt7621-openwrt-22.03`
+  - `docker.io/openwrtorg/imagebuilder:ramips-mt7620-openwrt-22.03`
 - `21.02`
-  - `docker.io/openwrtorg/imagebuilder:x86-64-21.02.3`
-  - `docker.io/openwrtorg/imagebuilder:armvirt-64-21.02.3`
-  - `docker.io/openwrtorg/imagebuilder:ath79-nand-21.02.3`
-  - `docker.io/openwrtorg/imagebuilder:ramips-mt7621-21.02.3`
-  - `docker.io/openwrtorg/imagebuilder:ramips-mt7620-21.02.3`
+  - `docker.io/openwrtorg/imagebuilder:x86-64-openwrt-21.02.3`
+  - `docker.io/openwrtorg/imagebuilder:armvirt-64-openwrt-21.02.3`
+  - `docker.io/openwrtorg/imagebuilder:ath79-nand-openwrt-21.02.3`
+  - `docker.io/openwrtorg/imagebuilder:ramips-mt7621-openwrt-21.02.3`
+  - `docker.io/openwrtorg/imagebuilder:ramips-mt7620-openwrt-21.02.3`
 - `19.07`
-  - `docker.io/openwrtorg/imagebuilder:x86-64-19.07.9`
+  - `docker.io/openwrtorg/imagebuilder:x86-64-openwrt-19.07.9`
 - `18.06`
-- `docker.io/openwrtorg/imagebuilder:x86-64-18.06.7`
+  - `docker.io/openwrtorg/imagebuilder:x86-64-18.06.7`
 
 ```bash
 # The package must be declare external
@@ -31,6 +37,7 @@ export PACKAGES
 
 bash -x build.sh -p x86-64 --dryrun
 
+bash -x build.sh -p x86-64 -v 22.03
 bash -x build.sh -p x86-64 -c
 bash -x build.sh -p ath79-nand -P netgear_wndr4300 -c
 bash -x build.sh -p ramips-mt7621 -P d-team_newifi-d2 -c

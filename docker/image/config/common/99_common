@@ -1,0 +1,73 @@
+#!/bin/sh
+
+set -e
+
+uci -q batch <<EOI
+set system.@system[0].conloglevel='5'
+set system.@system[0].cronloglevel='8'
+set system.@system[0].hostname='openwrt'
+set system.@system[0].log_proto='udp'
+set system.@system[0].log_size='64'
+set system.@system[0].timezone='CST-8'
+set system.@system[0].ttylogin='0'
+set system.@system[0].urandom_seed='0'
+set system.@system[0].zonename='Asia/Shanghai'
+set system.@system[0]=system
+commit system
+
+set system.ntp=timeserver
+delete system.ntp.server
+add_list system.ntp.server='time1.aliyun.com'
+add_list system.ntp.server='cn.pool.ntp.org'
+set system.ntp.enable_server='1'
+set system.ntp.interface='lan'
+commit system
+EOI
+
+while uci -q delete dropbear.@dropbear[0]; do :; done
+uci commit dropbear
+
+uci -q batch <<EOI
+add dropbear dropbear
+set dropbear.@dropbear[-1].PasswordAuth='on'
+set dropbear.@dropbear[-1].Port='22'
+set dropbear.@dropbear[-1].Interface='lan'
+commit dropbear
+EOI
+
+if ! grep -s -q "net.ipv4.tcp_fastopen=3" /etc/sysctl.conf; then
+    echo "net.ipv4.tcp_fastopen=3" | tee -a /etc/sysctl.conf
+fi
+
+# The following is only work for x86 openwrt
+if [ -f /boot/grub/grub.cfg ]; then
+    sed -i -e 's/set timeout="5"/set timeout="1"/g' /boot/grub/grub.cfg
+fi
+
+cat <<'EOF' | tee /usr/bin/switch-gw.sh
+#!/bin/sh
+
+set -x
+
+if [ $# -eq 1 ]; then
+    gateway=$1
+    dns=$1
+elif [ $# -eq 2 ]; then
+    gateway=$1
+    dns=$2
+else
+    echo 'OPTIONS <gateway> [dns]'
+    exit 1
+fi
+uci delete dhcp.lan.dhcp_option
+uci add_list dhcp.lan.dhcp_option="3,$gateway"
+uci add_list dhcp.lan.dhcp_option="6,$dns"
+uci commit
+uci changes
+uci commit dhcp
+/etc/init.d/dnsmasq restart
+EOF
+
+chmod a+x /usr/bin/switch-gw.sh
+
+exit 0

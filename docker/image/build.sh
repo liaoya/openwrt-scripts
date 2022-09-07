@@ -21,6 +21,17 @@ function _add_exit_hook() {
     done
 }
 
+PACKAGES=${PACKAGES:-""}
+
+function _add_package() {
+    while (($#)); do
+        if [[ ${PACKAGES} != *"${1}"* ]]; then
+            PACKAGES="${PACKAGES:+${PACKAGES} }${1}"
+        fi
+        shift
+    done
+}
+
 function _check_param() {
     while (($#)); do
         if [[ -z ${!1} ]]; then
@@ -129,16 +140,8 @@ if [[ -z ${bindir} ]]; then
     if [[ ! -d ${bindir} ]]; then mkdir -p "${bindir}"; fi
 fi
 
-docker_image_name=docker.io/openwrtorg/imagebuilder:${platform}-${version}
+docker_image_name=docker.io/openwrtorg/imagebuilder:${platform}-openwrt-${version}
 docker image pull "${docker_image_name}"
-
-# comment the below and do not provide files to disable search files
-if [[ -z ${files} ]]; then
-    files=${THIS_DIR}/config/${major_version}/${platform}/${profile}
-    if [[ ! -d "${files}" ]]; then
-        mkdir -p "${files}"
-    fi
-fi
 
 docker_opts=(--rm -it -u "$(id -u):$(id -g)")
 if [[ $(timedatectl show | grep Timezone | cut -d= -f2) == Asia/Shanghai ]]; then
@@ -153,20 +156,48 @@ done
 if [[ -n ${bindir} ]]; then
     docker_opts+=(-v "${bindir}:/home/build/openwrt/bin")
 fi
-if [[ -d ${files} ]]; then
-    if [[ -f "${THIS_DIR}/config/${major_version}/99_common" ]]; then
-        mkdir -p "${files}/etc/uci-defaults"
-        cp "${THIS_DIR}/config/${major_version}/99_common" "${files}/etc/uci-defaults/"
-        _add_exit_hook "rm -f ${files}/etc/uci-defaults/99_common"
-    fi
-    docker_opts+=(-v "${files}:/home/build/openwrt/custom")
+
+config_temp_dir=$(mktemp -d)
+docker_opts+=(-v "${config_temp_dir}:/home/build/openwrt/custom")
+_add_exit_hook "rm -fr ${config_temp_dir}"
+mkdir -p "${config_temp_dir}/etc/uci-defaults"
+if [[ -d "${files}" ]]; then
+    cp -p "${files}"/* "${config_temp_dir}"/
 fi
+if [[ -d "${THIS_DIR}/config/common" ]]; then
+    cp -p "${THIS_DIR}/config/common"/*common "${config_temp_dir}/etc/uci-defaults/"
+fi
+if [[ -d "${THIS_DIR}/config/common/${platform}/${profile}" ]]; then
+    cp -pr "${THIS_DIR}/config/common/${platform}/${profile}"/* "${config_temp_dir}"
+fi
+if [[ -d "${THIS_DIR}/config/${major_version}" ]]; then
+    cp -pr "${THIS_DIR}/config/${major_version}"/*common "${config_temp_dir}/etc/uci-defaults/"
+fi
+if [[ -d "${THIS_DIR}/config/${major_version}/${platform}/${profile}" ]]; then
+    cp -pr "${THIS_DIR}/config/${major_version}/${platform}/${profile}"/* "${config_temp_dir}"
+fi
+echo -e "#!/bin/sh\n\ncat <<EOF | tee /etc/dropbear/authorized_keys" >>"${config_temp_dir}/etc/uci-defaults/10_dropbear"
+while IFS= read -r -d '' _id_rsa; do
+    cat <"${_id_rsa}" | tee -a "${config_temp_dir}/etc/uci-defaults/10_dropbear"
+done < <(find ~/.ssh/ -iname id_rsa.pub -print0)
+echo -e "EOF\n\nexit 0" >>"${config_temp_dir}/etc/uci-defaults/10_dropbear"
+if [[ -n ${OPENWRT_MIRROR_PATH} ]]; then
+    cat <<EOF | tee "${config_temp_dir}/etc/uci-defaults/10_opkg"
+#!/bin/sh
+
+sed -i -e 's|https://downloads.openwrt.org|${OPENWRT_MIRROR_PATH}|g' -e 's|http://downloads.openwrt.org|${OPENWRT_MIRROR_PATH}|g' /etc/opkg/distfeeds.conf
+# sed -i -e 's|${OPENWRT_MIRROR_PATH}|http://downloads.openwrt.org|g' /etc/opkg/distfeeds.conf
+
+exit 0
+EOF
+fi
+
 if [[ -n ${thirdparty} ]]; then
     docker_opts+=(-v "${thirdparty}:/home/build/openwrt/thirdparty")
     cmd="${cmd:+${cmd}; }sed -i -e '\|^## Place your custom repositories here.*|a src custom file:///home/build/openwrt/thirdparty' -e 's/^option check_signature$/# &/' repositories.conf"
 fi
 if [[ ${platform} == "x86-64" ]]; then
-    PACKAGES="${PACKAGES:+${PACKAGES} }kmod-dax kmod-dm"
+    _add_package kmod-dax kmod-dm
 fi
 
 makecmd="make image"
