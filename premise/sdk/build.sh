@@ -92,7 +92,7 @@ if [[ ${VERSION} =~ 19.07 || ${VERSION} =~ 18.06 || ${VERSION} =~ 17.01 ]]; then
         OPENWRT_MIRROR_PATH=http://mirrors.ustc.edu.cn/openwrt
         # OPENWRT_MIRROR_PATH=https://mirror.sjtu.edu.cn/openwrt
         # OPENWRT_MIRROR_PATH=https://mirrors.tuna.tsinghua.edu.cn/openwrt
-        # OPENWRT_MIRROR_PATH=https://mirrors.cloud.tencent.com/openwrt/
+        # OPENWRT_MIRROR_PATH=https://mirrors.cloud.tencent.com/openwrt
     else
         OPENWRT_MIRROR_PATH=http://downloads.openwrt.org
     fi

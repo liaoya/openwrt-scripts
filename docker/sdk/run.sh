@@ -31,7 +31,7 @@ EOF
 }
 
 DL_DIR=${DL_DIR:-/work/openwrt/dl}
-VERSION=${VERSION:-"21.02.3"}
+VERSION=${VERSION:-"22.03.0"}
 
 while getopts "hb:cd:p:rv:" OPTION; do
     case ${OPTION} in

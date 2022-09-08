@@ -42,7 +42,7 @@ function _check_param() {
     done
 }
 
-version=21.02.3
+version=22.03.0
 
 function _print_help() {
     #shellcheck disable=SC2016
@@ -140,7 +140,7 @@ if [[ -z ${bindir} ]]; then
     if [[ ! -d ${bindir} ]]; then mkdir -p "${bindir}"; fi
 fi
 
-docker_image_name=docker.io/openwrtorg/imagebuilder:${platform}-openwrt-${version}
+docker_image_name=docker.io/openwrtorg/imagebuilder:${platform}-${version}
 docker image pull "${docker_image_name}"
 
 docker_opts=(--rm -it -u "$(id -u):$(id -g)")
