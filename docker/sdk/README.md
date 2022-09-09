@@ -22,6 +22,7 @@ docker run --rm -it -u $(id -u):$(id -g) -v $PWD/bin:/home/build/openwrt/bin doc
 export GIT_PROXY=http://192.168.1.202:9080/
 # export GIT_PROXY=http://10.245.91.190:9080/
 bash -x run.sh -p x86-64
+bash -x run.sh -p armvirt-64
 bash -x run.sh -p ramips-mt7621
 bash -x run.sh -p ath79-nand
 

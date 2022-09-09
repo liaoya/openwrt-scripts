@@ -44,6 +44,19 @@ if [ -f /boot/grub/grub.cfg ]; then
     sed -i -e 's/set timeout="5"/set timeout="1"/g' /boot/grub/grub.cfg
 fi
 
+if command -v tmux; then
+    cat <<EOF | tee /etc/tmux.conf
+    set -g buffer-limit 10000
+    set -g history-limit 5000
+    set -g renumber-windows on
+EOF
+    if command -v fish; then
+        echo "set -g default-shell $(command -v fish)" | tee -a /etc/tmux.conf
+    elif command -v bash; then
+        echo "set -g default-shell $(command -v bash)" | tee -a /etc/tmux.conf
+    fi
+fi
+
 cat <<'EOF' | tee /usr/bin/switch-gw.sh
 #!/bin/sh
 

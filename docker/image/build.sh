@@ -168,13 +168,13 @@ if [[ -d "${THIS_DIR}/config/common" ]]; then
     cp -p "${THIS_DIR}/config/common"/*common "${config_temp_dir}/etc/uci-defaults/"
 fi
 if [[ -d "${THIS_DIR}/config/common/${platform}/${profile}" ]]; then
-    cp -pr "${THIS_DIR}/config/common/${platform}/${profile}"/* "${config_temp_dir}"
+    cp -pr "${THIS_DIR}/config/common/${platform}/${profile}"/* "${config_temp_dir}"/
 fi
 if [[ -d "${THIS_DIR}/config/${major_version}" ]]; then
-    cp -pr "${THIS_DIR}/config/${major_version}"/*common "${config_temp_dir}/etc/uci-defaults/"
+    cp -pr "${THIS_DIR}/config/${major_version}"/*common "${config_temp_dir}/etc/uci-defaults/" || true
 fi
 if [[ -d "${THIS_DIR}/config/${major_version}/${platform}/${profile}" ]]; then
-    cp -pr "${THIS_DIR}/config/${major_version}/${platform}/${profile}"/* "${config_temp_dir}"
+    cp -pr "${THIS_DIR}/config/${major_version}/${platform}/${profile}"/* "${config_temp_dir}"/
 fi
 echo -e "#!/bin/sh\n\ncat <<EOF | tee /etc/dropbear/authorized_keys" >>"${config_temp_dir}/etc/uci-defaults/10_dropbear"
 while IFS= read -r -d '' _id_rsa; do
@@ -204,10 +204,7 @@ if [[ ${platform} == "x86-64" ]]; then
     _add_package kmod-dax kmod-dm
 fi
 
-makecmd="make image"
-if [[ -n ${files} ]]; then
-    makecmd="${makecmd} FILES=/home/build/openwrt/custom"
-fi
+makecmd="make image FILES=/home/build/openwrt/custom"
 if [[ -n ${name} ]]; then
     makecmd="${makecmd} EXTRA_IMAGE_NAME=${name}"
 fi
