@@ -39,18 +39,17 @@ export OPENWRT_MIRROR_PATH=https://mirrors.cloud.tencent.com/openwrt
 
 bash -x build.sh -p x86-64 --dryrun
 
-bash -x build.sh -p x86-64 -v 22.03.0
 bash -x build.sh -p x86-64 -c
 bash -x build.sh -p ath79-nand -P netgear_wndr4300 -c
 bash -x build.sh -p ramips-mt7621 -P d-team_newifi-d2 -c
 
 bash -x build.sh -p x86-64 -t /work/openwrt/package/21.02/x64 -c
-bash -x build.sh -p ath79-nand -P netgear_wndr4300 -t /work/openwrt/package/21.02/ath79 -c
-bash -x build.sh -p ramips-mt7621 -P d-team_newifi-d2 -t /work/openwrt/package/21.02/mt7621 -c
 
-env PACKAGES="bash nano luci-app-wol luci-i18n-wol-zh-cn luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn luci luci-compat luci-lib-ipkg luci-theme-bootstrap luci-app-vlmcsd luci-i18n-vlmcsd-zh-cn vlmcsd" bash -x build.sh -p ramips-mt7621 -P phicomm_k2p -t /work/openwrt/package/21.02/mt7621 -c
+env PACKAGES="bash nano luci-app-wol luci-i18n-wol-zh-cn luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn luci luci-compat luci-lib-ipkg luci-theme-bootstrap luci-app-vlmcsd luci-i18n-vlmcsd-zh-cn vlmcsd" bash -x build.sh -p ramips-mt7621 -P phicomm_k2p -c
 
-env PACKAGES="luci luci-compat luci-lib-ipkg luci-app-vlmcsd luci-app-wol luci-theme-bootstrap vlmcsd" bash -x build.sh -p ramips-mt7620 -P phicomm_psg1218a -t /work/openwrt/package/21.02/mt7620 -c
+env PACKAGES="luci luci-compat luci-lib-ipkg luci-app-vlmcsd luci-app-wol luci-theme-bootstrap vlmcsd" bash -x build.sh -p ramips-mt7620 -P phicomm_psg1218b -v 22.03.0
+
+env PACKAGES="luci luci-compat luci-lib-ipkg luci-app-vlmcsd luci-app-wol luci-theme-bootstrap vlmcsd" bash -x build.sh -p ramips-mt7620 -P phicomm_psg1218a -v 21.02.3 -c
 
 bash -x build.sh -p ramips-mt7621 -P d-team_newifi-d2 -v 19.07.9 -c
 bash -x build.sh -p ath79-nand -P WNDR4300V1 -v 19.07.9 -c
@@ -82,6 +81,14 @@ docker run --rm -it -u "$(id -u):$(id -g)" \
     -v "$PWD/config/${major_version}/${platform}/${profilename}:/home/build/openwrt/custom" \
     -v "${thirdparty}:/home/build/openwrt/thirdparty" \
     docker.io/openwrtorg/imagebuilder:x86-64-21.02.3 bash -c "sed -i -e 's|https://downloads.openwrt.org|http://mirrors.ustc.edu.cn/openwrt|g' -e 's|http://downloads.openwrt.org|http://mirrors.ustc.edu.cn/openwrt|g' -e 's|# src custom file:///usr/src/openwrt/bin/x86/packages|src custom file:///home/build/openwrt/thirdparty|g' -e 's/^option check_signature$/# &/' repositories.conf; make image PROFILE=${profilename} PACKAGES='${PACKAGES}' FILES=/home/build/openwrt/custom"
+```
+
+```bash
+cp ath79-nand-netgear_wndr4300-22.03.0-bin/targets/ath79/nand/*.manifest ath79-nand-netgear_wndr4300-22.03.0-bin/targets/ath79/nand/*.bin /work/openwrt/image/22.03/ath79-nand/
+
+cp ramips-mt7620-phicomm_psg1218b-22.03.0-bin/targets/ramips/mt7620/*.manifest ramips-mt7620-phicomm_psg1218b-22.03.0-bin/targets/ramips/mt7620/*.bin /work/openwrt/image/22.03/ramips-mt7620
+
+cp ramips-mt7621-phicomm_k2p-22.03.0-bin/targets/ramips/mt7621/*.manifest ramips-mt7621-phicomm_k2p-22.03.0-bin/targets/ramips/mt7621/*.bin /work/openwrt/image/22.03/ramips-mt7621/
 ```
 
 ```text

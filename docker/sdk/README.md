@@ -46,11 +46,13 @@ make -j package/feeds/jell/luci-app-vlmcsd/compile package/feeds/jell/vlmcsd/com
 export GIT_PROXY=http://192.168.1.202:9080/
 git config --global url."${GIT_PROXY}".insteadOf https://
 sed -e 's|git.openwrt.org/openwrt/openwrt|github.com/openwrt/openwrt|g' \
-    -e '/^src-git packages http/d' \
+    -e 's|git.openwrt.org/feed/packages|github.com/openwrt/packages|g' \
     -e 's|git.openwrt.org/project/luci|github.com/openwrt/luci|g' \
     -e 's|git.openwrt.org/feed/telephony|github.com/openwrt/telephony|g' \
+    -e '\%^src-git packages https://github.com/openwrt/packages% s%.%#&%' \
+    -e '\%^src-git-full packages https://github.com/openwrt/packages% s%.%#&%' \
     -i feeds.conf.default
-echo "src-git packages https://github.com/Lienol/openwrt-packages;21.02" >>feeds.conf.default
+echo "src-git packages https://github.com/Lienol/openwrt-packages;22.03" >>feeds.conf.default
 echo "src-git Lienol https://github.com/Lienol/openwrt-package" >>feeds.conf.default
 echo "src-git xiaorouji https://github.com/xiaorouji/openwrt-passwall" >>feeds.conf.default
 echo "src-git fw876 https://github.com/fw876/helloworld" >>feeds.conf.default

@@ -24,7 +24,11 @@ function _add_feed() {
 
 _check_param MAJOR_VERSION
 if [[ -n ${DEBIAN_MIRROR} ]]; then
-    sudo sed -i -e "s|http://deb.debian.org|${DEBIAN_MIRROR}|g" -e "s|https://deb.debian.org|${DEBIAN_MIRROR}|g" -e "s|http://security.debian.org|${DEBIAN_MIRROR}|g" -e "s|https://security.debian.org|${DEBIAN_MIRROR}|g" /etc/apt/sources.list
+    sudo sed -e "s|http://deb.debian.org|${DEBIAN_MIRROR}|g" \
+        -e "s|https://deb.debian.org|${DEBIAN_MIRROR}|g" \
+        -e "s|http://security.debian.org|${DEBIAN_MIRROR}|g" \
+        -e "s|https://security.debian.org|${DEBIAN_MIRROR}|g" \
+        -i /etc/apt/sources.list
 fi
 sudo apt update -yq
 sudo apt install -yq upx-ucl
@@ -39,11 +43,15 @@ EOF
 fi
 
 sed -e 's|git.openwrt.org/openwrt/openwrt|github.com/openwrt/openwrt|g' \
+    -e 's|git.openwrt.org/feed/packages|github.com/openwrt/packages|g' \
     -e 's|git.openwrt.org/project/luci|github.com/openwrt/luci|g' \
     -e 's|git.openwrt.org/feed/telephony|github.com/openwrt/telephony|g' \
     -i feeds.conf.default
 # Change the package definition
-sed -e '/^src-git packages http/d' -i feeds.conf.default
+sed -e '\%^src-git packages https://github.com/openwrt/packages% s%.%#&%' \
+    -e '\%^src-git-full packages https://github.com/openwrt/packages% s%.%#&%' \
+    -i feeds.conf.default
+
 _add_feed packages "https://github.com/Lienol/openwrt-packages;${MAJOR_VERSION}"
 
 # Add the third party repo

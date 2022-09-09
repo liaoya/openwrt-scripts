@@ -6,6 +6,22 @@ I use OpenWRT imagebuilder to assemble firmware for my own router. Fix the `luci
 opkg install --force-reinstall luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn
 ```
 
+The following command fix the directory name
+
+```bash
+while IFS= read -r -d "" _dir; do
+    mv "${_dir}" "${_dir}-nand"
+done < <(find . -iname "ath79" -type d -print0)
+
+while IFS= read -r -d "" _dir; do
+    mv "${_dir}" $(dirname "${_dir}")/ramips-$(basename "${_dir}")
+done < <(find . \( -iname "mt7621" -o -iname "mt7620" \) -type d -print0)
+
+while IFS= read -r -d "" _dir; do
+    mv "${_dir}" $(dirname "${_dir}")/x86-64
+done < <(find . -iname "x64" -type d -print0)
+```
+
 ## Adblock
 
 ```bash

@@ -9,65 +9,68 @@ SRC=${SRC:-""}
 
 function _print_help() {
     cat <<EOF
-Usage: $(basename "${BASH_SOURCE[0]}") [OPTIONS]
+Usage: $(basename "${BASH_SOURCE[0]}") [OPTIONS] <list|copy> <SRC> [DEST]
 OPTIONS
-    -d, --dest, the dest directory for ipk
     -h, --help, show help
-    -o, --operation, the value is copy or list
-    -s, --src, the src directory contain ipk package
 EOF
 }
 
-TEMP=$(getopt -o d:ho:s: --long dest:,help,operation:,src: -- "$@")
-eval set -- "${TEMP}"
-while true; do
-    case "$1" in
-    -d | --dest)
-        shift
-        if [[ ! -d ${1} ]]; then
-            mkdir -p "${1}"
-        fi
-        DEST=$(readlink -f "$1")
-        ;;
-    -h | --help)
+while getopts :h OPTION; do
+    case $OPTION in
+    h)
         _print_help
         exit 0
-        ;;
-    -o | --operation)
-        shift
-        OPERATION=$1
-        ;;
-    -s | --src)
-        shift
-        SRC=$(readlink -f "$1")
-        ;;
-    --)
-        shift
-        break
         ;;
     *)
         _print_help
         exit 1
         ;;
     esac
-    shift
 done
+shift $((OPTIND - 1))
 
-if [[ ! -d "${SRC}/packages" ]]; then
-    echo "${SRC} does not exist or is illegal"
+if [[ ${1} != list && ${1} != copy ]]; then
+    _print_help
     exit 1
 fi
+OPERATION=${1}
+shift
 
-cd "${SRC}/packages"
+if [[ ! -d "${1}/packages" ]]; then
+    echo "${1} does not exist or is illegal"
+    exit 1
+fi
+SRC=${1}
+shift
+
+if [[ ${OPERATION} == "copy" && $# -eq 0 ]]; then
+    _print_help
+    exit 1
+else
+    DEST=${1}
+    if [[ ! -d "${DEST}" ]]; then
+        mkdir -p "${DEST}"
+    fi
+fi
+
+#shellcheck disable=SC2086
+cd "${SRC}/packages/$(ls -1 ${SRC}/packages)"
 
 if [[ ${OPERATION} == "list" ]]; then
     find . -iname "*.ipk" | grep -v "/base/" | grep -v "/luci/" | grep -v "/packages/" | grep -v "/routing/" | grep -v "/telephony/"
     find . \( -iname "*shadowsocks*.ipk" -o -iname "*smartdns*.ipk" -o -iname "*v2ray*.ipk" -o -iname "*xray*.ipk" \)
-else
+elif [[ ${OPERATION} == "copy" ]]; then
     while IFS= read -r _pkg; do
         cp "${_pkg}" "${DEST}"
     done < <(find . -iname "*.ipk" | grep -v "/base/" | grep -v "/luci/" | grep -v "/packages/" | grep -v "/routing/" | grep -v "/telephony/")
     while IFS= read -r _pkg; do
         cp "${_pkg}" "${DEST}"
     done < <(find . \( -iname "*shadowsocks*.ipk" -o -iname "*smartdns*.ipk" -o -iname "*v2ray*.ipk" -o -iname "*xray*.ipk" \) -print0)
+    if command -v ipkg-make-index.sh; then
+        pushd "${DEST}" || exit 1
+        ipkg-make-index.sh . > Packages && gzip -9nc Packages > Packages.gz
+    fi
+else
+    echo "Unkonwn ${OPERATION}"
+    exit 1
 fi

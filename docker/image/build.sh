@@ -192,6 +192,10 @@ exit 0
 EOF
 fi
 
+if [[ -z ${thirdparty} && -d /work/openwrt/package/"${major_version}/${platform}" ]]; then
+    thirdparty=/work/openwrt/package/"${major_version}/${platform}"
+fi
+
 if [[ -n ${thirdparty} ]]; then
     docker_opts+=(-v "${thirdparty}:/home/build/openwrt/thirdparty")
     cmd="${cmd:+${cmd}; }sed -i -e '\|^## Place your custom repositories here.*|a src custom file:///home/build/openwrt/thirdparty' -e 's/^option check_signature$/# &/' repositories.conf"
