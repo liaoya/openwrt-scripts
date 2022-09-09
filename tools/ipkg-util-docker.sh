@@ -68,7 +68,7 @@ elif [[ ${OPERATION} == "copy" ]]; then
     done < <(find . \( -iname "*shadowsocks*.ipk" -o -iname "*smartdns*.ipk" -o -iname "*v2ray*.ipk" -o -iname "*xray*.ipk" \) -print0)
     if command -v ipkg-make-index.sh; then
         pushd "${DEST}" || exit 1
-        ipkg-make-index.sh . > Packages && gzip -9nc Packages > Packages.gz
+        ipkg-make-index.sh . >Packages && gzip -9nc Packages >Packages.gz
     fi
 else
     echo "Unkonwn ${OPERATION}"
