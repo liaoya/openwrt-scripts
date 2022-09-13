@@ -63,7 +63,7 @@ elif [[ ${OPERATION} == "copy" ]]; then
     while IFS= read -r _pkg; do
         cp "${_pkg}" "${DEST}"
     done < <(find . -iname "*.ipk" | grep -v "/base/" | grep -v "/luci/" | grep -v "/packages/" | grep -v "/routing/" | grep -v "/telephony/")
-    while IFS= read -r _pkg; do
+    while IFS= read -r -d '' _pkg; do
         cp "${_pkg}" "${DEST}"
     done < <(find . \( -iname "*shadowsocks*.ipk" -o -iname "*smartdns*.ipk" -o -iname "*v2ray*.ipk" -o -iname "*xray*.ipk" \) -print0)
     if command -v ipkg-make-index.sh; then
