@@ -32,7 +32,7 @@ lscpu \
 luci-app-wol luci-i18n-wol-zh-cn \
 luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn \
 luci luci-compat luci-lib-ipkg luci-theme-bootstrap \
-nano pciutils procps-ng-pkill tcpdump tmux \
+mtr nano pciutils procps-ng-pkill tcpdump tmux \
 uci wget"
 PACKAGES="${PACKAGES:+$PACKAGES }luci-app-vlmcsd luci-i18n-vlmcsd-zh-cn vlmcsd"
 export PACKAGES
@@ -47,11 +47,11 @@ bash -x build.sh -p ramips-mt7621 -P d-team_newifi-d2 -c
 
 bash -x build.sh -p x86-64 -t /work/openwrt/package/21.02/x86-64 -c
 
-env PACKAGES="bash nano luci-app-wol luci-i18n-wol-zh-cn luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn luci luci-compat luci-lib-ipkg luci-theme-bootstrap luci-app-vlmcsd luci-i18n-vlmcsd-zh-cn vlmcsd" bash -x build.sh -p ramips-mt7621 -P phicomm_k2p -c
+env PACKAGES="bash mtr nano luci-app-wol luci-i18n-wol-zh-cn luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn luci luci-compat luci-lib-ipkg luci-theme-bootstrap luci-app-vlmcsd luci-i18n-vlmcsd-zh-cn vlmcsd" bash -x build.sh -p ramips-mt7621 -P phicomm_k2p -c
 
-env PACKAGES="luci luci-compat luci-lib-ipkg luci-app-vlmcsd luci-app-wol luci-theme-bootstrap vlmcsd" bash -x build.sh -p ramips-mt7620 -P phicomm_psg1208 -v 22.03.0
+env PACKAGES="luci luci-compat luci-lib-ipkg luci-app-vlmcsd luci-app-wol luci-theme-bootstrap mtr vlmcsd" bash -x build.sh -p ramips-mt7620 -P phicomm_psg1208 -v 22.03.0
 
-env PACKAGES="luci luci-compat luci-lib-ipkg luci-app-vlmcsd luci-app-wol luci-theme-bootstrap vlmcsd" bash -x build.sh -p ramips-mt7620 -P phicomm_psg1218a -v 21.02.3 -c
+env PACKAGES="luci luci-compat luci-lib-ipkg luci-app-vlmcsd luci-app-wol luci-theme-bootstrap mtr vlmcsd" bash -x build.sh -p ramips-mt7620 -P phicomm_psg1218a -v 21.02.3 -c
 
 bash -x build.sh -p ramips-mt7621 -P d-team_newifi-d2 -v 19.07.9 -c
 bash -x build.sh -p ath79-nand -P WNDR4300V1 -v 19.07.9 -c
