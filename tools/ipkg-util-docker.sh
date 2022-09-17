@@ -43,10 +43,11 @@ fi
 SRC=${1}
 shift
 
-if [[ ${OPERATION} == "copy" && $# -eq 0 ]]; then
-    _print_help
-    exit 1
-else
+if [[ ${OPERATION} == "copy" ]]; then
+    if [[ $# -eq 0 ]]; then
+        _print_help
+        exit 1
+    fi
     DEST=${1}
     if [[ ! -d "${DEST}" ]]; then
         mkdir -p "${DEST}"
@@ -58,14 +59,14 @@ cd "${SRC}/packages/$(ls -1 ${SRC}/packages)"
 
 if [[ ${OPERATION} == "list" ]]; then
     find . -iname "*.ipk" | grep -v "/base/" | grep -v "/luci/" | grep -v "/packages/" | grep -v "/routing/" | grep -v "/telephony/"
-    find . \( -iname "*shadowsocks*.ipk" -o -iname "*smartdns*.ipk" -o -iname "*v2ray*.ipk" -o -iname "*xray*.ipk" \)
+    find . \( -iname "*coremark*.ipk" -o -iname "*shadowsocks*.ipk" -o -iname "*smartdns*.ipk" -o -iname "*v2ray*.ipk" -o -iname "*xray*.ipk" \)
 elif [[ ${OPERATION} == "copy" ]]; then
     while IFS= read -r _pkg; do
         cp "${_pkg}" "${DEST}"
     done < <(find . -iname "*.ipk" | grep -v "/base/" | grep -v "/luci/" | grep -v "/packages/" | grep -v "/routing/" | grep -v "/telephony/")
     while IFS= read -r -d '' _pkg; do
         cp "${_pkg}" "${DEST}"
-    done < <(find . \( -iname "*shadowsocks*.ipk" -o -iname "*smartdns*.ipk" -o -iname "*v2ray*.ipk" -o -iname "*xray*.ipk" \) -print0)
+    done < <(find . \( -iname "*coremark*.ipk" -o -iname "*shadowsocks*.ipk" -o -iname "*smartdns*.ipk" -o -iname "*v2ray*.ipk" -o -iname "*xray*.ipk" \) -print0)
     if command -v ipkg-make-index.sh; then
         pushd "${DEST}" || exit 1
         ipkg-make-index.sh . >Packages && gzip -9nc Packages >Packages.gz

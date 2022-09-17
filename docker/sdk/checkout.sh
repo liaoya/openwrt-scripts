@@ -62,6 +62,7 @@ _add_feed kenzok8 https://github.com/kenzok8/openwrt-packages
 _add_feed small https://github.com/kenzok8/small-package
 _add_feed jell https://github.com/kenzok8/jell
 _add_feed liuran001 "https://github.com/liuran001/openwrt-packages;packages"
+_add_feed gwlim https://github.com/gwlim/coremark-openwrt
 
 scripts/feeds clean || true
 ./scripts/feeds update -a || true
