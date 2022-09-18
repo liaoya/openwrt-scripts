@@ -26,6 +26,7 @@ OPTIONS
     -c, clean build. ${CLEAN:+The default is "${CLEAN}"}
     -d, the dl download directory. ${DL_DIR:+The default is '"${DL_DIR}"'}
     -p, the platform. ${PLATFORM:+The default is '"${PLATFORM}"'}
+    -r, dry run. ${DRYRUN:+The default is '"${DRYRUN}"'}
     -v, the openwrt version. ${VERSION:+The default is '"${VERSION}"'}
 EOF
 }
