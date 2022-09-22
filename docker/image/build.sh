@@ -24,9 +24,18 @@ function _add_exit_hook() {
 PACKAGES=${PACKAGES:-""}
 
 function _add_package() {
+    local _before=0
+    if [[ ${1} == "-b" ]]; then
+        _before=1
+        shift
+    fi
     while (($#)); do
         if [[ ${PACKAGES} != *"${1}"* ]]; then
-            PACKAGES="${PACKAGES:+${PACKAGES} }${1}"
+            if [[ ${_before} -gt 0 ]]; then
+                PACKAGES="${1}${PACKAGES:+ ${PACKAGES}}"
+            else
+                PACKAGES="${PACKAGES:+${PACKAGES} }${1}"
+            fi
         fi
         shift
     done
@@ -69,6 +78,7 @@ OPTIONS
         Thirdparty package directory. ${thirdparty:+The default is '"${thirdparty}"'}
     -v, --version version
         OpenWRT version(used for image tag). ${version:+The default is '"${version}"'}
+    --dryrun
 EOF
 }
 
@@ -96,7 +106,7 @@ while true; do
         profile=$2
         ;;
     -t | --thirdparty)
-        thirdparty=$2
+        thirdparty=$(readlink -f "$2")
         ;;
     -v | --version)
         version=$2
@@ -227,14 +237,20 @@ if [[ $(command -v qemu-img) && ${platform} == "x86-64" && ${dryrun:-0} -eq 0 ]]
         _prefix=$(dirname "${_gz_image}")
         _img=${_prefix}/$(basename -s .gz "${_gz_image}")
         _qcow=${_prefix}/$(basename -s .img.gz "${_gz_image}").qcow2c
-        if [[ -f "${_qcow}" ]]; then
+        if [[ -f "${_qcow}" && ${_gz_image} != *"squashfs"* ]] || [[ -f "${_img}" && ${_gz_image} == *"squashfs"* ]]; then
             continue
         fi
         if [[ ! -f "${_img}" ]]; then
             gunzip -k "${_gz_image}" || true
         fi
-        qemu-img convert -c -O qcow2 "${_img}" "${_qcow}"
-        qemu-img convert -O qcow2 "${_qcow}" "${_img}" # Ventoy use img
+        # Ventoy use img
+        if [[ ${_gz_image} == *"squashfs"* ]]; then
+            qemu-img convert -O qcow2 "${_img}" "${_qcow}"
+            mv "${_qcow}" "${_img}"
+        else
+            qemu-img convert -c -O qcow2 "${_img}" "${_qcow}"
+            qemu-img convert -O qcow2 "${_qcow}" "${_img}"
+        fi
         unset -v _prefix _img _qcow
     done < <(find "${bindir}/targets/x86/64" -iname "*-combined*.img.gz" | grep -v efi | sort)
 fi

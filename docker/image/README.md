@@ -1,6 +1,6 @@
 # README
 
-If we only use official package without customization, use <https://firmware-selector.openwrt.org> to build the image.
+**Use <https://firmware-selector.openwrt.org> if you want a image with customize package.**
 
 User OpenWRT docker image to build firmware
 
