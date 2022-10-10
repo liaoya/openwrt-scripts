@@ -21,7 +21,6 @@ export KCPTUN_VERSION
 
 _image_prefix=docker.io/yaekee
 
-echo "${_this_dir}/Dockerfile.client"
 if [[ ${DOCKERFILE} == "${_this_dir}/Dockerfile.client" ]]; then
     add_image "${_image_prefix}/kcptun-client:${KCPTUN_VERSION}"
 elif [[ ${DOCKERFILE} == "${_this_dir}/Dockerfile.server" ]]; then
