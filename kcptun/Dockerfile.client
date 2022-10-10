@@ -1,0 +1,14 @@
+ARG ALPINE_BASE
+#hadolint ignore=DL3006
+FROM $ALPINE_BASE
+
+# hadolint ignore=DL3018
+RUN set -eux ; \
+    apk update -q --no-progress ; \
+    apk --no-cache --no-progress add \
+        iptables \
+    ; \
+    rm -rf /var/lib/apk/lists/*; \
+    rm /var/cache/apk/*
+
+COPY client_linux_amd64 /usr/local/bin/client

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 _this_dir=$(readlink -f "${BASH_SOURCE[0]}")
-_this_dir=$(dirname "${THIS_DIR}")
+_this_dir=$(dirname "${_this_dir}")
 
 for _item in "${_this_dir}"/*.sh; do
     if [[ ! -x "${_item}" ]]; then
