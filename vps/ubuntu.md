@@ -37,16 +37,16 @@ elif [[ ${VERSION} -eq 2004 ]]; then
     # ppa:mtvoid/ppa for emacs27
     # ppa:mjuhasz/backports for tmux 3.1b
     ppa_repos+=(ppa:savoury1/backports)
-    ppa_repos+=(ppa:fish-shell/release-3 ppa:jonathonf/vim ppa:kelebek333/xfce-4.16 ppa:mjuhasz/backports)
+    ppa_repos+=(ppa:fish-shell/release-3 ppa:jonathonf/vim ppa:kelebek333/xfce-4.16 ppa:mjuhasz/backports ppa:rmescandon/yq)
 elif [[ ${VERSION} -eq 2204 ]]; then
     ppa_repos+=(ppa:savoury1/backports)
-    ppa_repos+=(ppa:fish-shell/release-3 ppa:jonathonf/vim)
+    ppa_repos+=(ppa:fish-shell/release-3 ppa:jonathonf/vim ppa:rmescandon/yq)
 fi
 for ppa in "${ppa_repos[@]}"; do add-apt-repository -y "$ppa"; done
 apt update -qq -y
 apt upgrade -q -y
 
-apt install -qq -y certbot curl docker.io dos2unix fish git gnupg jq moreutils nmon nano sshpass tig tmux vim
+apt install -qq -y certbot curl docker.io dos2unix fish git gnupg jq moreutils nmon nano sshpass tig tmux vim yq
 apt install -qq -y python3-distutils
 
 mkdir ~/.ssh
