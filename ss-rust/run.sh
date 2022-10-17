@@ -19,6 +19,24 @@ function _check_command() {
     done
 }
 
+function _add_ufw_port() {
+    while (($#)); do
+        if ! sudo ufw status numbered | sed '1,4d' | sed -s 's/\[ /\[/g' | tr -d '[]' | cut -d' ' -f2 | grep -s -q -w "${1}"; then
+            sudo ufw allow "${1}"
+        fi
+        shift
+    done
+}
+
+function _delete_ufw_port() {
+    while (($#)); do
+        while IFS= read -r line; do
+            num=$(echo "${line}" | cut -d' ' -f1)
+            echo "y" | sudo ufw delete "${num}"
+        done < <(sudo ufw status numbered | sed '1,4d' | sed -s 's/\[ /\[/g' | tr -d '[]' | cut -d' ' -f1,2 | grep -s -q -w "${1}")
+    done
+}
+
 function print_usage() {
     cat <<EOF
 Usage: $(basename "${BASH_SOURCE[0]}") options <clean|restart|start|stop> <client|kcp|server>
@@ -65,11 +83,14 @@ if [[ -f "${ROOT_DIR}/post.sh" ]]; then source "${ROOT_DIR}/post.sh"; fi
 if [[ -f "$2/env.sh" ]]; then source "$2/env.sh"; fi
 if [[ $1 == clean ]]; then
     docker-compose -p "${PROJECT}" -f "${2}/docker-compose.yaml" down -v
+    _delete_ufw_port "${SHADOWSOCKS[KCPTUN_PORT]}" "${SHADOWSOCKS[SHADOWSOCKS_PORT]}"
     [[ -x "${2}/clean.sh" ]] && source "${2}/clean.sh"
 elif [[ $1 == restart ]]; then
     docker-compose -p "${PROJECT}" -f "${2}/docker-compose.yaml" restart
+    _add_ufw_port "${SHADOWSOCKS[KCPTUN_PORT]}" "${SHADOWSOCKS[SHADOWSOCKS_PORT]}"
 elif [[ $1 == start ]]; then
     docker-compose -p "${PROJECT}" -f "${2}/docker-compose.yaml" up -d
+    _add_ufw_port "${SHADOWSOCKS[KCPTUN_PORT]}" "${SHADOWSOCKS[SHADOWSOCKS_PORT]}"
 elif [[ $1 == stop ]]; then
     docker-compose -p "${PROJECT}" -f "${2}/docker-compose.yaml" stop
 else
