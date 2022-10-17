@@ -31,8 +31,8 @@ function _add_ufw_port() {
 function _delete_ufw_port() {
     while (($#)); do
         while IFS= read -r num; do
-            sudo ufw delete "${num}"
-        done < <(sudo ufw status numbered | sed '1,4d' | sed -s 's/\[ /\[/g' | tr -d '[]' | cut -d' ' -f1,2 | grep -s -q -w "${1}" | tac | cut -d' ' -f1)
+            echo "y" | sudo ufw delete "${num}"
+        done < <(sudo ufw status numbered | sed '1,4d' | sed -s 's/\[ /\[/g' | tr -d '[]' | cut -d' ' -f1,2 | grep -w "${1}" | tac | cut -d' ' -f1)
         shift
     done
 }
