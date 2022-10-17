@@ -26,9 +26,6 @@ function _read_param() {
     SHADOWSOCKS[${_upper}]=${SHADOWSOCKS[${_upper}]:-""}
 }
 
-XRAY_PLUGIN_VERSION=${XRAY_PLUGIN_VERSION:-$(curl -s "https://api.github.com/repos/teddysun/xray-plugin/tags" | jq -r '.[0].name')}
-XRAY_PLUGIN_VERSION=${XRAY_PLUGIN_VERSION:-v1.6.0}
-
 _read_param kcptun_port $((RANDOM % 30000 + 20000))
 _read_param kcptun_version
 _read_param shadowsocks_password "$(tr -cd '[:alnum:]' </dev/urandom | fold -w30 | head -n1)"
