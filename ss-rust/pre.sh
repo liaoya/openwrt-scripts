@@ -57,19 +57,26 @@ if [[ -z ${SHADOWSOCKS[XRAY_PLUGIN_VERSION]} ]]; then
     XRAY_PLUGIN_VERSION=${XRAY_PLUGIN_VERSION:-v1.6.0}
     SHADOWSOCKS[XRAY_PLUGIN_VERSION]="${XRAY_PLUGIN_VERSION}"
 fi
+{
+    tracestate=$(shopt -po xtrace) || true
+    set +x
+    for key in "${!SHADOWSOCKS[@]}"; do echo "$key => ${SHADOWSOCKS[$key]}"; done
+    [[ -n "${tracestate}" ]] && eval "${tracestate}"
+} | sort
+_check_param KCPTUN_PORT KCPTUN_VERSION SHADOWSOCKS_PASSWORD SHADOWSOCKS_PORT SHADOWSOCKS_RUST_VERSION XRAY_PLUGIN_VERSION
 
 if [[ -n ${SHADOWSOCKS[SIP003_PLUGIN]} ]]; then
     if [[ ${SHADOWSOCKS[SIP003_PLUGIN]} == xray-plugin ]] && [[ ! -x "${ROOT_DIR}/xray-plugin_linux_amd64" ]]; then
-        curl -sL -o - "https://github.com/teddysun/xray-plugin/releases/download/${XRAY_PLUGIN_VERSION}/xray-plugin-linux-amd64-${XRAY_PLUGIN_VERSION}.tar.gz" | tar -C "${ROOT_DIR}" -I gzip -xf -
+        curl -sL -o - "https://github.com/teddysun/xray-plugin/releases/download/${SHADOWSOCKS[XRAY_PLUGIN_VERSION]}/xray-plugin-linux-amd64-${SHADOWSOCKS[XRAY_PLUGIN_VERSION]}.tar.gz" | tar -C "${ROOT_DIR}" -I gzip -xf -
         chmod a+x "${ROOT_DIR}/xray-plugin_linux_amd64"
         sudo chown "$(id -un):$(id -gn)" "${ROOT_DIR}/xray-plugin_linux_amd64"
     elif [[ ${SHADOWSOCKS[SIP003_PLUGIN]} == v2ray-plugin ]] && [[ ! -x "${ROOT_DIR}/v2ray-plugin_linux_amd64" ]]; then
-        curl -sL -o - "https://github.com/shadowsocks/v2ray-plugin/releases/download/${V2RAY_PLUGIN_VERSION}/v2ray-plugin-linux-amd64-${V2RAY_PLUGIN_VERSION}.tar.gz" | tar -C "${ROOT_DIR}" -I gzip -xf -
+        curl -sL -o - "https://github.com/shadowsocks/v2ray-plugin/releases/download/${SHADOWSOCKS[V2RAY_PLUGIN_VERSION]}/v2ray-plugin-linux-amd64-${SHADOWSOCKS[V2RAY_PLUGIN_VERSION]}.tar.gz" | tar -C "${ROOT_DIR}" -I gzip -xf -
         chmod a+x "${ROOT_DIR}/v2ray-plugin_linux_amd64"
         sudo chown "$(id -un):$(id -gn)" "${ROOT_DIR}/v2ray-plugin_linux_amd64"
     fi
 fi
-_check_param KCPTUN_PORT KCPTUN_VERSION SHADOWSOCKS_PASSWORD SHADOWSOCKS_PORT SHADOWSOCKS_RUST_VERSION XRAY_PLUGIN_VERSION
+
 export KCPTUN_PORT=${SHADOWSOCKS[KCPTUN_PORT]}
 export KCPTUN_VERSION=${SHADOWSOCKS[KCPTUN_VERSION]}
 export SHADOWSOCKS_PORT=${SHADOWSOCKS[SHADOWSOCKS_PORT]}

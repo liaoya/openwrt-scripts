@@ -1,9 +1,7 @@
 #!/bin/bash
 #shellcheck disable=SC1091
 
-set -aex
-
-export PS4='+(${BASH_SOURCE[0]}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+set -ae
 
 ROOT_DIR=$(readlink -f "${BASH_SOURCE[0]}")
 ROOT_DIR=$(dirname "${ROOT_DIR}")
@@ -37,11 +35,17 @@ function _delete_ufw_port() {
     done
 }
 
+function enable_trace() {
+    set -e
+    export PS4='+(${BASH_SOURCE[0]}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+}
+
 function print_usage() {
     cat <<EOF
 Usage: $(basename "${BASH_SOURCE[0]}") options <clean|restart|start|stop> <client|kcp|server>
   -m, SIP003_PLUGIN_OPTS: sip003 plugin_opts. ${SHADOWSOCKS[SIP003_PLUGIN]:+The default is ${SHADOWSOCKS[SIP003_PLUGIN_OPTS]}}
   -p, SIP003_PLUGIN: Shadowsocks sip003 plugin. ${SHADOWSOCKS[SIP003_PLUGIN_OPTS]:+The default is ${SHADOWSOCKS[SIP003_PLUGIN]}}
+  -v, VERBOSE
 EOF
 }
 
@@ -52,11 +56,14 @@ export SHADOWSOCKS
 
 if [[ -f "${ROOT_DIR}/pre.sh" ]]; then source "${ROOT_DIR}/pre.sh"; fi
 
-while getopts ":hm:p:" opt; do
+while getopts ":hvm:p:" opt; do
     case $opt in
     h)
         print_usage
         exit 0
+        ;;
+    v)
+        enable_trace
         ;;
     m)
         SHADOWSOCKS[SIP003_PLUGIN_OPTS]=$OPTARG
@@ -81,16 +88,23 @@ PROJECT=$(basename "${ROOT_DIR}")
 
 if [[ -f "${ROOT_DIR}/post.sh" ]]; then source "${ROOT_DIR}/post.sh"; fi
 if [[ -f "$2/env.sh" ]]; then source "$2/env.sh"; fi
+
 if [[ $1 == clean ]]; then
     docker-compose -p "${PROJECT}" -f "${2}/docker-compose.yaml" down -v
-    _delete_ufw_port "${SHADOWSOCKS[KCPTUN_PORT]}" "${SHADOWSOCKS[SHADOWSOCKS_PORT]}"
+    if [[ $2 == server ]]; then
+        _delete_ufw_port "${SHADOWSOCKS[KCPTUN_PORT]}" "${SHADOWSOCKS[SHADOWSOCKS_PORT]}"
+    fi
     [[ -x "${2}/clean.sh" ]] && source "${2}/clean.sh"
 elif [[ $1 == restart ]]; then
     docker-compose -p "${PROJECT}" -f "${2}/docker-compose.yaml" restart
-    _add_ufw_port "${SHADOWSOCKS[KCPTUN_PORT]}" "${SHADOWSOCKS[SHADOWSOCKS_PORT]}"
+    if [[ $2 == server ]]; then
+        _add_ufw_port "${SHADOWSOCKS[KCPTUN_PORT]}" "${SHADOWSOCKS[SHADOWSOCKS_PORT]}"
+    fi
 elif [[ $1 == start ]]; then
     docker-compose -p "${PROJECT}" -f "${2}/docker-compose.yaml" up -d
-    _add_ufw_port "${SHADOWSOCKS[KCPTUN_PORT]}" "${SHADOWSOCKS[SHADOWSOCKS_PORT]}"
+    if [[ $2 == server ]]; then
+        _add_ufw_port "${SHADOWSOCKS[KCPTUN_PORT]}" "${SHADOWSOCKS[SHADOWSOCKS_PORT]}"
+    fi
 elif [[ $1 == stop ]]; then
     docker-compose -p "${PROJECT}" -f "${2}/docker-compose.yaml" stop
 else

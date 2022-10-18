@@ -1,6 +1,6 @@
 #!/bin/bash
 
-tracestate=$(shopt -po xtrace)
+tracestate=$(shopt -po xtrace) || true
 set +x
 
 grep -e "^#" "${ROOT_DIR}/.options" | sponge "${ROOT_DIR}/.options"
