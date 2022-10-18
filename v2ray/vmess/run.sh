@@ -1,7 +1,7 @@
 #!/bin/bash
 #shellcheck disable=SC1091
 
-set -aex
+set -ae
 
 ROOT_DIR=$(readlink -f "${BASH_SOURCE[0]}")
 ROOT_DIR=$(dirname "${ROOT_DIR}")
@@ -9,7 +9,7 @@ export ROOT_DIR
 
 function print_usage() {
     cat <<EOF
-Usage: $(basename "${BASH_SOURCE[0]}") -h <clean|restart|start|stop> <client|server>
+Usage: $(basename "${BASH_SOURCE[0]}") [-h] [-v] <clean|restart|start|stop> <client|server>
 EOF
 }
 
@@ -31,11 +31,15 @@ function _delete_ufw_port() {
     done
 }
 
-while getopts ":h" opt; do
+while getopts ":hv" opt; do
     case $opt in
     h)
         print_usage
         exit 0
+        ;;
+    v)
+        set -x
+        export PS4='+(${BASH_SOURCE[0]}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
         ;;
     \?)
         print_usage
