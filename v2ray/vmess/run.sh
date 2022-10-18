@@ -57,14 +57,20 @@ if [[ -f "$2/env.sh" ]]; then source "$2/env.sh"; fi
 if [[ $1 == clean ]]; then
     docker-compose -p "${PROJECT}" -f "${2}/docker-compose.yaml" down -v || true
     rm -f "${2}"/config.json "${2}"/config-*.json || true
-    _delete_ufw_port "${V2RAY[PORT]}" "${V2RAY[MKCP_PORT]}"
+    if [[ $2 == server ]]; then
+        _delete_ufw_port "${V2RAY[PORT]}" "${V2RAY[MKCP_PORT]}"
+    fi
     [[ -x "${2}/clean.sh" ]] && "${2}/clean.sh"
 elif [[ $1 == restart ]]; then
     docker-compose -p "${PROJECT}" -f "${2}/docker-compose.yaml" restart
-    _add_ufw_port "${V2RAY[PORT]}" "${V2RAY[MKCP_PORT]}"
+    if [[ $2 == server ]]; then
+        _add_ufw_port "${V2RAY[PORT]}" "${V2RAY[MKCP_PORT]}"
+    fi
 elif [[ $1 == start ]]; then
     docker-compose -p "${PROJECT}" -f "${2}/docker-compose.yaml" up -d
-    _add_ufw_port "${V2RAY[PORT]}" "${V2RAY[MKCP_PORT]}"
+    if [[ $2 == server ]]; then
+        _add_ufw_port "${V2RAY[PORT]}" "${V2RAY[MKCP_PORT]}"
+    fi
 elif [[ $1 == stop ]]; then
     docker-compose -p "${PROJECT}" -f "${2}/docker-compose.yaml" stop
 else

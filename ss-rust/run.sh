@@ -36,7 +36,7 @@ function _delete_ufw_port() {
 }
 
 function enable_trace() {
-    set -e
+    set -x
     export PS4='+(${BASH_SOURCE[0]}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
 }
 

@@ -30,17 +30,17 @@ if [[ ${VERSION} -eq 1804 ]]; then
     ppa_repos+=(ppa:apt-fast/stable ppa:codeblocks-devs/release ppa:deadsnakes/ppa ppa:kelleyk/emacs ppa:fish-shell/release-3
         ppa:lazygit-team/release
         ppa:kimura-o/ppa-tig ppa:pypy/ppa ppa:unilogicbv/shellcheck
-        ppa:jonathonf/vim ppa:rmescandon/yq)
+        ppa:jonathonf/vim)
 elif [[ ${VERSION} -eq 2004 ]]; then
     # ppa:deadsnakes/ppa for various python
     # ppa:git-core/ppa, now ppa:savoury1/backports has latest git
     # ppa:mtvoid/ppa for emacs27
     # ppa:mjuhasz/backports for tmux 3.1b
     ppa_repos+=(ppa:savoury1/backports)
-    ppa_repos+=(ppa:fish-shell/release-3 ppa:jonathonf/vim ppa:kelebek333/xfce-4.16 ppa:mjuhasz/backports ppa:rmescandon/yq)
+    ppa_repos+=(ppa:fish-shell/release-3 ppa:jonathonf/vim ppa:kelebek333/xfce-4.16 ppa:mjuhasz/backports)
 elif [[ ${VERSION} -eq 2204 ]]; then
     ppa_repos+=(ppa:savoury1/backports)
-    ppa_repos+=(ppa:fish-shell/release-3 ppa:jonathonf/vim ppa:rmescandon/yq)
+    ppa_repos+=(ppa:fish-shell/release-3 ppa:jonathonf/vim)
 fi
 for ppa in "${ppa_repos[@]}"; do add-apt-repository -y "$ppa"; done
 apt update -qq -y
@@ -48,6 +48,9 @@ apt upgrade -q -y
 
 apt install -qq -y certbot curl docker.io dos2unix fish git gnupg jq moreutils nmon nano sshpass tig tmux vim yq
 apt install -qq -y python3-distutils
+
+curl -sL https://github.com/mikefarah/yq/releases/download/v4.28.1/yq_linux_amd64 -o /usr/local/bin/yq
+chmod a+x /usr/local/bin/yq
 
 mkdir ~/.ssh
 chmod 700 ~/.ssh
