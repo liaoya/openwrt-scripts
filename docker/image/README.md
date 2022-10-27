@@ -7,19 +7,19 @@ User OpenWRT docker image to build firmware
 There're no image after `18.06.7` for `18.06` series
 
 - `22.03`
-  - `docker.io/openwrtorg/imagebuilder:x86-64-22.03.0`
-  - `docker.io/openwrtorg/imagebuilder:armvirt-64-22.03.0`
-  - `docker.io/openwrtorg/imagebuilder:ath79-nand-22.03.0`
-  - `docker.io/openwrtorg/imagebuilder:ramips-mt7621-22.03.0`
-  - `docker.io/openwrtorg/imagebuilder:ramips-mt7620-22.03.0`
+  - `docker.io/openwrtorg/imagebuilder:x86-64-22.03.2`
+  - `docker.io/openwrtorg/imagebuilder:armvirt-64-22.03.2`
+  - `docker.io/openwrtorg/imagebuilder:ath79-nand-22.03.2`
+  - `docker.io/openwrtorg/imagebuilder:ramips-mt7621-22.03.2`
+  - `docker.io/openwrtorg/imagebuilder:ramips-mt7620-22.03.2`
 - `21.02`
-  - `docker.io/openwrtorg/imagebuilder:x86-64-21.02.3`
-  - `docker.io/openwrtorg/imagebuilder:armvirt-64-21.02.3`
-  - `docker.io/openwrtorg/imagebuilder:ath79-nand-21.02.3`
-  - `docker.io/openwrtorg/imagebuilder:ramips-mt7621-21.02.3`
-  - `docker.io/openwrtorg/imagebuilder:ramips-mt7620-21.02.3`
+  - `docker.io/openwrtorg/imagebuilder:x86-64-21.02.5`
+  - `docker.io/openwrtorg/imagebuilder:armvirt-64-21.02.5`
+  - `docker.io/openwrtorg/imagebuilder:ath79-nand-21.02.5`
+  - `docker.io/openwrtorg/imagebuilder:ramips-mt7621-21.02.5`
+  - `docker.io/openwrtorg/imagebuilder:ramips-mt7620-21.02.5`
 - `19.07`
-  - `docker.io/openwrtorg/imagebuilder:x86-64-19.07.9`
+  - `docker.io/openwrtorg/imagebuilder:x86-64-19.07.10`
 - `18.06`
   - `docker.io/openwrtorg/imagebuilder:x86-64-18.06.7`
 
@@ -49,12 +49,12 @@ bash -x build.sh -p x86-64 -t /work/openwrt/package/21.02/x86-64 -c
 
 env PACKAGES="bash mtr nano luci-app-wol luci-i18n-wol-zh-cn luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn luci luci-compat luci-lib-ipkg luci-theme-bootstrap luci-app-vlmcsd luci-i18n-vlmcsd-zh-cn vlmcsd" bash -x build.sh -p ramips-mt7621 -P phicomm_k2p -c
 
-env PACKAGES="luci luci-compat luci-lib-ipkg luci-app-vlmcsd luci-app-wol luci-theme-bootstrap mtr vlmcsd" bash -x build.sh -p ramips-mt7620 -P phicomm_psg1208 -v 22.03.0
+env PACKAGES="luci luci-compat luci-lib-ipkg luci-app-vlmcsd luci-app-wol luci-theme-bootstrap mtr vlmcsd" bash -x build.sh -p ramips-mt7620 -P phicomm_psg1208 -v 22.03.2
 
-env PACKAGES="luci luci-compat luci-lib-ipkg luci-app-vlmcsd luci-app-wol luci-theme-bootstrap mtr vlmcsd" bash -x build.sh -p ramips-mt7620 -P phicomm_psg1218a -v 21.02.3 -c
+env PACKAGES="luci luci-compat luci-lib-ipkg luci-app-vlmcsd luci-app-wol luci-theme-bootstrap mtr vlmcsd" bash -x build.sh -p ramips-mt7620 -P phicomm_psg1218a -v 21.02.5 -c
 
-bash -x build.sh -p ramips-mt7621 -P d-team_newifi-d2 -v 19.07.9 -c
-bash -x build.sh -p ath79-nand -P WNDR4300V1 -v 19.07.9 -c
+bash -x build.sh -p ramips-mt7621 -P d-team_newifi-d2 -v 19.07.10 -c
+bash -x build.sh -p ath79-nand -P WNDR4300V1 -v 19.07.10 -c
 ```
 
 ## Backup
@@ -73,7 +73,7 @@ luci-app-vlmcsd vlmcsd"
 platform=x86-64
 profilename=generic
 thirdparty=/work/openwrt/package/21.02/x64
-version=21.02.3
+version=21.02.5
 major_version=$(echo "${version}" | cut -d. -f1,2)
 bin_dir=${platform}-${profilename}-${version}-bin
 [ -d ${bin_dir} ] || mkdir ${bin_dir}
@@ -82,19 +82,19 @@ docker run --rm -it -u "$(id -u):$(id -g)" \
     -v "$(readlink -f ${bin_dir}):/home/build/openwrt/bin" \
     -v "$PWD/config/${major_version}/${platform}/${profilename}:/home/build/openwrt/custom" \
     -v "${thirdparty}:/home/build/openwrt/thirdparty" \
-    docker.io/openwrtorg/imagebuilder:x86-64-21.02.3 bash -c "sed -i -e 's|https://downloads.openwrt.org|http://mirrors.ustc.edu.cn/openwrt|g' -e 's|http://downloads.openwrt.org|http://mirrors.ustc.edu.cn/openwrt|g' -e 's|# src custom file:///usr/src/openwrt/bin/x86/packages|src custom file:///home/build/openwrt/thirdparty|g' -e 's/^option check_signature$/# &/' repositories.conf; make image PROFILE=${profilename} PACKAGES='${PACKAGES}' FILES=/home/build/openwrt/custom"
+    docker.io/openwrtorg/imagebuilder:x86-64-21.02.5 bash -c "sed -i -e 's|https://downloads.openwrt.org|http://mirrors.ustc.edu.cn/openwrt|g' -e 's|http://downloads.openwrt.org|http://mirrors.ustc.edu.cn/openwrt|g' -e 's|# src custom file:///usr/src/openwrt/bin/x86/packages|src custom file:///home/build/openwrt/thirdparty|g' -e 's/^option check_signature$/# &/' repositories.conf; make image PROFILE=${profilename} PACKAGES='${PACKAGES}' FILES=/home/build/openwrt/custom"
 ```
 
 ```bash
-cp ath79-nand-netgear_wndr4300-22.03.0-bin/targets/ath79/nand/*.manifest ath79-nand-netgear_wndr4300-22.03.0-bin/targets/ath79/nand/*.bin /work/openwrt/image/22.03/ath79-nand/
+cp ath79-nand-netgear_wndr4300-22.03.2-bin/targets/ath79/nand/*.manifest ath79-nand-netgear_wndr4300-22.03.2-bin/targets/ath79/nand/*.bin /work/openwrt/image/22.03/ath79-nand/
 
-cp ramips-mt7620-phicomm_psg1208-22.03.0-bin/targets/ramips/mt7620/*.manifest ramips-mt7620-phicomm_psg1208-22.03.0-bin/targets/ramips/mt7620/*.bin /work/openwrt/image/22.03/ramips-mt7620/
+cp ramips-mt7620-phicomm_psg1208-22.03.2-bin/targets/ramips/mt7620/*.manifest ramips-mt7620-phicomm_psg1208-22.03.2-bin/targets/ramips/mt7620/*.bin /work/openwrt/image/22.03/ramips-mt7620/
 
-cp ramips-mt7621-phicomm_k2p-22.03.0-bin/targets/ramips/mt7621/*.manifest ramips-mt7621-phicomm_k2p-22.03.0-bin/targets/ramips/mt7621/*.bin /work/openwrt/image/22.03/ramips-mt7621/
+cp ramips-mt7621-phicomm_k2p-22.03.2-bin/targets/ramips/mt7621/*.manifest ramips-mt7621-phicomm_k2p-22.03.2-bin/targets/ramips/mt7621/*.bin /work/openwrt/image/22.03/ramips-mt7621/
 
-cp ramips-mt7621-d-team_newifi-d2-22.03.0-bin/targets/ramips/mt7621/*.manifest ramips-mt7621-d-team_newifi-d2-22.03.0-bin/targets/ramips/mt7621/*.bin /work/openwrt/image/22.03/ramips-mt7621/
+cp ramips-mt7621-d-team_newifi-d2-22.03.2-bin/targets/ramips/mt7621/*.manifest ramips-mt7621-d-team_newifi-d2-22.03.2-bin/targets/ramips/mt7621/*.bin /work/openwrt/image/22.03/ramips-mt7621/
 
-cp x86-64-generic-22.03.0-bin/targets/x86/64/*.img x86-64-generic-22.03.0-bin/targets/x86/64/*.manifest /work/openwrt/image/22.03/x86-64/
+cp x86-64-generic-22.03.2-bin/targets/x86/64/*.img x86-64-generic-22.03.2-bin/targets/x86/64/*.manifest /work/openwrt/image/22.03/x86-64/
 ```
 
 ```text
