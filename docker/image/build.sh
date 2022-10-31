@@ -137,7 +137,11 @@ done
 
 _check_param platform version
 if [[ -z ${profile} && ${platform} == "x86-64" ]]; then
-    profile=Generic
+    if [[ ${version} =~ 19.07 ]]; then
+        profile=Generic
+    else
+        profile=generic
+    fi
 fi
 _check_param profile
 

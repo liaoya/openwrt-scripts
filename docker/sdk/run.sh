@@ -69,7 +69,7 @@ _check_param PLATFORM VERSION
 MAJOR_VERSION=$(echo "${VERSION}" | cut -d. -f1,2)
 DOCKER_IMAGE=docker.io/openwrtorg/sdk:${PLATFORM}-${VERSION}
 docker image pull "${DOCKER_IMAGE}"
-if [[ -z ${BIN_DIR} ]]; then BIN_DIR=${THIS_DIR}/${PLATFORM}-${VERSION}-bin; fi
+if [[ -z ${BIN_DIR} ]]; then BIN_DIR=${THIS_DIR}/${PLATFORM}-${MAJOR_VERSION}-bin; fi
 if [[ ${CLEAN} -gt 0 && -d "${BIN_DIR}" ]]; then rm -fr "${BIN_DIR}"; fi
 if [[ ! -d "${BIN_DIR}" ]]; then mkdir -p "${BIN_DIR}"; fi
 
