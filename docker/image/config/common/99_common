@@ -75,8 +75,6 @@ fi
 uci delete dhcp.lan.dhcp_option
 uci add_list dhcp.lan.dhcp_option="3,$gateway"
 uci add_list dhcp.lan.dhcp_option="6,$dns"
-uci commit
-uci changes
 uci commit dhcp
 /etc/init.d/dnsmasq restart
 EOF

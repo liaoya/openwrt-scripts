@@ -88,7 +88,7 @@ function configure_v2ray() {
 }
 
 # grep -i app-vssr .config | grep -v vssr-plus | sed -e 's/=m//g' -e 's/=y//g' -e 's/^# //g' -e 's/ is not set//g' | sort
-function configure_vssr_plus() {
+function configure_vssr() {
     for config in CONFIG_PACKAGE_luci-app-vssr_INCLUDE_Kcptun \
         CONFIG_PACKAGE_luci-app-vssr_INCLUDE_Xray \
         CONFIG_PACKAGE_luci-app-vssr_INCLUDE_Xray_plugin; do

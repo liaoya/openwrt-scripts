@@ -51,7 +51,7 @@ function _check_param() {
     done
 }
 
-version=22.03.2
+version=22.03.3
 
 function _print_help() {
     #shellcheck disable=SC2016
@@ -70,6 +70,8 @@ OPTIONS
         FILES="<path>" # include extra files from <path>. ${files:+The default is '"${files}"'}
     -n, --name name
         EXTRA_IMAGE_NAME="<string>" # Add this to the output image filename (sanitized). ${name:+The default is '"${name}"'}
+    --nocustomize no_customize
+        Exclude the common configuration for /etc/uci-defaults. ${no_customize:+The default is '"${no_customize}"'}
     -p, --platform platform
         OpenWRT platform(used for image tag), e.g. armvirt-64, ath79-nand, ramips-mt7621, x86-64. ${platform:+The default is '"${platform}"'}
     -P, --profile profile
@@ -79,10 +81,11 @@ OPTIONS
     -v, --version version
         OpenWRT version(used for image tag). ${version:+The default is '"${version}"'}
     --dryrun
+        Only kick start the shell, skip the final 'make' step
 EOF
 }
 
-TEMP=$(getopt -o b:d:f:n:p:P:t:v:hc --long bindir:,disableservice:,files:,name:,platform:,profile:,thirdparty:,version:,help,clean,dryrun -- "$@")
+TEMP=$(getopt -o b:d:f:n:p:P:t:v:hc --long bindir:,disableservice:,files:,name:,platform:,profile:,thirdparty:,version:,help,clean,dryrun,nocustomize -- "$@")
 eval set -- "${TEMP}"
 while true; do
     shift_step=2
@@ -122,6 +125,10 @@ while true; do
     --dryrun)
         shift_step=1
         dryrun=1
+        ;;
+    --nocustomize)
+        shift_step=1
+        nocustomize=1
         ;;
     --)
         shift
@@ -178,25 +185,26 @@ mkdir -p "${config_temp_dir}/etc/uci-defaults"
 if [[ -d "${files}" ]]; then
     cp -p "${files}"/* "${config_temp_dir}"/
 fi
-if [[ -d "${THIS_DIR}/config/common" ]]; then
-    cp -p "${THIS_DIR}/config/common"/*common "${config_temp_dir}/etc/uci-defaults/"
-fi
-if [[ -d "${THIS_DIR}/config/common/${platform}/${profile}" ]]; then
-    cp -pr "${THIS_DIR}/config/common/${platform}/${profile}"/* "${config_temp_dir}"/
-fi
-if [[ -d "${THIS_DIR}/config/${major_version}" ]]; then
-    cp -pr "${THIS_DIR}/config/${major_version}"/*common "${config_temp_dir}/etc/uci-defaults/" || true
-fi
-if [[ -d "${THIS_DIR}/config/${major_version}/${platform}/${profile}" ]]; then
-    cp -pr "${THIS_DIR}/config/${major_version}/${platform}/${profile}"/* "${config_temp_dir}"/
-fi
-echo -e "#!/bin/sh\n\ncat <<EOF | tee /etc/dropbear/authorized_keys" >>"${config_temp_dir}/etc/uci-defaults/10_dropbear"
-while IFS= read -r -d '' _id_rsa; do
-    cat <"${_id_rsa}" | tee -a "${config_temp_dir}/etc/uci-defaults/10_dropbear"
-done < <(find ~/.ssh/ -iname id_rsa.pub -print0)
-echo -e "EOF\n\nexit 0" >>"${config_temp_dir}/etc/uci-defaults/10_dropbear"
-if [[ -n ${OPENWRT_MIRROR_PATH} ]]; then
-    cat <<EOF | tee "${config_temp_dir}/etc/uci-defaults/10_opkg"
+if [[ ${nocustomize:-0} -ne 1 ]]; then
+    if [[ -d "${THIS_DIR}/config/common" ]]; then
+        cp -p "${THIS_DIR}/config/common"/*common "${config_temp_dir}/etc/uci-defaults/"
+    fi
+    if [[ -d "${THIS_DIR}/config/common/${platform}/${profile}" ]]; then
+        cp -pr "${THIS_DIR}/config/common/${platform}/${profile}"/* "${config_temp_dir}"/
+    fi
+    if [[ -d "${THIS_DIR}/config/${major_version}" ]]; then
+        cp -pr "${THIS_DIR}/config/${major_version}"/*common "${config_temp_dir}/etc/uci-defaults/" || true
+    fi
+    if [[ -d "${THIS_DIR}/config/${major_version}/${platform}/${profile}" ]]; then
+        cp -pr "${THIS_DIR}/config/${major_version}/${platform}/${profile}"/* "${config_temp_dir}"/
+    fi
+    echo -e "#!/bin/sh\n\ncat <<EOF | tee /etc/dropbear/authorized_keys" >>"${config_temp_dir}/etc/uci-defaults/10_dropbear"
+    while IFS= read -r -d '' _id_rsa; do
+        cat <"${_id_rsa}" >"${config_temp_dir}/etc/uci-defaults/10_dropbear"
+    done < <(find ~/.ssh/ -iname id_rsa.pub -print0)
+    echo -e "EOF\n\nexit 0" >>"${config_temp_dir}/etc/uci-defaults/10_dropbear"
+    if [[ -n ${OPENWRT_MIRROR_PATH} ]]; then
+        cat <<EOF | tee "${config_temp_dir}/etc/uci-defaults/10_opkg"
 #!/bin/sh
 
 sed -i -e 's|https://downloads.openwrt.org|${OPENWRT_MIRROR_PATH}|g' -e 's|http://downloads.openwrt.org|${OPENWRT_MIRROR_PATH}|g' /etc/opkg/distfeeds.conf
@@ -204,6 +212,7 @@ sed -i -e 's|https://downloads.openwrt.org|${OPENWRT_MIRROR_PATH}|g' -e 's|http:
 
 exit 0
 EOF
+    fi
 fi
 
 if [[ -z ${thirdparty} && -d /work/openwrt/package/"${major_version}/${platform}" ]]; then
