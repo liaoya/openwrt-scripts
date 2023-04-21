@@ -51,7 +51,7 @@ function _check_param() {
     done
 }
 
-version=22.03.3
+version=22.03.4
 
 function _print_help() {
     #shellcheck disable=SC2016

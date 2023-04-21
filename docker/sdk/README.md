@@ -1,26 +1,26 @@
 # OpenWrt sdk docker image
 
 ```bash
-docker run --rm -it -u $(id -u):$(id -g) -v $PWD/bin:/home/build/openwrt/bin docker.io/openwrtorg/sdk:x86-64-21.02.5 bash
+docker run --rm -it -u $(id -u):$(id -g) -v $PWD/bin:/home/build/openwrt/bin docker.io/openwrtorg/sdk:x86-64-21.02.6 bash
 ```
 
-- `docker.io/openwrtorg/sdk:x86-64-22.03.3`
-- `docker.io/openwrtorg/sdk:x86-64-21.02.5`
+- `docker.io/openwrtorg/sdk:x86-64-22.03.4`
+- `docker.io/openwrtorg/sdk:x86-64-21.02.6`
 - `docker.io/openwrtorg/sdk:x86-64-19.07.10`
 - `docker.io/openwrtorg/sdk:x86-64-18.06.7`
 
-- `docker.io/openwrtorg/sdk:armvirt-64-22.03.3`
-- `docker.io/openwrtorg/sdk:armvirt-64-21.02.5`
+- `docker.io/openwrtorg/sdk:armvirt-64-22.03.4`
+- `docker.io/openwrtorg/sdk:armvirt-64-21.02.6`
 
-- `docker.io/openwrtorg/sdk:ath79-nand-22.03.3`
-- `docker.io/openwrtorg/sdk:ath79-nand-21.02.5`
+- `docker.io/openwrtorg/sdk:ath79-nand-22.03.4`
+- `docker.io/openwrtorg/sdk:ath79-nand-21.02.6`
 
-- `docker.io/openwrtorg/sdk:ramips-mt7621-22.03.3`
-- `docker.io/openwrtorg/sdk:ramips-mt7621-21.02.5`
+- `docker.io/openwrtorg/sdk:ramips-mt7621-22.03.4`
+- `docker.io/openwrtorg/sdk:ramips-mt7621-21.02.6`
 
 ```bash
-export GIT_PROXY=http://192.168.1.202:9080/
-# export GIT_PROXY=http://10.245.91.190:9080/
+# export GIT_PROXY=http://192.168.1.202:9080/
+export GIT_PROXY=http://10.245.91.190:9080/
 bash -x run.sh -p x86-64
 bash -x run.sh -p armvirt-64
 bash -x run.sh -p ramips-mt7621

@@ -23,22 +23,12 @@ function _add_feed() {
 }
 
 _check_param MAJOR_VERSION
-if [[ -n ${DEBIAN_MIRROR} ]]; then
-    sudo sed -e "s|http://deb.debian.org|${DEBIAN_MIRROR}|g" \
-        -e "s|https://deb.debian.org|${DEBIAN_MIRROR}|g" \
-        -e "s|http://security.debian.org|${DEBIAN_MIRROR}|g" \
-        -e "s|https://security.debian.org|${DEBIAN_MIRROR}|g" \
-        -i /etc/apt/sources.list
-fi
-sudo apt update -yq
-sudo apt install -yq upx-ucl
-if [[ ! -L staging_dir/host/bin/upx ]]; then
-    ln -s "$(command -v upx)" staging_dir/host/bin/upx
-fi
+curl -sL -o - https://github.com/upx/upx/releases/download/v4.0.2/upx-4.0.2-amd64_linux.tar.xz | tar --strip-components=1 -C /tmp -I xz -xf -
+cp /tmp/upx staging_dir/host/bin/upx
 if [[ -n ${GIT_PROXY} ]]; then
     cat <<EOF | tee /home/build/.gitconfig
 [url "${GIT_PROXY}"]
-        insteadOf = https://
+    insteadOf = https://
 EOF
 fi
 
@@ -63,7 +53,8 @@ _add_feed small https://github.com/kenzok8/small-package
 _add_feed jell https://github.com/kenzok8/jell
 _add_feed liuran001 "https://github.com/liuran001/openwrt-packages;packages"
 _add_feed gwlim https://github.com/gwlim/coremark-openwrt
-_add_feed yichya https://github.com/yichya/luci-app-xray
+# small of kenzok8 has luci-app-xray
+# _add_feed yichya https://github.com/yichya/luci-app-xray
 
 scripts/feeds clean || true
 ./scripts/feeds update -a || true

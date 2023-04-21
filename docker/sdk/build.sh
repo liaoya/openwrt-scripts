@@ -3,6 +3,9 @@
 set -e
 
 function build() {
+    # build coremark explicitly
+    make -j package/coremark/compile
+
     for src_dir in package/feeds/*; do
         [[ -d "${src_dir}" ]] || continue
         _build=1
