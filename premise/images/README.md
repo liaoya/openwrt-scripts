@@ -20,11 +20,11 @@ Run the following command to install the image build requirements for Ubuntu 18.
 
 Some examples, read `build.sh` for usage.
 
-- Arm Arch64: `bash build.sh -d armvirt -p /work/openwrt/package/21.02/armvirt`
-- WNDR4300V1: `bash build.sh -d netgear_wndr4300 -p /work/openwrt/package/21.02/ath79`
-- Newifi D2: `bash build.sh -d d-team_newifi-d2 -p /work/openwrt/package/21.02/mt7621`
-- X86: `bash build.sh -d x64 -p /work/openwrt/package/21.02/x64`
-- K2: `env PACKAGES="luci-app-wol luci-i18n-wol-zh-cn luci-app-vlmcsd luci-i18n-vlmcsd-zh-cn" bash build.sh -d phicomm_psg1218a -p /work/openwrt/package/21.02/mt7620`. It has only 8M Rom and 100Mb NIC, but its wireless signal is very good.
+- Arm Arch64: `bash build.sh -d armvirt-64 -p /work/openwrt/package/22.03/armvirt-64`
+- WNDR4300V1: `bash build.sh -d netgear_wndr4300 -p /work/openwrt/package/22.03/ath79-nand`
+- Newifi D2: `bash build.sh -d d-team_newifi-d2 -p /work/openwrt/package/22.03/ramips-mt7621`
+- X86: `bash build.sh -d x86-64 -p /work/openwrt/package/22.03/x86-64`
+- K2: `env PACKAGES="luci-app-wol luci-i18n-wol-zh-cn luci-app-vlmcsd luci-i18n-vlmcsd-zh-cn" bash build.sh -d phicomm_psg1218a -p /work/openwrt/package/22.03/ramips-mt7620`. It has only 8M Rom and 100Mb NIC, but its wireless signal is very good.
 
 Copy the personal ipk to a separate folder and pass it to `build.sh` with `-p`.
 

@@ -14,7 +14,7 @@ DEVICE=${OPENWRT_DEVICE:-""}
 REPOSITORY=${REPOSITORY:-""}
 IMAGE_DIR=${IMAGE_DIR:-/work/openwrt/imagebuilder}
 VARIANT=${OPENWRT_VARIANT:-"custom"}
-VERSION=${OPENWRT_VERSION:-"21.02.2"}
+VERSION=${OPENWRT_VERSION:-"22.03.5"}
 CLEAN=0
 
 function _print_help() {
@@ -155,9 +155,9 @@ if [[ ! -d "${IMAGE_BUILDER_DIR}" || -z $(ls -A "${IMAGE_BUILDER_DIR}") ]]; then
 fi
 
 cd "${IMAGE_BUILDER_DIR}"
-if [[ $(command -v pyenv) ]]; then
-    pyenv local 3.8.13
-fi
+# if [[ $(command -v pyenv) ]]; then
+#     pyenv local 3.8.13
+# fi
 if [[ -f repositories.conf.bak ]]; then
     cp -r repositories.conf.bak repositories.conf
 fi
@@ -187,7 +187,7 @@ fi
 if [[ $(command -v pre_ops) ]]; then pre_ops; fi
 
 [[ ${CLEAN} -gt 0 ]] && make clean
-if [[ ${DEVICE} == "x64" || ${DEVICE} == "armvirt" ]]; then
+if [[ ${DEVICE} == "x86-64" || ${DEVICE} == "armvirt-64" ]]; then
     make image PACKAGES="${PACKAGES}" FILES="${ROOT_DIR}/custom" EXTRA_IMAGE_NAME="${VARIANT}"
 else
     make image PROFILE="${DEVICE}" PACKAGES="${PACKAGES}" FILES="${ROOT_DIR}/custom" EXTRA_IMAGE_NAME="${VARIANT}"
