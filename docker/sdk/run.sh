@@ -32,7 +32,7 @@ EOF
 }
 
 DL_DIR=${DL_DIR:-/work/openwrt/dl}
-VERSION=${VERSION:-"22.03.4"}
+VERSION=${VERSION:-"22.03.5"}
 
 while getopts "hb:cd:p:rv:" OPTION; do
     case ${OPTION} in
@@ -67,7 +67,7 @@ done
 
 _check_param PLATFORM VERSION
 MAJOR_VERSION=$(echo "${VERSION}" | cut -d. -f1,2)
-DOCKER_IMAGE=docker.io/openwrtorg/sdk:${PLATFORM}-${VERSION}
+DOCKER_IMAGE=docker.io/openwrt/sdk:${PLATFORM}-${VERSION}
 docker image pull "${DOCKER_IMAGE}"
 if [[ -z ${BIN_DIR} ]]; then BIN_DIR=${THIS_DIR}/${PLATFORM}-${MAJOR_VERSION}-bin; fi
 if [[ ${CLEAN} -gt 0 && -d "${BIN_DIR}" ]]; then rm -fr "${BIN_DIR}"; fi

@@ -1,22 +1,22 @@
 # OpenWrt sdk docker image
 
 ```bash
-docker run --rm -it -u $(id -u):$(id -g) -v $PWD/bin:/home/build/openwrt/bin docker.io/openwrtorg/sdk:x86-64-21.02.6 bash
+docker run --rm -it -u $(id -u):$(id -g) -v $PWD/bin:/home/build/openwrt/bin docker.io/openwrt/sdk:x86-64-21.02.5 bash
 ```
 
-- `docker.io/openwrtorg/sdk:x86-64-22.03.4`
-- `docker.io/openwrtorg/sdk:x86-64-21.02.6`
-- `docker.io/openwrtorg/sdk:x86-64-19.07.10`
-- `docker.io/openwrtorg/sdk:x86-64-18.06.7`
+- `docker.io/openwrt/sdk:x86-64-22.03.5`
+- `docker.io/openwrt/sdk:x86-64-21.02.5`
+- `docker.io/openwrt/sdk:x86-64-19.07.10`
+- `docker.io/openwrt/sdk:x86-64-18.06.7`
 
-- `docker.io/openwrtorg/sdk:armvirt-64-22.03.4`
-- `docker.io/openwrtorg/sdk:armvirt-64-21.02.6`
+- `docker.io/openwrt/sdk:armvirt-64-22.03.5`
+- `docker.io/openwrt/sdk:armvirt-64-21.02.7`
 
-- `docker.io/openwrtorg/sdk:ath79-nand-22.03.4`
-- `docker.io/openwrtorg/sdk:ath79-nand-21.02.6`
+- `docker.io/openwrt/sdk:ath79-nand-22.03.5`
+- `docker.io/openwrt/sdk:ath79-nand-21.02.7`
 
-- `docker.io/openwrtorg/sdk:ramips-mt7621-22.03.4`
-- `docker.io/openwrtorg/sdk:ramips-mt7621-21.02.6`
+- `docker.io/openwrt/sdk:ramips-mt7621-22.03.5`
+- `docker.io/openwrt/sdk:ramips-mt7621-21.02.7`
 
 ```bash
 # export GIT_PROXY=http://192.168.1.202:9080/
