@@ -73,13 +73,16 @@ if [[ -z ${BIN_DIR} ]]; then BIN_DIR=${THIS_DIR}/${PLATFORM}-${MAJOR_VERSION}-bi
 if [[ ${CLEAN} -gt 0 && -d "${BIN_DIR}" ]]; then rm -fr "${BIN_DIR}"; fi
 if [[ ! -d "${BIN_DIR}" ]]; then mkdir -p "${BIN_DIR}"; fi
 
-DOCKER_OPTS=(--rm -it -u "$(id -u):$(id -g)" -v "${BIN_DIR}:/home/build/openwrt/bin")
+MOUNT_DIR=/builder
+SCRIPT_DIR=$(dirname "${MOUNT_DIR}")
+
+DOCKER_OPTS=(--rm -it -u "$(id -u):$(id -g)" -v "${BIN_DIR}:${MOUNT_DIR}/bin")
 if [[ -d "${DL_DIR}" ]]; then
-    DOCKER_OPTS+=(-v "${DL_DIR}:/home/build/openwrt/dl")
+    DOCKER_OPTS+=(-v "${DL_DIR}:${MOUNT_DIR}/dl")
 fi
 
 for script in build.sh checkout.sh config.sh; do
-    DOCKER_OPTS+=(-v "${THIS_DIR}/${script}:/home/build/${script}")
+    DOCKER_OPTS+=(-v "${THIS_DIR}/${script}:${SCRIPT_DIR}/${script}")
 done
 if [[ -n ${GIT_PROXY} ]]; then
     DOCKER_OPTS+=(--env GIT_PROXY="${GIT_PROXY}")
@@ -95,7 +98,7 @@ if [[ $(timedatectl show | grep Timezone | cut -d= -f2) == Asia/Shanghai ]]; the
 fi
 
 if [[ ${DRYRUN:-0} -eq 0 ]]; then
-    docker run "${DOCKER_OPTS[@]}" "${DOCKER_IMAGE}" bash -c '$HOME/checkout.sh; $HOME/config.sh; $HOME/build.sh'
+    docker run "${DOCKER_OPTS[@]}" "${DOCKER_IMAGE}" bash -c '${SCRIPT_DIR}/checkout.sh; ${SCRIPT_DIR}/config.sh; ${SCRIPT_DIR}/build.sh'
 else
     docker run "${DOCKER_OPTS[@]}" "${DOCKER_IMAGE}" bash
 fi
