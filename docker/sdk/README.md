@@ -4,17 +4,21 @@
 docker run --rm -it -u $(id -u):$(id -g) -v $PWD/bin:/home/build/openwrt/bin docker.io/openwrt/sdk:x86-64-21.02.7 bash
 ```
 
+- `docker.io/openwrt/sdk:x86-64-23.05.0`
 - `docker.io/openwrt/sdk:x86-64-22.03.5`
 - `docker.io/openwrt/sdk:x86-64-21.02.7`
 - `docker.io/openwrt/sdk:x86-64-19.07.10`
 - `docker.io/openwrt/sdk:x86-64-18.06.7`
 
+- `docker.io/openwrt/sdk:armvirt-64-23.05.0`
 - `docker.io/openwrt/sdk:armvirt-64-22.03.5`
 - `docker.io/openwrt/sdk:armvirt-64-21.02.7`
 
+- `docker.io/openwrt/sdk:ath79-nand-23.05.0`
 - `docker.io/openwrt/sdk:ath79-nand-22.03.5`
 - `docker.io/openwrt/sdk:ath79-nand-21.02.7`
 
+- `docker.io/openwrt/sdk:ramips-mt7621-23.05.0`
 - `docker.io/openwrt/sdk:ramips-mt7621-22.03.5`
 - `docker.io/openwrt/sdk:ramips-mt7621-21.02.7`
 

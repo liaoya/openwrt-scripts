@@ -14,7 +14,7 @@ DEVICE=${OPENWRT_DEVICE:-""}
 REPOSITORY=${REPOSITORY:-""}
 IMAGE_DIR=${IMAGE_DIR:-/work/openwrt/imagebuilder}
 VARIANT=${OPENWRT_VARIANT:-"custom"}
-VERSION=${OPENWRT_VERSION:-"22.03.5"}
+VERSION=${OPENWRT_VERSION:-"23.05.0"}
 CLEAN=0
 
 function _print_help() {
