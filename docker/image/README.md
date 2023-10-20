@@ -85,7 +85,7 @@ docker run --rm -it -u "$(id -u):$(id -g)" \
     -v "$(readlink -f ${bin_dir}):/home/build/openwrt/bin" \
     -v "$PWD/config/${major_version}/${platform}/${profilename}:/home/build/openwrt/custom" \
     -v "${thirdparty}:/home/build/openwrt/thirdparty" \
-    docker.io/openwrtorg/imagebuilder:x86-64-21.02.5 bash -c "sed -i -e 's|https://downloads.openwrt.org|http://mirrors.ustc.edu.cn/openwrt|g' -e 's|http://downloads.openwrt.org|http://mirrors.ustc.edu.cn/openwrt|g' -e 's|# src custom file:///usr/src/openwrt/bin/x86/packages|src custom file:///home/build/openwrt/thirdparty|g' -e 's/^option check_signature$/# &/' repositories.conf; make image PROFILE=${profilename} PACKAGES='${PACKAGES}' FILES=/home/build/openwrt/custom"
+    docker.io/openwrtorg/imagebuilder:x86-64-21.02.7 bash -c "sed -i -e 's|https://downloads.openwrt.org|http://mirrors.ustc.edu.cn/openwrt|g' -e 's|http://downloads.openwrt.org|http://mirrors.ustc.edu.cn/openwrt|g' -e 's|# src custom file:///usr/src/openwrt/bin/x86/packages|src custom file:///home/build/openwrt/thirdparty|g' -e 's/^option check_signature$/# &/' repositories.conf; make image PROFILE=${profilename} PACKAGES='${PACKAGES}' FILES=/home/build/openwrt/custom"
 ```
 
 ```bash

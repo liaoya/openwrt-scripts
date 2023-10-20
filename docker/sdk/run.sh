@@ -75,6 +75,9 @@ if [[ ! -d "${BIN_DIR}" ]]; then mkdir -p "${BIN_DIR}"; fi
 
 MOUNT_DIR=/builder
 SCRIPT_DIR=$(dirname "${MOUNT_DIR}")
+if [[ / == "${SCRIPT_DIR}" ]]; then
+    SCRIPT_DIR=""
+fi
 
 DOCKER_OPTS=(--rm -it -u "$(id -u):$(id -g)" -v "${BIN_DIR}:${MOUNT_DIR}/bin")
 if [[ -d "${DL_DIR}" ]]; then

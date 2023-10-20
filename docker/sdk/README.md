@@ -1,11 +1,11 @@
 # OpenWrt sdk docker image
 
 ```bash
-docker run --rm -it -u $(id -u):$(id -g) -v $PWD/bin:/home/build/openwrt/bin docker.io/openwrt/sdk:x86-64-21.02.5 bash
+docker run --rm -it -u $(id -u):$(id -g) -v $PWD/bin:/home/build/openwrt/bin docker.io/openwrt/sdk:x86-64-21.02.7 bash
 ```
 
 - `docker.io/openwrt/sdk:x86-64-22.03.5`
-- `docker.io/openwrt/sdk:x86-64-21.02.5`
+- `docker.io/openwrt/sdk:x86-64-21.02.7`
 - `docker.io/openwrt/sdk:x86-64-19.07.10`
 - `docker.io/openwrt/sdk:x86-64-18.06.7`
 

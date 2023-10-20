@@ -23,10 +23,12 @@ function _add_feed() {
 }
 
 _check_param MAJOR_VERSION
-curl -sL -o - https://github.com/upx/upx/releases/download/v4.0.2/upx-4.0.2-amd64_linux.tar.xz | tar --strip-components=1 -C /tmp -I xz -xf -
-cp /tmp/upx staging_dir/host/bin/upx
+if [[ ! -x staging_dir/host/bin/upx ]]; then
+    curl -sL -o - https://github.com/upx/upx/releases/download/v4.0.2/upx-4.0.2-amd64_linux.tar.xz | tar --strip-components=1 -C /tmp -I xz -xf -
+    cp /tmp/upx staging_dir/host/bin/upx
+fi
 if [[ -n ${GIT_PROXY} ]]; then
-    cat <<EOF | tee /home/build/.gitconfig
+    cat <<EOF | tee ~/.gitconfig
 [url "${GIT_PROXY}"]
     insteadOf = https://
 EOF
