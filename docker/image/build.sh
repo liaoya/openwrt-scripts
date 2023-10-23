@@ -51,7 +51,7 @@ function _check_param() {
     done
 }
 
-version=23.05.0
+version=${version:-23.05.0}
 
 function _print_help() {
     #shellcheck disable=SC2016
@@ -66,6 +66,8 @@ OPTIONS
         BIN_DIR="<path>" # alternative output directory for the images. ${bindir:+The default is '"${bindir}"'}
     -d, --disableservice disableservice
         DISABLED_SERVICES="<svc1> [<svc2> [<svc3> ..]]" # Which services in /etc/init.d/ should be disabled. ${disableservice:+The default is '"${disableservice}"'}
+    --distribution distribution
+        openwrt or immortalwrt. ${distribution:+The default is '"${distribution}"'}
     -f, --files files
         FILES="<path>" # include extra files from <path>. ${files:+The default is '"${files}"'}
     -n, --name name
@@ -80,12 +82,16 @@ OPTIONS
         Thirdparty package directory. ${thirdparty:+The default is '"${thirdparty}"'}
     -v, --version version
         OpenWRT version(used for image tag). ${version:+The default is '"${version}"'}
+    --verbose
+        More information
     --dryrun
         Only kick start the shell, skip the final 'make' step
 EOF
 }
 
-TEMP=$(getopt -o b:d:f:n:p:P:t:v:hc --long bindir:,disableservice:,files:,name:,platform:,profile:,thirdparty:,version:,help,clean,dryrun,nocustomize -- "$@")
+distribution=${distribution:-openwrt}
+
+TEMP=$(getopt -o b:d:f:n:p:P:t:v:hc --long bindir:,disableservice:,distribution:,files:,name:,platform:,profile:,thirdparty:,version:,verbose,help,clean,dryrun,nocustomize -- "$@")
 eval set -- "${TEMP}"
 while true; do
     shift_step=2
@@ -95,6 +101,9 @@ while true; do
         ;;
     -d | --disableservice)
         disableservice=$2
+        ;;
+    --distribution)
+        distribution=$2
         ;;
     -f | --files)
         files=$(readlink -f "$2")
@@ -113,6 +122,11 @@ while true; do
         ;;
     -v | --version)
         version=$2
+        ;;
+    --verbose)
+        shift_step=1
+        set -x
+        export PS4='+(${BASH_SOURCE[0]}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
         ;;
     -h | --help)
         _print_help
@@ -143,43 +157,106 @@ while true; do
 done
 
 _check_param platform version
+major_version=$(echo "${version}" | cut -d. -f1,2)
+major_version_number=$(echo "${major_version} * 100 / 1" | bc)
+
 if [[ -z ${profile} && ${platform} == "x86-64" ]]; then
-    if [[ ${version} =~ 19.07 ]]; then
+    if [[ major_version_number -le 1907 ]]; then
         profile=Generic
     else
         profile=generic
     fi
 fi
-_check_param profile
+if [[ ! ${platform} =~ armvirt ]]; then
+    _check_param profile
+fi
 
-major_version=$(echo "${version}" | cut -d. -f1,2)
 if [[ -z ${bindir} ]]; then
-    bindir=${THIS_DIR}/${platform}-${profile}-${version}-bin
+    bindir=${THIS_DIR}/${distribution}-${platform}${profile:+"-${profile}"}-${version}-bin
     if [[ ${clean:-0} -gt 0 ]] && [[ -d "${bindir}" ]]; then
         rm -fr "${bindir}"
     fi
     if [[ ! -d ${bindir} ]]; then mkdir -p "${bindir}"; fi
 fi
 
-docker_image_name=docker.io/openwrt/imagebuilder:${platform}-${version}
+if [[ ${distribution} == openwrt ]]; then
+    docker_image_name=docker.io/openwrt/imagebuilder:${platform}-${version}
+elif [[ ${distribution} == immortalwrt ]]; then
+    docker_image_name=docker.io/immortalwrt/imagebuilder:${platform}-openwrt-${version}
+fi
 docker image pull "${docker_image_name}"
 
 docker_opts=(--rm -it -u "$(id -u):$(id -g)")
+
+_temp_dir=$(mktemp -d)
+_add_exit_hook "rm -fr ${_temp_dir}"
+echo "build ALL=(ALL) NOPASSWD: ALL" | tee "${_temp_dir}/build"
+sudo chown 0:0 "${_temp_dir}/build"
+docker_opts+=(-v "${_temp_dir}/build:/etc/sudoers.d/build")
+if [[ -n ${http_proxy} ]]; then
+    #shellcheck disable=SC2154
+    cat <<EOF | sudo tee "${_temp_dir}/90curtin-aptproxy"
+Acquire::http::proxy "${http_proxy}";
+Acquire::https::proxy "${https_proxy}";
+EOF
+    sudo chown 0:0 "${_temp_dir}/90curtin-aptproxy"
+    docker_opts+=(-v "${_temp_dir}/90curtin-aptproxy:/etc/apt/apt.conf.d/90curtin-aptproxy")
+fi
+
 if [[ $(timedatectl show | grep Timezone | cut -d= -f2) == Asia/Shanghai ]]; then
+    DEBIAN_MIRROR_PATH=${DEBIAN_MIRROR_PATH:-http://mirrors.ustc.edu.cn}
+    cmd=${cmd:+${cmd}; }"sudo sed -i -e 's|http://deb.debian.org|${DEBIAN_MIRROR_PATH}|g' -e 's|https://deb.debian.org|${DEBIAN_MIRROR_PATH}|g' /etc/apt/sources.list"
+fi
+if [[ ${distribution} == openwrt && $(timedatectl show | grep Timezone | cut -d= -f2) == Asia/Shanghai ]]; then
     OPENWRT_MIRROR_PATH=${OPENWRT_MIRROR_PATH:-http://mirrors.ustc.edu.cn/openwrt}
     cmd=${cmd:+${cmd}; }"sed -i -e 's|http://downloads.openwrt.org|${OPENWRT_MIRROR_PATH}|g' -e 's|https://downloads.openwrt.org|${OPENWRT_MIRROR_PATH}|g' repositories.conf"
 fi
+if [[ ${distribution} == immortalwrt ]]; then
+    if [[ $(timedatectl show | grep Timezone | cut -d= -f2) == Asia/Shanghai ]]; then
+        #OPENWRT_MIRROR_PATH=${OPENWRT_MIRROR_PATH:-http://mirrors.vsean.net/openwrt}
+        OPENWRT_MIRROR_PATH=${OPENWRT_MIRROR_PATH:-http://mirrors.cernet.edu.cn/immortalwrt}
+        cmd=${cmd:+${cmd}; }"sed -i -e 's|http://downloads.immortalwrt.org|${OPENWRT_MIRROR_PATH}|g' -e 's|https://downloads.immortalwrt.org|${OPENWRT_MIRROR_PATH}|g' repositories.conf"
+    else
+        OPENWRT_MIRROR_PATH=${OPENWRT_MIRROR_PATH:-http://immortalwrt.kyarucloud.moe/}
+    fi
+fi
+if [[ ${distribution} == immortalwrt ]]; then
+    if [[ ${platform} == "x86-64" ]]; then
+        cmd=${cmd:+${cmd}; }"sudo apt update -qy; sudo apt install -qy genisoimage"
+    fi
+    if [[ ${platform} == "armvirt-64" ]]; then
+        cmd=${cmd:+${cmd}; }"sudo apt update -qy; sudo apt install -qy cpio"
+    fi
+fi
+
 for item in http_proxy https_proxy no_proxy; do
     if [[ -n ${!item} ]]; then
         docker_opts+=(--env "${item}=${!item}")
+        docker_opts+=(--env "${item^^}=${!item}")
     fi
 done
 if [[ -n ${bindir} ]]; then
-    docker_opts+=(-v "${bindir}:/home/build/openwrt/bin")
+    if [[ ${distribution} == openwrt ]]; then
+        if [[ ${major_version_number} -ge 2305 ]]; then
+            docker_opts+=(-v "${bindir}:/builder/bin")
+        else
+            docker_opts+=(-v "${bindir}:/home/build/openwrt/bin")
+        fi
+    elif [[ ${distribution} == immortalwrt ]]; then
+        docker_opts+=(-v "${bindir}:/home/build/immortalwrt/bin")
+    fi
 fi
 
 config_temp_dir=$(mktemp -d)
-docker_opts+=(-v "${config_temp_dir}:/home/build/openwrt/custom")
+if [[ ${distribution} == openwrt ]]; then
+    if [[ ${major_version_number} -ge 2305 ]]; then
+        docker_opts+=(-v "${config_temp_dir}:/builder/custom")
+    else
+        docker_opts+=(-v "${config_temp_dir}:/home/build/openwrt/custom")
+    fi
+elif [[ ${distribution} == immortalwrt ]]; then
+    docker_opts+=(-v "${config_temp_dir}:/home/build/immortalwrt/custom")
+fi
 _add_exit_hook "rm -fr ${config_temp_dir}"
 mkdir -p "${config_temp_dir}/etc/uci-defaults"
 if [[ -d "${files}" ]]; then

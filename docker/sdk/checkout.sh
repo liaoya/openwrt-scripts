@@ -24,7 +24,7 @@ function _add_feed() {
 
 _check_param MAJOR_VERSION
 if [[ ! -x staging_dir/host/bin/upx ]]; then
-    curl -sL -o - https://github.com/upx/upx/releases/download/v4.0.2/upx-4.0.2-amd64_linux.tar.xz | tar --strip-components=1 -C /tmp -I xz -xf -
+    curl -sL -o - https://github.com/upx/upx/releases/download/v4.1.0/upx-4.1.0-amd64_linux.tar.xz | tar --strip-components=1 -C /tmp -I xz -xf -
     cp /tmp/upx staging_dir/host/bin/upx
 fi
 if [[ -n ${GIT_PROXY} ]]; then
@@ -55,6 +55,7 @@ _add_feed small https://github.com/kenzok8/small-package
 _add_feed jell https://github.com/kenzok8/jell
 _add_feed liuran001 "https://github.com/liuran001/openwrt-packages;packages"
 _add_feed gwlim https://github.com/gwlim/coremark-openwrt
+_add_feed shmilee https://github.com/shmilee/openwrt-shmilee-feeds.git
 # small of kenzok8 has luci-app-xray
 # _add_feed yichya https://github.com/yichya/luci-app-xray
 

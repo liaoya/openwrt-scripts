@@ -29,9 +29,17 @@ There're no image after `18.06.7` for `18.06` series
 - `18.06`
   - `docker.io/openwrtorg/imagebuilder:x86-64-18.06.7`
 
+- `21.02`
+  - `docker.io/immortalwrt/imagebuilder:x86-64-openwrt-21.02.7`
+  - `docker.io/immortalwrt/imagebuilder:armvirt-64-openwrt-21.02.7`
+  - `docker.io/immortalwrt/imagebuilder:ath79-nand-openwrt-21.02.7`
+  - `docker.io/immortalwrt/imagebuilder:ramips-mt7621-openwrt-21.02.7`
+  - `docker.io/immortalwrt/imagebuilder:ramips-mt7620-openwrt-21.02.7`
+
 ```bash
 # The package must be declare external
-PACKAGES="${PACKAGES:+$PACKAGES }-dnsmasq -wpad-mini -wpad-basic -wpad-basic-wolfssl dnsmasq-full wpad"
+unset -v PACKAGES
+PACKAGES="${PACKAGES:+$PACKAGES }-dnsmasq -wpad-mini -wpad-basic -wpad-basic-wolfssl -wpad-openssl dnsmasq-full wpad"
 PACKAGES="${PACKAGES:+$PACKAGES }atop bash bind-dig coreutils-base64 curl diffutils dropbearconvert fdisk file \
 ip-full ipset \
 lscpu \
@@ -41,6 +49,7 @@ luci luci-compat luci-lib-ipkg luci-theme-bootstrap \
 mtr nano pciutils procps-ng-pkill tcpdump tmux \
 uci wget"
 PACKAGES="${PACKAGES:+$PACKAGES }coremark luci-app-vlmcsd luci-i18n-vlmcsd-zh-cn vlmcsd"
+PACKAGES="${PACKAGES:+$PACKAGES }luci-app-passwall luci-i18n-passwall-zh-cn luci-app-ssr-plus"
 export PACKAGES
 
 export OPENWRT_MIRROR_PATH=http://mirrors.cloud.tencent.com/openwrt
@@ -51,6 +60,11 @@ bash -x build.sh -p x86-64 --dryrun
 bash -x build.sh -p x86-64 -c
 bash -x build.sh -p ath79-nand -P netgear_wndr4300 -c
 bash -x build.sh -p ramips-mt7621 -P d-team_newifi-d2 -c
+
+bash build.sh -p armvirt-64 --distribution immortalwrt -v 21.02.7
+bash build.sh -p x86-64 --distribution immortalwrt -v 21.02.7
+bash build.sh -p ath79-nand -P netgear_wndr4300 --distribution immortalwrt -v 21.02.7
+bash build.sh -p ramips-mt7621 -P d-team_newifi-d2 --distribution immortalwrt -v 21.02.7
 
 bash -x build.sh -p x86-64 -t /work/openwrt/package/21.02/x86-64 -c
 
