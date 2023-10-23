@@ -214,8 +214,9 @@ fi
 if [[ ${distribution} == immortalwrt ]]; then
     if [[ $(timedatectl show | grep Timezone | cut -d= -f2) == Asia/Shanghai ]]; then
         #OPENWRT_MIRROR_PATH=${OPENWRT_MIRROR_PATH:-http://mirrors.vsean.net/openwrt}
-        OPENWRT_MIRROR_PATH=${OPENWRT_MIRROR_PATH:-http://mirrors.cernet.edu.cn/immortalwrt}
-        cmd=${cmd:+${cmd}; }"sed -i -e 's|http://downloads.immortalwrt.org|${OPENWRT_MIRROR_PATH}|g' -e 's|https://downloads.immortalwrt.org|${OPENWRT_MIRROR_PATH}|g' repositories.conf"
+        # https://help.mirrors.cernet.edu.cn/immortalwrt/
+        OPENWRT_MIRROR_PATH=${OPENWRT_MIRROR_PATH:-http://mirror.nju.edu.cn/immortalwrt}
+        cmd=${cmd:+${cmd}; }"sed -i -e 's|http://downloads.immortalwrt.org|${OPENWRT_MIRROR_PATH}|g' -e 's|https://downloads.immortalwrt.org|${OPENWRT_MIRROR_PATH}|g' -e 's|http://mirrors.vsean.net|${OPENWRT_MIRROR_PATH}|g' -e 's|mirrors.vsean.net|${OPENWRT_MIRROR_PATH}|g' repositories.conf"
     else
         OPENWRT_MIRROR_PATH=${OPENWRT_MIRROR_PATH:-http://immortalwrt.kyarucloud.moe/}
     fi
