@@ -27,12 +27,6 @@ if [[ ! -x staging_dir/host/bin/upx ]]; then
     curl -sL -o - https://github.com/upx/upx/releases/download/v4.1.0/upx-4.1.0-amd64_linux.tar.xz | tar --strip-components=1 -C /tmp -I xz -xf -
     cp /tmp/upx staging_dir/host/bin/upx
 fi
-if [[ -n ${GIT_PROXY} ]]; then
-    cat <<EOF | tee ~/.gitconfig
-[url "${GIT_PROXY}"]
-    insteadOf = https://
-EOF
-fi
 
 sed -e 's|git.openwrt.org/openwrt/openwrt|github.com/openwrt/openwrt|g' \
     -e 's|git.openwrt.org/feed/packages|github.com/openwrt/packages|g' \
@@ -44,18 +38,19 @@ sed -e '\%^src-git packages https://github.com/openwrt/packages% s%.%#&%' \
     -e '\%^src-git-full packages https://github.com/openwrt/packages% s%.%#&%' \
     -i feeds.conf.default
 
-_add_feed packages "https://github.com/Lienol/openwrt-packages;${MAJOR_VERSION}"
+# _add_feed packages "https://github.com/Lienol/openwrt-packages;${MAJOR_VERSION}"
 
 # Add the third party repo
-_add_feed Lienol https://github.com/Lienol/openwrt-package
-_add_feed xiaorouji https://github.com/xiaorouji/openwrt-passwall
-_add_feed fw876 https://github.com/fw876/helloworld
-_add_feed kenzok8 https://github.com/kenzok8/openwrt-packages
-_add_feed small https://github.com/kenzok8/small-package
-_add_feed jell https://github.com/kenzok8/jell
-_add_feed liuran001 "https://github.com/liuran001/openwrt-packages;packages"
-_add_feed gwlim https://github.com/gwlim/coremark-openwrt
-_add_feed shmilee https://github.com/shmilee/openwrt-shmilee-feeds.git
+# _add_feed Lienol https://github.com/Lienol/openwrt-package
+# _add_feed xiaorouji https://github.com/xiaorouji/openwrt-passwall
+# _add_feed fw876 https://github.com/fw876/helloworld
+_add_feed kenzo https://github.com/kenzok8/openwrt-packages
+_add_feed small https://github.com/kenzok8/small
+# _add_feed smpackage https://github.com/kenzok8/small-package
+# _add_feed jell https://github.com/kenzok8/jell
+# _add_feed liuran001 "https://github.com/liuran001/openwrt-packages;packages"
+# _add_feed gwlim https://github.com/gwlim/coremark-openwrt
+# _add_feed shmilee https://github.com/shmilee/openwrt-shmilee-feeds.git
 # small of kenzok8 has luci-app-xray
 # _add_feed yichya https://github.com/yichya/luci-app-xray
 

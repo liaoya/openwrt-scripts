@@ -5,7 +5,7 @@ set -e
 
 function disable_option() {
     local config=$1
-    sed -i "s/${config}=y/# ${config} is not set/g" .config
+    sed -i -e "s/${config}=y/# ${config} is not set/g" -e "s/${config}=m/# ${config} is not set/g" .config
 }
 
 function enable_option() {
@@ -104,8 +104,27 @@ function configure_vssr_plus() {
     done
 }
 
-configure_passwall
-configure_passwall2
-configure_ssr_plus
-configure_v2ray
-configure_vssr_plus
+function disable_mesh() {
+    for config in \
+        CONFIG_PACKAGE_luci-app-easymesh \
+        CONFIG_PACKAGE_mesh11sd \
+        CONFIG_PACKAGE_wpa-supplicant-mesh-mbedtls \
+        CONFIG_PACKAGE_wpa-supplicant-mesh-openssl \
+        CONFIG_PACKAGE_wpa-supplicant-mesh-wolfssl \
+        CONFIG_PACKAGE_wpad-mesh-mbedtls \
+        CONFIG_PACKAGE_wpad-mesh-openssl \
+        CONFIG_PACKAGE_wpad-mesh-wolfssl \
+        CONFIG_PACKAGE_libopenssl \
+        ; do
+        disable_option "${config}"
+    done
+}
+
+rm -fr tmp
+
+# configure_passwall
+# configure_passwall2
+# configure_ssr_plus
+# configure_v2ray
+# configure_vssr_plus
+disable_mesh
