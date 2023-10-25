@@ -1,0 +1,10 @@
+#!/bin/sh
+
+set -e
+
+uci -q batch <<-EOI >/dev/null
+set system.@system[0].hostname='armvirt-64'
+commit system
+EOI
+
+exit 0

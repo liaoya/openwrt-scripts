@@ -63,4 +63,4 @@ opkg install luci-i18n-v2ray-zh-cn
 
 - <https://github.com/logdns/v2ray-config>
 - <https://github.com/topics/openwrt-feed>
-- <files.kos.org.cn/rockchip>
+- <http://files.kos.org.cn/rockchip>
