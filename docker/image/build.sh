@@ -243,7 +243,7 @@ for item in http_proxy https_proxy no_proxy; do
 done
 if [[ -n ${BINDIR} ]]; then
     if [[ ${DISTRIBUTION} == openwrt ]]; then
-        if [[ ${MAJOR_VERSION_NUMBER} -ge 2305 ]]; then
+        if [[ ${MAJOR_VERSION_NUMBER} -ge 2203 ]]; then
             DOCKER_OPTS+=(-v "${BINDIR}:/builder/bin")
         else
             DOCKER_OPTS+=(-v "${BINDIR}:/home/build/openwrt/bin")
