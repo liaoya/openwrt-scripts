@@ -219,7 +219,6 @@ if [[ ${DISTRIBUTION} == openwrt && $(timedatectl show | grep Timezone | cut -d=
 fi
 if [[ ${DISTRIBUTION} == immortalwrt ]]; then
     if [[ $(timedatectl show | grep Timezone | cut -d= -f2) == Asia/Shanghai ]]; then
-        #OPENWRT_MIRROR_PATH=${OPENWRT_MIRROR_PATH:-http://mirrors.vsean.net/openwrt}
         # https://help.mirrors.cernet.edu.cn/immortalwrt/
         OPENWRT_MIRROR_PATH=${OPENWRT_MIRROR_PATH:-http://mirror.nju.edu.cn/immortalwrt}
         cmd=${cmd:+${cmd}; }"sed -i -e 's|http://downloads.immortalwrt.org|${OPENWRT_MIRROR_PATH}|g' -e 's|https://downloads.immortalwrt.org|${OPENWRT_MIRROR_PATH}|g' -e 's|http://mirrors.vsean.net/openwrt|${OPENWRT_MIRROR_PATH}|g' -e 's|https://mirrors.vsean.net/openwrt|${OPENWRT_MIRROR_PATH}|g' repositories.conf"
@@ -231,7 +230,7 @@ if [[ ${DISTRIBUTION} == immortalwrt ]]; then
     if [[ ${PLATFORM} == "x86-64" ]]; then
         cmd=${cmd:+${cmd}; }"sudo apt update -qy; sudo apt install -qy genisoimage"
     fi
-    if [[ ${PLATFORM} == "armvirt-64" ]]; then
+    if [[ ${PLATFORM} =~ armvirt ]]; then
         cmd=${cmd:+${cmd}; }"sudo apt update -qy; sudo apt install -qy cpio"
     fi
 fi
@@ -291,27 +290,32 @@ if [[ ${nocustomize:-0} -ne 1 ]]; then
         cat <<EOF | tee "${config_TEMP_DIR}/etc/uci-defaults/10_opkg"
 #!/bin/sh
 
-sed -i -e 's|https://downloads.openwrt.org|${OPENWRT_MIRROR_PATH}|g' -e 's|http://downloads.openwrt.org|${OPENWRT_MIRROR_PATH}|g' /etc/opkg/distfeeds.conf
-# sed -i -e 's|${OPENWRT_MIRROR_PATH}|http://downloads.openwrt.org|g' /etc/opkg/distfeeds.conf
+sed -e 's|http://downloads.openwrt.org|${OPENWRT_MIRROR_PATH}|g' \
+    -e 's|https://downloads.openwrt.org|${OPENWRT_MIRROR_PATH}|g' \
+    -e 's|http://downloads.immortalwrt.org|${OPENWRT_MIRROR_PATH}|g' \
+    -e 's|https://downloads.immortalwrt.org|${OPENWRT_MIRROR_PATH}|g' \
+    -e 's|http://mirrors.vsean.net/openwrt|${OPENWRT_MIRROR_PATH}|g' \
+    -e 's|https://mirrors.vsean.net/openwrt|${OPENWRT_MIRROR_PATH}|g' \
+    -i /etc/opkg/distfeeds.conf
 
 exit 0
 EOF
     fi
 fi
 
-if [[ -z ${THIRDPARTY} && -d /work/openwrt/package/"${MAJOR_VERSION}/${PLATFORM}" ]]; then
-    THIRDPARTY=/work/openwrt/package/"${MAJOR_VERSION}/${PLATFORM}"
+if [[ -z ${THIRDPARTY} && -d /work/${DISTRIBUTION}/package/"${MAJOR_VERSION}/${PLATFORM}" ]]; then
+    THIRDPARTY=/work/${DISTRIBUTION}/package/"${MAJOR_VERSION}/${PLATFORM}"
 fi
 
 if [[ -n ${THIRDPARTY} ]]; then
-    DOCKER_OPTS+=(-v "${THIRDPARTY}:/home/build/openwrt/THIRDPARTY")
-    cmd="${cmd:+${cmd}; }sed -i -e '\|^## Place your custom repositories here.*|a src custom file:///home/build/openwrt/THIRDPARTY' -e 's/^option check_signature$/# &/' repositories.conf"
+    DOCKER_OPTS+=(-v "${THIRDPARTY}:/home/build/${DISTRIBUTION}/THIRDPARTY")
+    cmd="${cmd:+${cmd}; }sed -i -e '\|^## Place your custom repositories here.*|a src custom file:///home/build/${DISTRIBUTION}/THIRDPARTY' -e 's/^option check_signature$/# &/' repositories.conf"
 fi
 if [[ ${PLATFORM} == "x86-64" ]]; then
     _add_package kmod-dax kmod-dm
 fi
 
-makecmd="make image FILES=/home/build/openwrt/custom"
+makecmd="make image FILES=/home/build/${DISTRIBUTION}/custom"
 if [[ -n ${NAME} ]]; then
     makecmd="${makecmd} EXTRA_IMAGE_NAME=${NAME}"
 fi
@@ -321,7 +325,7 @@ fi
 if [[ -n ${PROFILE} ]]; then
     makecmd="${makecmd} PROFILE=${PROFILE}"
 fi
-if [[ ${PLATFORM} == x86-64 || ${PLATFORM} == armvirt-64 ]]; then
+if [[ ${PLATFORM} == x86-64 || ${PLATFORM} =~ armvirt ]]; then
     makecmd="${makecmd} ROOTFS_PARTSIZE=${ROOTFS_PARTSIZE}"
 fi
 if [[ ${dryrun:-0} -eq 0 ]]; then
