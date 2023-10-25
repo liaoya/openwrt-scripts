@@ -4,7 +4,8 @@
 
 ```bash
 export PACKAGES="-dnsmasq -wpad-mini -wpad-basic -wpad-basic-wolfssl \
-bash bind-dig ca-bundle ca-certificates coremark coreutils-base64 curl dnsmasq-full dropbearconvert file \
+7z \
+atop bash bind-dig bzip2 ca-bundle ca-certificates coremark coreutils-base64 curl dnsmasq-full dropbearconvert file gzip \
 htop ip-full ipset iptables-mod-tproxy \
 libpthread \
 luci-app-adbyby-plus luci-i18n-adbyby-plus-zh-cn \
@@ -13,14 +14,16 @@ luci-app-passwall luci-i18n-passwall-zh-cn \
 luci-app-ssr-plus \
 luci-app-uhttpd luci-i18n-uhttpd-zh-cn \
 luci-app-wol luci-i18n-wol-zh-cn \
+luci-app-vlmcsd luci-i18n-vlmcsd-zh-cn \
 luci-app-vssr luci-i18n-vssr-zh-cn \
 luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn \
 luci luci-compat luci-lib-ipkg \
 luci-theme-argon luci-theme-bootstrap luci-theme-material \
 mtr nano tmux \
+openssh-client openssh-client-utils openssh-keygen \
 perl perlbase-cpan \
-uci uhttpd-mod-ubus wget wpad \
-luci-app-vlmcsd luci-i18n-vlmcsd-zh-cn"
+uci uhttpd-mod-ubus wget wpad xz \
+"
 
 make image PACKAGES="$PACKAGES" ROOTFS_PARTSIZE=1024
 
