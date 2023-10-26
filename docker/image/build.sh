@@ -92,7 +92,8 @@ EOF
 }
 
 DISTRIBUTION=${DISTRIBUTION:-openwrt}
-ROOTFS_PARTSIZE=${ROOTFS_PARTSIZE:-1024}
+NOCUSTOMIZE=${NOCUSTOMIZE:-0}
+ROOTFS_PARTSIZE=${ROOTFS_PARTSIZE:-0}
 
 TEMP=$(getopt -o b:d:f:n:p:P:s:t:v:hc --long bindir:,disableservice:,distribution:,files:,name:,partsize,platform:,profile:,thirdparty:,VERSION:,verbose,help,clean,dryrun,nocustomize -- "$@")
 eval set -- "${TEMP}"
@@ -140,7 +141,7 @@ while true; do
         ;;
     -c | --clean)
         shift_step=1
-        clean=1
+        CLEAN=1
         ;;
     --dryrun)
         shift_step=1
@@ -148,7 +149,7 @@ while true; do
         ;;
     --nocustomize)
         shift_step=1
-        nocustomize=1
+        NOCUSTOMIZE=1
         ;;
     --)
         shift
@@ -161,6 +162,10 @@ while true; do
     esac
     shift "${shift_step}"
 done
+
+if [[ -n ${FILES} && ${NOCUSTOMIZE} -gt 0 ]]; then
+    echo "${FILES} will not be used as \${NOCUSTOMIZE} is ${NOCUSTOMIZE}"
+fi
 
 _check_param PLATFORM VERSION
 MAJOR_VERSION=$(echo "${VERSION}" | cut -d. -f1,2)
@@ -179,7 +184,7 @@ fi
 
 if [[ -z ${BINDIR} ]]; then
     BINDIR=${THIS_DIR}/${DISTRIBUTION}-${PLATFORM}${PROFILE:+"-${PROFILE}"}-${VERSION}-bin
-    if [[ ${clean:-0} -gt 0 ]] && [[ -d "${BINDIR}" ]]; then
+    if [[ ${CLEAN:-0} -gt 0 ]] && [[ -d "${BINDIR}" ]]; then
         rm -fr "${BINDIR}"
     fi
     if [[ ! -d ${BINDIR} ]]; then mkdir -p "${BINDIR}"; fi
@@ -215,24 +220,23 @@ if [[ ${DISTRIBUTION} == openwrt && $(timedatectl show | grep Timezone | cut -d=
 fi
 if [[ ${DISTRIBUTION} == immortalwrt ]]; then
     if [[ $(timedatectl show | grep Timezone | cut -d= -f2) == Asia/Shanghai ]]; then
-        # https://help.mirrors.cernet.edu.cn/immortalwrt/
-        OPENWRT_MIRROR_PATH=${OPENWRT_MIRROR_PATH:-http://mirror.nju.edu.cn/immortalwrt}
+        # https://help.mirrors.cernet.edu.cn/immortalwrt
+        # OPENWRT_MIRROR_PATH=${OPENWRT_MIRROR_PATH:-http://mirror.nju.edu.cn/immortalwrt}
+        OPENWRT_MIRROR_PATH=${OPENWRT_MIRROR_PATH:-http://mirrors.shanghaitech.edu.cn/immortalwrt}
         cmd=${cmd:+${cmd}; }"sed -i -e 's|http://downloads.immortalwrt.org|${OPENWRT_MIRROR_PATH}|g' -e 's|https://downloads.immortalwrt.org|${OPENWRT_MIRROR_PATH}|g' -e 's|http://mirrors.vsean.net/openwrt|${OPENWRT_MIRROR_PATH}|g' -e 's|https://mirrors.vsean.net/openwrt|${OPENWRT_MIRROR_PATH}|g' repositories.conf"
     else
         OPENWRT_MIRROR_PATH=${OPENWRT_MIRROR_PATH:-http://immortalwrt.kyarucloud.moe/}
     fi
 fi
-if [[ ${DISTRIBUTION} == immortalwrt ]]; then
-    if [[ $(timedatectl show | grep Timezone | cut -d= -f2) == Asia/Shanghai ]]; then
-        DEBIAN_MIRROR_PATH=${DEBIAN_MIRROR_PATH:-http://mirrors.ustc.edu.cn}
-        cmd=${cmd:+${cmd}; }"sudo sed -i -e 's|http://deb.debian.org|${DEBIAN_MIRROR_PATH}|g' -e 's|https://deb.debian.org|${DEBIAN_MIRROR_PATH}|g' /etc/apt/sources.list"
-    fi
-    if [[ ${PLATFORM} == "x86-64" ]]; then
-        cmd=${cmd:+${cmd}; }"sudo apt update -qy; sudo apt install -qy genisoimage"
-    fi
-    if [[ ${PLATFORM} =~ armvirt ]]; then
-        cmd=${cmd:+${cmd}; }"sudo apt update -qy; sudo apt install -qy cpio"
-    fi
+if [[ $(timedatectl show | grep Timezone | cut -d= -f2) == Asia/Shanghai ]]; then
+    DEBIAN_MIRROR_PATH=${DEBIAN_MIRROR_PATH:-http://mirrors.ustc.edu.cn}
+    cmd=${cmd:+${cmd}; }"sudo sed -i -e 's|http://deb.debian.org|${DEBIAN_MIRROR_PATH}|g' -e 's|https://deb.debian.org|${DEBIAN_MIRROR_PATH}|g' /etc/apt/sources.list"
+fi
+if [[ ${PLATFORM} == "x86-64" ]]; then
+    cmd=${cmd:+${cmd}; }"sudo apt update -qy; sudo apt install -qy genisoimage"
+fi
+if [[ ${PLATFORM} =~ armvirt ]]; then
+    cmd=${cmd:+${cmd}; }"sudo apt update -qy; sudo apt install -qy cpio"
 fi
 
 for item in http_proxy https_proxy no_proxy; do
@@ -253,41 +257,40 @@ if [[ -n ${BINDIR} ]]; then
     fi
 fi
 
-config_TEMP_DIR=$(mktemp -d)
-if [[ ${DISTRIBUTION} == openwrt ]]; then
-    if [[ ${MAJOR_VERSION_NUMBER} -ge 2305 ]]; then
-        DOCKER_OPTS+=(-v "${config_TEMP_DIR}:/builder/custom")
-    else
-        DOCKER_OPTS+=(-v "${config_TEMP_DIR}:/home/build/openwrt/custom")
+if [[ ${NOCUSTOMIZE:-0} -ne 1 ]]; then
+    CONFIG_TEMP_DIR=${_TEMP_DIR}/config
+    mkdir -p "${CONFIG_TEMP_DIR}/etc/uci-defaults"
+    if [[ ${DISTRIBUTION} == openwrt ]]; then
+        if [[ ${MAJOR_VERSION_NUMBER} -ge 2305 ]]; then
+            DOCKER_OPTS+=(-v "${CONFIG_TEMP_DIR}:/builder/custom")
+        else
+            DOCKER_OPTS+=(-v "${CONFIG_TEMP_DIR}:/home/build/openwrt/custom")
+        fi
+    elif [[ ${DISTRIBUTION} == immortalwrt ]]; then
+        DOCKER_OPTS+=(-v "${CONFIG_TEMP_DIR}:/home/build/immortalwrt/custom")
     fi
-elif [[ ${DISTRIBUTION} == immortalwrt ]]; then
-    DOCKER_OPTS+=(-v "${config_TEMP_DIR}:/home/build/immortalwrt/custom")
-fi
-_add_exit_hook "rm -fr ${config_TEMP_DIR}"
-mkdir -p "${config_TEMP_DIR}/etc/uci-defaults"
-if [[ -d "${FILES}" ]]; then
-    cp -p "${FILES}"/* "${config_TEMP_DIR}"/
-fi
-if [[ ${nocustomize:-0} -ne 1 ]]; then
+    if [[ -d "${FILES}" ]]; then
+        cp -p "${FILES}"/* "${CONFIG_TEMP_DIR}"/
+    fi
     if [[ -d "${THIS_DIR}/config/common" ]]; then
-        cp -p "${THIS_DIR}/config/common"/*common "${config_TEMP_DIR}/etc/uci-defaults/"
+        cp -p "${THIS_DIR}/config/common"/*common "${CONFIG_TEMP_DIR}/etc/uci-defaults/"
     fi
     if [[ -d "${THIS_DIR}/config/common/${PLATFORM}/${PROFILE}" ]]; then
-        cp -pr "${THIS_DIR}/config/common/${PLATFORM}/${PROFILE}"/* "${config_TEMP_DIR}"/
+        cp -pr "${THIS_DIR}/config/common/${PLATFORM}/${PROFILE}"/* "${CONFIG_TEMP_DIR}"/
     fi
     if [[ -d "${THIS_DIR}/config/${MAJOR_VERSION}" ]]; then
-        cp -pr "${THIS_DIR}/config/${MAJOR_VERSION}"/*common "${config_TEMP_DIR}/etc/uci-defaults/" || true
+        cp -pr "${THIS_DIR}/config/${MAJOR_VERSION}"/*common "${CONFIG_TEMP_DIR}/etc/uci-defaults/" || true
     fi
     if [[ -d "${THIS_DIR}/config/${MAJOR_VERSION}/${PLATFORM}/${PROFILE}" ]]; then
-        cp -pr "${THIS_DIR}/config/${MAJOR_VERSION}/${PLATFORM}/${PROFILE}"/* "${config_TEMP_DIR}"/
+        cp -pr "${THIS_DIR}/config/${MAJOR_VERSION}/${PLATFORM}/${PROFILE}"/* "${CONFIG_TEMP_DIR}"/
     fi
-    echo -e "#!/bin/sh\n\ncat <<EOF | tee /etc/dropbear/authorized_keys" >>"${config_TEMP_DIR}/etc/uci-defaults/10_dropbear"
+    echo -e "#!/bin/sh\n\ncat <<EOF | tee /etc/dropbear/authorized_keys" >>"${CONFIG_TEMP_DIR}/etc/uci-defaults/10_dropbear"
     while IFS= read -r -d '' _id_rsa; do
-        cat <"${_id_rsa}" >"${config_TEMP_DIR}/etc/uci-defaults/10_dropbear"
+        cat <"${_id_rsa}" >"${CONFIG_TEMP_DIR}/etc/uci-defaults/10_dropbear"
     done < <(find ~/.ssh/ -iname id_rsa.pub -print0)
-    echo -e "EOF\n\nexit 0" >>"${config_TEMP_DIR}/etc/uci-defaults/10_dropbear"
+    echo -e "EOF\n\nexit 0" >>"${CONFIG_TEMP_DIR}/etc/uci-defaults/10_dropbear"
     if [[ -n ${OPENWRT_MIRROR_PATH} ]]; then
-        cat <<EOF | tee "${config_TEMP_DIR}/etc/uci-defaults/10_opkg"
+        cat <<EOF | tee "${CONFIG_TEMP_DIR}/etc/uci-defaults/10_opkg"
 #!/bin/sh
 
 sed -e 's|http://downloads.openwrt.org|${OPENWRT_MIRROR_PATH}|g' \
@@ -320,7 +323,10 @@ if [[ ${PLATFORM} == "x86-64" ]]; then
     _add_package kmod-dax kmod-dm
 fi
 
-makecmd="make image FILES=/home/build/${DISTRIBUTION}/custom"
+makecmd="make image"
+if [[ ${NOCUSTOMIZE:-0} -ne 1 ]]; then
+    makecmd="${makecmd} FILES=/home/build/${DISTRIBUTION}/custom"
+fi
 if [[ -n ${NAME} ]]; then
     makecmd="${makecmd} EXTRA_IMAGE_NAME=${NAME}"
 fi
@@ -330,7 +336,7 @@ fi
 if [[ -n ${PROFILE} ]]; then
     makecmd="${makecmd} PROFILE=${PROFILE}"
 fi
-if [[ ${PLATFORM} == x86-64 || ${PLATFORM} =~ armvirt ]]; then
+if [[ ${PLATFORM} == x86-64 || ${PLATFORM} =~ armvirt ]] && [[ ${ROOTFS_PARTSIZE} -gt 0 ]]; then
     makecmd="${makecmd} ROOTFS_PARTSIZE=${ROOTFS_PARTSIZE}"
 fi
 if [[ ${dryrun:-0} -eq 0 ]]; then

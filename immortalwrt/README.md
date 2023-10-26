@@ -38,4 +38,8 @@ sed -i -e "s|http://downloads.immortalwrt.org|${OPENWRT_MIRROR_PATH}|g" -e "s|ht
 
 in ophub
 
-`sudo ./make -b firefly -k 6.1.59`
+```bash
+bash build.sh -p armvirt-64 --distribution immortalwrt -v 21.02.7 --nocustomize -c --dryrun --verbose
+
+sudo ./make -b firefly -k 6.1.59
+```

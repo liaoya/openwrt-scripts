@@ -61,7 +61,7 @@ bash -x build.sh -p x86-64 -c
 bash -x build.sh -p ath79-nand -P netgear_wndr4300 -c
 bash -x build.sh -p ramips-mt7621 -P d-team_newifi-d2 -t https://op.dllkids.xyz/packages/mipsel_24kc
 
-bash build.sh -p armvirt-64 --distribution immortalwrt -v 21.02.7
+bash build.sh -p armvirt-64 --distribution immortalwrt -v 21.02.7 --nocustomize
 bash build.sh -p x86-64 --distribution immortalwrt -v 21.02.7
 bash build.sh -p ath79-nand -P netgear_wndr4300 --distribution immortalwrt -v 21.02.7
 bash build.sh -p ramips-mt7621 -P d-team_newifi-d2 --distribution immortalwrt -v 21.02.7
