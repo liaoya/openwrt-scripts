@@ -122,9 +122,9 @@ function disable_mesh() {
 
 rm -fr tmp
 
-# configure_passwall
-# configure_passwall2
-# configure_ssr_plus
-# configure_v2ray
-# configure_vssr_plus
-disable_mesh
+configure_passwall
+configure_passwall2
+configure_ssr_plus
+configure_v2ray
+configure_vssr_plus
+# disable_mesh

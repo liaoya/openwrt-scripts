@@ -124,7 +124,7 @@ while true; do
         ROOTFS_PARTSIZE=$2
         ;;
     -t | --thirdparty)
-        THIRDPARTY=$(readlink -f "$2")
+        THIRDPARTY=$2
         ;;
     -v | --VERSION)
         VERSION=$2
@@ -209,10 +209,6 @@ EOF
     DOCKER_OPTS+=(-v "${_TEMP_DIR}/90curtin-aptproxy:/etc/apt/apt.conf.d/90curtin-aptproxy")
 fi
 
-if [[ $(timedatectl show | grep Timezone | cut -d= -f2) == Asia/Shanghai ]]; then
-    DEBIAN_MIRROR_PATH=${DEBIAN_MIRROR_PATH:-http://mirrors.ustc.edu.cn}
-    cmd=${cmd:+${cmd}; }"sudo sed -i -e 's|http://deb.debian.org|${DEBIAN_MIRROR_PATH}|g' -e 's|https://deb.debian.org|${DEBIAN_MIRROR_PATH}|g' /etc/apt/sources.list"
-fi
 if [[ ${DISTRIBUTION} == openwrt && $(timedatectl show | grep Timezone | cut -d= -f2) == Asia/Shanghai ]]; then
     OPENWRT_MIRROR_PATH=${OPENWRT_MIRROR_PATH:-http://mirrors.ustc.edu.cn/openwrt}
     cmd=${cmd:+${cmd}; }"sed -i -e 's|http://downloads.openwrt.org|${OPENWRT_MIRROR_PATH}|g' -e 's|https://downloads.openwrt.org|${OPENWRT_MIRROR_PATH}|g' repositories.conf"
@@ -227,6 +223,10 @@ if [[ ${DISTRIBUTION} == immortalwrt ]]; then
     fi
 fi
 if [[ ${DISTRIBUTION} == immortalwrt ]]; then
+    if [[ $(timedatectl show | grep Timezone | cut -d= -f2) == Asia/Shanghai ]]; then
+        DEBIAN_MIRROR_PATH=${DEBIAN_MIRROR_PATH:-http://mirrors.ustc.edu.cn}
+        cmd=${cmd:+${cmd}; }"sudo sed -i -e 's|http://deb.debian.org|${DEBIAN_MIRROR_PATH}|g' -e 's|https://deb.debian.org|${DEBIAN_MIRROR_PATH}|g' /etc/apt/sources.list"
+    fi
     if [[ ${PLATFORM} == "x86-64" ]]; then
         cmd=${cmd:+${cmd}; }"sudo apt update -qy; sudo apt install -qy genisoimage"
     fi
@@ -308,8 +308,13 @@ if [[ -z ${THIRDPARTY} && -d /work/${DISTRIBUTION}/package/"${MAJOR_VERSION}/${P
 fi
 
 if [[ -n ${THIRDPARTY} ]]; then
-    DOCKER_OPTS+=(-v "${THIRDPARTY}:/home/build/${DISTRIBUTION}/THIRDPARTY")
-    cmd="${cmd:+${cmd}; }sed -i -e '\|^## Place your custom repositories here.*|a src custom file:///home/build/${DISTRIBUTION}/THIRDPARTY' -e 's/^option check_signature$/# &/' repositories.conf"
+    if [[ ${THIRDPARTY:0:4} == http ]]; then
+        cmd="${cmd:+${cmd}; }sed -i -e '\|^## This is the local package repository.*|a src custom ${THIRDPARTY}' -e 's/^option check_signature$/# &/' repositories.conf"
+    else
+        THIRDPARTY=$(readlink -f "${THIRDPARTY}")
+        DOCKER_OPTS+=(-v "${THIRDPARTY}:/home/build/${DISTRIBUTION}/THIRDPARTY")
+        cmd="${cmd:+${cmd}; }sed -i -e '\|^## Place your custom repositories here.*|a src custom file:///home/build/${DISTRIBUTION}/THIRDPARTY' -e 's/^option check_signature$/# &/' repositories.conf"
+    fi
 fi
 if [[ ${PLATFORM} == "x86-64" ]]; then
     _add_package kmod-dax kmod-dm

@@ -28,15 +28,22 @@ if [[ ! -x staging_dir/host/bin/upx ]]; then
     cp /tmp/upx staging_dir/host/bin/upx
 fi
 
+if [[ ! -f feeds.conf.default.origin ]]; then
+    cp feeds.conf.default feeds.conf.default.origin
+fi
+cp feeds.conf.default.origin feeds.conf.default
+
 sed -e 's|git.openwrt.org/openwrt/openwrt|github.com/openwrt/openwrt|g' \
     -e 's|git.openwrt.org/feed/packages|github.com/openwrt/packages|g' \
     -e 's|git.openwrt.org/project/luci|github.com/openwrt/luci|g' \
+    -e 's|git.openwrt.org/feed/routing|github.com/openwrt/routing|g' \
     -e 's|git.openwrt.org/feed/telephony|github.com/openwrt/telephony|g' \
     -i feeds.conf.default
+
 # Change the package definition
-sed -e '\%^src-git packages https://github.com/openwrt/packages% s%.%#&%' \
-    -e '\%^src-git-full packages https://github.com/openwrt/packages% s%.%#&%' \
-    -i feeds.conf.default
+# sed -e '\%^src-git packages https://github.com/openwrt/packages% s%.%#&%' \
+#     -e '\%^src-git-full packages https://github.com/openwrt/packages% s%.%#&%' \
+#     -i feeds.conf.default
 
 # _add_feed packages "https://github.com/Lienol/openwrt-packages;${MAJOR_VERSION}"
 

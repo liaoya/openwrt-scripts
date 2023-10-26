@@ -1,25 +1,25 @@
 version: "3.0"
 
-volumes:
-  data:
-    driver: local
+#volumes:
+#  data:
+#    driver: local
 
 services:
   git-cache-http-server:
     build:
       context: .
       args:
-        - http_proxy=http://10.245.250.11:1080
-        - https_proxy=http://10.245.250.11:1080
+        - http_proxy=http://10.245.91.190:3128
+        - https_proxy=http://10.245.91.190:1080
         - no_proxy=localhost,127.0.0.1
         - npm_config_registry=https://registry.npmmirror.com
     environment:
       - NODE_ENV=production
-      - http_proxy=http://10.245.250.11:1080
-      - https_proxy=http://10.245.250.11:1080
-      - no_proxy=localhost,127.0.0.1
+      - http_proxy=http://10.245.91.190:1080
+      - https_proxy=http://10.245.91.190:1080
+      - no_proxy=localhost,127.0.0.1,cn
     ports:
       - "9080:8080"
     restart: always
     volumes:
-      - data:/var/cache/git
+      - ./data:/var/cache/git

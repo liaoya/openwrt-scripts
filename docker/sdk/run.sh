@@ -119,6 +119,10 @@ for item in http_proxy https_proxy no_proxy; do
         DOCKER_OPTS+=(--env "${item^^}=${!item}")
     fi
 done
+# GOSU=$(command -v gosu)
+# if [[ -n ${GOSU} ]]; then
+#     DOCKER_OPTS+=(-v "${GOSU}:/usr/local/bin/gosu:ro")
+# fi
 
 if [[ ${DRYRUN:-0} -eq 0 ]]; then
     docker run "${DOCKER_OPTS[@]}" "${DOCKER_IMAGE}" bash -c "${SCRIPT_DIR}/checkout.sh; ${SCRIPT_DIR}/config.sh; ${SCRIPT_DIR}/build.sh"

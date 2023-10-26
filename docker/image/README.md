@@ -39,7 +39,7 @@ There're no image after `18.06.7` for `18.06` series
 ```bash
 # The package must be declare external
 unset -v PACKAGES
-PACKAGES="${PACKAGES:+$PACKAGES }-dnsmasq -wpad-mini -wpad-basic -wpad-basic-wolfssl -wpad-openssl dnsmasq-full wpad"
+PACKAGES="${PACKAGES:+$PACKAGES }-dnsmasq -wpad-mini -wpad-basic -wpad-basic-wolfssl -wpad-basic-mbedtls -wpad-openssl dnsmasq-full wpad"
 PACKAGES="${PACKAGES:+$PACKAGES }atop bash bind-dig coreutils-base64 curl diffutils dropbearconvert fdisk file \
 ip-full ipset \
 lscpu \
@@ -59,7 +59,7 @@ bash -x build.sh -p x86-64 --dryrun
 
 bash -x build.sh -p x86-64 -c
 bash -x build.sh -p ath79-nand -P netgear_wndr4300 -c
-bash -x build.sh -p ramips-mt7621 -P d-team_newifi-d2 -c
+bash -x build.sh -p ramips-mt7621 -P d-team_newifi-d2 -t https://op.dllkids.xyz/packages/mipsel_24kc
 
 bash build.sh -p armvirt-64 --distribution immortalwrt -v 21.02.7
 bash build.sh -p x86-64 --distribution immortalwrt -v 21.02.7

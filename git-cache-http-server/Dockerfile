@@ -1,8 +1,8 @@
-FROM docker.io/library/node:16-alpine3.15
+FROM docker.io/library/node:18-alpine3.18
 
 # hadolint ignore=DL3018
 RUN apk update -q --no-progress && \
-    apk add --no-cache --no-progress bash git
+    apk add --no-cache --no-progress bash curl git
 
 # hadolint ignore=DL3016
 RUN npm install --location=global npm && \
