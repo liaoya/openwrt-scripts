@@ -13,66 +13,93 @@ function enable_option() {
     sed -i "s/# ${config} is not set/${config}=y/g" .config
 }
 
-# grep app-bypass .config | sed -e 's/=m//g' -e 's/=y//g' -e 's/^# //g' -e 's/ is not set//g' | sort
+function module_option() {
+    local config=$1
+    sed -i "s/# ${config} is not set/${config}=m/g" .config
+}
+
+function common_luci_work() {
+    local name=CONFIG_PACKAGE_luci-app-$1
+    local option
+
+    module_option "${name}"
+
+    while IFS= read -r -d '' option; do
+        disable_option "${option}"
+    done < <(grep "${name}_" .config | sed -e 's/=m//g' -e 's/=y//g' -e 's/^# //g' -e 's/ is not set//g' | sort)
+
+    name=CONFIG_PACKAGE_luci-i18n-$1-
+    while IFS= read -r -d '' option; do
+        enable_option "${option}"
+    done < <(grep "${name}" .config | sed -e 's/=m//g' -e 's/=y//g' -e 's/^# //g' -e 's/ is not set//g' | sort)
+}
+
+# grep -e 'luci-app-bypass\|luci-i18n-bypass' .config | sed -e 's/=m//g' -e 's/=y//g' -e 's/^# //g' -e 's/ is not set//g' | sort
 function configure_bypass() {
-    for config in CONFIG_PACKAGE_luci-app-bypass_INCLUDE_Shadowsocks_Libev_Server \
-        CONFIG_PACKAGE_luci-app-bypass_INCLUDE_ShadowsocksR_Libev_Server \
-        CONFIG_PACKAGE_luci-app-bypass_INCLUDE_Socks_Server \
-        CONFIG_PACKAGE_luci-app-bypass_INCLUDE_Trojan; do
-        disable_option "${config}"
+    local option
+
+    common_luci_work bypass
+
+    for option in \
+        CONFIG_PACKAGE_luci-app-bypass_INCLUDE_Kcptun \
+        CONFIG_PACKAGE_luci-app-bypass_INCLUDE_Shadowsocks_Libev_Client \
+        CONFIG_PACKAGE_luci-app-bypass_INCLUDE_Simple_Obfs \
+        CONFIG_PACKAGE_luci-app-bypass_INCLUDE_V2ray_plugin \
+        CONFIG_PACKAGE_luci-app-bypass_INCLUDE_Xray \
+    ; do
+        enable_option "${option}"
     done
 
-    for config in CONFIG_PACKAGE_luci-app-bypass_INCLUDE_Kcptun \
-        CONFIG_PACKAGE_luci-app-bypass_INCLUDE_NaiveProxy \
-        CONFIG_PACKAGE_luci-app-bypass_INCLUDE_Simple_Obfs \
-        CONFIG_PACKAGE_luci-app-bypass_INCLUDE_V2ray_plugin; do
-        enable_option "${config}"
-    done
+    name="CONFIG_PACKAGE_luci-i18n-bypass-"
+    while IFS= read -r -d '' option; do
+        enable_option "${option}"
+    done < <(grep "${name}" .config | sed -e 's/=m//g' -e 's/=y//g' -e 's/^# //g' -e 's/ is not set//g' | sort)
 }
 
 # grep -i passwall .config | grep -v passwall2 | sed -e 's/=m//g' -e 's/=y//g' -e 's/^# //g' -e 's/ is not set//g' | sort
 function configure_passwall() {
-    for config in CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Brook \
-        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_ChinaDNS_NG \
-        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Haproxy \
-        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_NaiveProxy \
-        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_ShadowsocksR_Libev_Server \
-        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Trojan_GO; do
-        disable_option "${config}"
-    done
+    local option
 
-    for config in CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Shadowsocks_Rust_Client \
-        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Xray_Plugin; do
+    common_luci_work passwall
+
+    for config in \
+        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Shadowsocks_Rust_Client \
+        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Simple_Obfs \
+        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Xray \
+        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Xray_Plugin \
+    ; do
         enable_option "${config}"
     done
 }
 
 # grep -i passwall2 .config | sed -e 's/=m//g' -e 's/=y//g' -e 's/^# //g' -e 's/ is not set//g' | sort
 function configure_passwall2() {
-    for config in CONFIG_PACKAGE_luci-app-passwall2_INCLUDE_Shadowsocks_Rust_Client \
-        CONFIG_PACKAGE_luci-app-passwall2_INCLUDE_V2ray; do
+    local option
+
+    common_luci_work passwall2
+
+    for config in \
+        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Shadowsocks_Rust_Client \
+        CONFIG_PACKAGE_luci-app-passwall2_INCLUDE_Simple_Obfs \
+        CONFIG_PACKAGE_luci-app-passwall2_INCLUDE_V2ray_Plugin \
+    ; do
         enable_option "${config}"
     done
 }
 
-# grep -i app-ssr-plus .config | sed -e 's/=m//g' -e 's/=y//g' -e 's/^# //g' -e 's/ is not set//g' | sort
+# grep -i ssr-plus .config | sed -e 's/=m//g' -e 's/=y//g' -e 's/^# //g' -e 's/ is not set//g' | sort
 function configure_ssr_plus() {
-    # shellcheck disable=SC2043
-    for config in CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_NaiveProxy \
-        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks_Libev_Server \
-        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_ShadowsocksR_Libev_Server \
-        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks_Rust_Server \
-        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_ShadowsocksR_Server; do
-        disable_option "${config}"
-    done
+    local option
 
-    for config in CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Kcptun \
-        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks_Libev_Client \
-        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_ShadowsocksR_Libev_Client \
+    common_luci_work ssr-plus
+
+    for config in \
+        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Kcptun \
         CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks_Rust_Client \
-        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Simple_Obfs \
-        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_V2ray_Plugin \
-        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Xray; do
+        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks_Simple_Obfs \
+        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks_V2ray_Plugin \
+        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Xray \
+    ; do
         enable_option "${config}"
     done
 }
@@ -87,44 +114,33 @@ function configure_v2ray() {
     fi
 }
 
-# grep -i app-vssr .config | grep -v vssr-plus | sed -e 's/=m//g' -e 's/=y//g' -e 's/^# //g' -e 's/ is not set//g' | sort
+# grep -i vssr .config | grep -v vssr-plus | sed -e 's/=m//g' -e 's/=y//g' -e 's/^# //g' -e 's/ is not set//g' | sort
 function configure_vssr() {
-    for config in CONFIG_PACKAGE_luci-app-vssr_INCLUDE_Kcptun \
+    local option
+
+    common_luci_work vssr
+
+    for config in \
+        CONFIG_PACKAGE_luci-app-vssr_INCLUDE_Kcptun \
         CONFIG_PACKAGE_luci-app-vssr_INCLUDE_Xray \
-        CONFIG_PACKAGE_luci-app-vssr_INCLUDE_Xray_plugin; do
+        CONFIG_PACKAGE_luci-app-vssr_INCLUDE_Xray_plugin \
+    ; do
         enable_option "${config}"
     done
 }
 
-# grep -i app-vssr-plus .config | sed -e 's/=m//g' -e 's/=y//g' -e 's/^# //g' -e 's/ is not set//g' | sort
+# grep -i vssr-plus .config | sed -e 's/=m//g' -e 's/=y//g' -e 's/^# //g' -e 's/ is not set//g' | sort
 function configure_vssr_plus() {
-    for config in CONFIG_PACKAGE_luci-app-vssr-plus_INCLUDE_ShadowsocksR_Server \
-        CONFIG_PACKAGE_luci-app-vssr-plus_INCLUDE_ShadowsocksR_Socks; do
-        disable_option "${config}"
-    done
-}
+    local option
 
-function disable_mesh() {
-    for config in \
-        CONFIG_PACKAGE_luci-app-easymesh \
-        CONFIG_PACKAGE_mesh11sd \
-        CONFIG_PACKAGE_wpa-supplicant-mesh-mbedtls \
-        CONFIG_PACKAGE_wpa-supplicant-mesh-openssl \
-        CONFIG_PACKAGE_wpa-supplicant-mesh-wolfssl \
-        CONFIG_PACKAGE_wpad-mesh-mbedtls \
-        CONFIG_PACKAGE_wpad-mesh-openssl \
-        CONFIG_PACKAGE_wpad-mesh-wolfssl \
-        CONFIG_PACKAGE_libopenssl \
-        ; do
-        disable_option "${config}"
-    done
+    common_luci_work vssr-plus
 }
 
 rm -fr tmp
 
+configure_bypass
 configure_passwall
 configure_passwall2
 configure_ssr_plus
-configure_v2ray
-configure_vssr_plus
-# disable_mesh
+# configure_v2ray
+configure_vssr

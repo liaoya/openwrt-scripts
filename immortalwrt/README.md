@@ -8,17 +8,18 @@ export PACKAGES="-dnsmasq -wpad-mini -wpad-basic -wpad-basic-wolfssl \
 atop bash bind-dig bzip2 ca-bundle ca-certificates coremark coreutils-base64 curl dnsmasq-full dropbearconvert file gzip \
 htop ip-full ipset iptables-mod-tproxy \
 libpthread \
-luci-app-adbyby-plus luci-i18n-adbyby-plus-zh-cn \
+luci luci-compat luci-lib-ipkg \
 luci-app-accesscontrol luci-i18n-accesscontrol-zh-cn \
+luci-app-adbyby-plus luci-i18n-adbyby-plus-zh-cn \
+luci-app-netdata luci-i18n-netdata-zh-cn \
 luci-app-passwall luci-i18n-passwall-zh-cn \
-luci-app-ssr-plus \
+luci-app-ssr-plus luci-i18n-ssr-plus-zh-cn \
+luci-app-ttyd luci-i18n-ttyd-zh-cn \
 luci-app-uhttpd luci-i18n-uhttpd-zh-cn \
 luci-app-vlmcsd luci-i18n-vlmcsd-zh-cn \
-luci-app-wol luci-i18n-wol-zh-cn \
-luci-app-vlmcsd luci-i18n-vlmcsd-zh-cn \
 luci-app-vssr luci-i18n-vssr-zh-cn \
+luci-app-wol luci-i18n-wol-zh-cn \
 luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn \
-luci luci-compat luci-lib-ipkg \
 luci-theme-argon luci-theme-bootstrap luci-theme-material \
 mtr nano tmux \
 openssh-client openssh-client-utils openssh-keygen \
