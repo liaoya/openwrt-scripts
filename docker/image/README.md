@@ -36,6 +36,8 @@ There're no image after `18.06.7` for `18.06` series
   - `docker.io/immortalwrt/imagebuilder:ramips-mt7621-openwrt-21.02.7`
   - `docker.io/immortalwrt/imagebuilder:ramips-mt7620-openwrt-21.02.7`
 
+## 22.03 and 23.05
+
 ```bash
 # The package must be declare external
 unset -v PACKAGES
@@ -48,8 +50,10 @@ luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn \
 luci luci-compat luci-lib-ipkg luci-theme-bootstrap \
 mtr nano pciutils procps-ng-pkill tcpdump tmux \
 uci wget"
-PACKAGES="${PACKAGES:+$PACKAGES }coremark luci-app-vlmcsd luci-i18n-vlmcsd-zh-cn vlmcsd"
-PACKAGES="${PACKAGES:+$PACKAGES }luci-app-passwall luci-i18n-passwall-zh-cn luci-app-ssr-plus"
+PACKAGES="${PACKAGES:+$PACKAGES }coremark"
+PACKAGES="${PACKAGES:+$PACKAGES }luci-app-vlmcsd luci-i18n-vlmcsd-zh-cn vlmcsd"
+PACKAGES="${PACKAGES:+$PACKAGES }luci-app-ssr-plus luci-i18n-ssr-plus-zh-cn"
+PACKAGES="${PACKAGES:+$PACKAGES }luci-app-passwall luci-i18n-passwall-zh-cn"
 export PACKAGES
 
 export OPENWRT_MIRROR_PATH=http://mirrors.cloud.tencent.com/openwrt
@@ -60,24 +64,32 @@ bash -x build.sh -p x86-64 --dryrun
 bash -x build.sh -p x86-64 -c
 bash -x build.sh -p ath79-nand -P netgear_wndr4300 -c
 bash -x build.sh -p ramips-mt7621 -P d-team_newifi-d2
+```
+
+## 21.02
+
+```bash
+unset -v PACKAGES
+PACKAGES="${PACKAGES:+$PACKAGES }-dnsmasq -wpad-mini -wpad-basic -wpad-basic-wolfssl -wpad-basic-mbedtls -wpad-openssl dnsmasq-full wpad"
+PACKAGES="${PACKAGES:+$PACKAGES }atop bash bind-dig coreutils-base64 curl diffutils dropbearconvert fdisk file \
+ip-full ipset \
+lscpu \
+luci-app-wol luci-i18n-wol-zh-cn \
+luci-app-accesscontrol luci-i18n-accesscontrol-zh-cn \
+luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn \
+luci luci-compat luci-lib-ipkg luci-theme-bootstrap \
+mtr nano pciutils procps-ng-pkill tcpdump tmux \
+uci wget"
+PACKAGES="${PACKAGES:+$PACKAGES }coremark"
+PACKAGES="${PACKAGES:+$PACKAGES }luci-app-vlmcsd luci-i18n-vlmcsd-zh-cn vlmcsd"
+PACKAGES="${PACKAGES:+$PACKAGES }luci-app-ssr-plus luci-i18n-ssr-plus-zh-cn"
+PACKAGES="${PACKAGES:+$PACKAGES }luci-app-passwall luci-i18n-passwall-zh-cn"
+export PACKAGES
 
 bash build.sh -p armvirt-64 --distribution immortalwrt -v 21.02.7 --nocustomize
 bash build.sh -p x86-64 --distribution immortalwrt -v 21.02.7
 bash build.sh -p ath79-nand -P netgear_wndr4300 --distribution immortalwrt -v 21.02.7
 bash build.sh -p ramips-mt7621 -P d-team_newifi-d2 --distribution immortalwrt -v 21.02.7
-
-bash -x build.sh -p x86-64 -t /work/openwrt/package/21.02/x86-64 -c
-
-env PACKAGES="kmod-dax kmod-dm luci luci-app-wol luci-lib-ipkg luci-theme-bootstrap uci" bash -x build.sh -p x86-64 -c
-
-env PACKAGES="bash coremark mtr nano luci-app-wol luci-i18n-wol-zh-cn luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn luci luci-compat luci-lib-ipkg luci-theme-bootstrap luci-app-vlmcsd luci-i18n-vlmcsd-zh-cn vlmcsd" bash -x build.sh -p ramips-mt7621 -P phicomm_k2p -c
-
-env PACKAGES="luci luci-compat luci-lib-ipkg luci-app-vlmcsd luci-app-wol luci-theme-bootstrap mtr vlmcsd" bash -x build.sh -p ramips-mt7620 -P phicomm_psg1208 -v 22.03.5
-
-env PACKAGES="luci luci-compat luci-lib-ipkg luci-app-vlmcsd luci-app-wol luci-theme-bootstrap mtr vlmcsd" bash -x build.sh -p ramips-mt7620 -P phicomm_psg1218a -v 21.02.7 -c
-
-bash -x build.sh -p ramips-mt7621 -P d-team_newifi-d2 -v 19.07.10 -c
-bash -x build.sh -p ath79-nand -P WNDR4300V1 -v 19.07.10 -c
 ```
 
 ## Backup

@@ -51,6 +51,9 @@ function _check_param() {
     done
 }
 
+DISTRIBUTION=${DISTRIBUTION:-openwrt}
+NOCUSTOMIZE=${NOCUSTOMIZE:-0}
+ROOTFS_PARTSIZE=${ROOTFS_PARTSIZE:-0}
 VERSION=${VERSION:-23.05.0}
 
 function _print_help() {
@@ -90,10 +93,6 @@ OPTIONS
         Only kick start the shell, skip the final 'make' step
 EOF
 }
-
-DISTRIBUTION=${DISTRIBUTION:-openwrt}
-NOCUSTOMIZE=${NOCUSTOMIZE:-0}
-ROOTFS_PARTSIZE=${ROOTFS_PARTSIZE:-0}
 
 TEMP=$(getopt -o b:d:f:n:p:P:s:t:v:hc --long bindir:,disableservice:,distribution:,files:,name:,partsize,platform:,profile:,thirdparty:,VERSION:,verbose,help,clean,dryrun,nocustomize -- "$@")
 eval set -- "${TEMP}"

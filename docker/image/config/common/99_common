@@ -58,9 +58,9 @@ EOF
 fi
 
 if [ ! -d /usr/local/bin ]; then
-    mkdir -p /usr/local/bin
+    mkdir -p /usr/bin
 fi
-cat <<'EOF' | tee /usr/local/bin/switch-gw.sh
+cat <<'EOF' | tee /usr/bin/switch-gw.sh
 #!/bin/sh
 
 set -x
@@ -90,6 +90,6 @@ uci commit dhcp
 /etc/init.d/dnsmasq restart
 EOF
 
-chmod a+x /usr/local/bin/switch-gw.sh
+chmod a+x /usr/bin/switch-gw.sh
 
 exit 0
