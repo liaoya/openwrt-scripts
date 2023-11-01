@@ -21,7 +21,7 @@ ipkg-make-index.sh . > Packages && gzip -9nc Packages > Packages.gz
 ```bash
 ./ipkg-util-docker.sh list ../docker/sdk/ath79-nand-22.03-bin
 
-./ipkg-util-docker.sh copy ../docker/sdk/armvirt-64-23.05-bin /work/openwrt/package/23.05/armvirt-64
+./ipkg-util-docker.sh copy ../docker/sdk/armsr-armv8-23.05-bin /work/openwrt/package/23.05/armsr-armv8
 ./ipkg-util-docker.sh copy ../docker/sdk/ath79-nand-23.05-bin /work/openwrt/package/23.05/ath79-nand
 ./ipkg-util-docker.sh copy ../docker/sdk/ramips-mt7620-23.05-bin /work/openwrt/package/23.05/ramips-mt7620
 ./ipkg-util-docker.sh copy ../docker/sdk/ramips-mt7621-23.05-bin /work/openwrt/package/23.05/ramips-mt7621
@@ -33,6 +33,7 @@ ipkg-make-index.sh . > Packages && gzip -9nc Packages > Packages.gz
 ./ipkg-util-docker.sh copy ../docker/sdk/ramips-mt7621-22.03-bin /work/openwrt/package/22.03/ramips-mt7621
 ./ipkg-util-docker.sh copy ../docker/sdk/x86-64-22.03-bin /work/openwrt/package/22.03/x86-64
 
+./ipkg-util-docker.sh copy ../docker/sdk/armvirt-64-21.02-bin /work/openwrt/package/21.02/armvirt-64
 ./ipkg-util-docker.sh copy ../docker/sdk/ath79-nand-21.02-bin /work/openwrt/package/21.02/ath79-nand
 ./ipkg-util-docker.sh copy ../docker/sdk/ramips-mt7620-21.02-bin /work/openwrt/package/21.02/ramips-mt7620
 ./ipkg-util-docker.sh copy ../docker/sdk/ramips-mt7621-21.02-bin /work/openwrt/package/21.02/ramips-mt7621

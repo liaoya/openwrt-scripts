@@ -3,11 +3,12 @@
 - <https://bingmeme.github.io/OpenWrt_CN/release/ImmortalWrtSource.html>
 
 ```bash
-export PACKAGES="-dnsmasq -wpad-mini -wpad-basic -wpad-basic-wolfssl \
-7z \
-atop bash bind-dig bzip2 ca-bundle ca-certificates coremark coreutils-base64 curl dnsmasq-full dropbearconvert file gzip \
+export PACKAGES="-dnsmasq -wpad-mini -wpad-basic \
+dnsmasq-full wpad \
+atop bash bind-dig bzip2 ca-bundle ca-certificates cfdisk coremark coreutils-base64 curl dropbearconvert file fdisk gzip \
 htop ip-full ipset iptables-mod-tproxy \
 libpthread \
+kcptun-client xray-plugin \
 luci luci-compat luci-lib-ipkg \
 luci-app-accesscontrol luci-i18n-accesscontrol-zh-cn \
 luci-app-adbyby-plus luci-i18n-adbyby-plus-zh-cn \
@@ -17,19 +18,20 @@ luci-app-ssr-plus luci-i18n-ssr-plus-zh-cn \
 luci-app-ttyd luci-i18n-ttyd-zh-cn \
 luci-app-uhttpd luci-i18n-uhttpd-zh-cn \
 luci-app-vlmcsd luci-i18n-vlmcsd-zh-cn \
-luci-app-vssr luci-i18n-vssr-zh-cn \
 luci-app-wol luci-i18n-wol-zh-cn \
 luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn \
-luci-theme-argon luci-theme-bootstrap luci-theme-material \
+luci-theme-bootstrap \
+luci-theme-argon luci-app-argon-config luci-i18n-argon-config-zh-cn \
 mtr nano tmux \
-openssh-client openssh-client-utils openssh-keygen \
 perl perlbase-cpan \
-uci uhttpd-mod-ubus wget wpad xz \
+uci uhttpd-mod-ubus wget xz \
 "
 
-make image PACKAGES="$PACKAGES" ROOTFS_PARTSIZE=1024
+bash build.sh -p armvirt-64 --distribution immortalwrt -v 21.02.7
 
 wc -l bin/targets/armvirt/64/immortalwrt-21.02.7-armvirt-64-default.manifest
+
+grep shadowsock immortalwrt-armvirt-64-21.02.7-bin/targets/armvirt/64/immortalwrt-21.02.7-armvirt-64-default.manifest
 ```
 
 ```bash
@@ -40,7 +42,5 @@ sed -i -e "s|http://downloads.immortalwrt.org|${OPENWRT_MIRROR_PATH}|g" -e "s|ht
 in ophub
 
 ```bash
-bash build.sh -p armvirt-64 --distribution immortalwrt -v 21.02.7 --nocustomize -c --dryrun --verbose
-
-sudo ./make -b firefly -k 6.1.59
+sudo ./make -b firefly -k 6.1.60
 ```

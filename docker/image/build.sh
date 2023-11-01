@@ -52,6 +52,7 @@ function _check_param() {
 }
 
 DISTRIBUTION=${DISTRIBUTION:-openwrt}
+DRYRUN=${DRYRUN:-0}
 NOCUSTOMIZE=${NOCUSTOMIZE:-0}
 ROOTFS_PARTSIZE=${ROOTFS_PARTSIZE:-0}
 VERSION=${VERSION:-23.05.0}
@@ -70,7 +71,7 @@ OPTIONS
     -d, --disableservice DISABLESERVICE
         DISABLED_SERVICES="<svc1> [<svc2> [<svc3> ..]]" # Which services in /etc/init.d/ should be disabled. ${DISABLESERVICE:+The default is '"${DISABLESERVICE}"'}
     --distribution DISTRIBUTION
-        openwrt or immortalwrt. ${DISTRIBUTION:+The default is '"${DISTRIBUTION}"'}
+        OpenWRT or ImmortalWrt. ${DISTRIBUTION:+The default is '"${DISTRIBUTION}"'}
     -f, --files FILES
         FILES="<path>" # include extra FILES from <path>. ${FILES:+The default is '"${FILES}"'}
     -n, --name NAME
@@ -86,11 +87,11 @@ OPTIONS
     -t, --thirdparty THIRDPARTY
         Thirdparty package directory. ${THIRDPARTY:+The default is '"${THIRDPARTY}"'}
     -v, --VERSION VERSION
-        OpenWRT VERSION(used for image tag). ${VERSION:+The default is '"${VERSION}"'}
+       OpenWRT or ImmortalWrt version(used for image tag). ${VERSION:+The default is '"${VERSION}"'}
     --verbose
         More information
     --dryrun
-        Only kick start the shell, skip the final 'make' step
+        Only kick start the shell, skip the final build step. ${DRYRUN:+The default is '"${DRYRUN}"'}
 EOF
 }
 
@@ -144,7 +145,7 @@ while true; do
         ;;
     --dryrun)
         shift_step=1
-        dryrun=1
+        DRYRUN=1
         ;;
     --nocustomize)
         shift_step=1
@@ -226,16 +227,16 @@ if [[ ${DISTRIBUTION} == immortalwrt ]]; then
     else
         OPENWRT_MIRROR_PATH=${OPENWRT_MIRROR_PATH:-http://immortalwrt.kyarucloud.moe/}
     fi
-fi
-if [[ $(timedatectl show | grep Timezone | cut -d= -f2) == Asia/Shanghai ]]; then
-    DEBIAN_MIRROR_PATH=${DEBIAN_MIRROR_PATH:-http://mirrors.ustc.edu.cn}
-    cmd=${cmd:+${cmd}; }"sudo sed -i -e 's|http://deb.debian.org|${DEBIAN_MIRROR_PATH}|g' -e 's|https://deb.debian.org|${DEBIAN_MIRROR_PATH}|g' /etc/apt/sources.list"
-fi
-if [[ ${PLATFORM} == "x86-64" ]]; then
-    cmd=${cmd:+${cmd}; }"sudo apt update -qy; sudo apt install -qy genisoimage"
-fi
-if [[ ${PLATFORM} =~ armvirt ]]; then
-    cmd=${cmd:+${cmd}; }"sudo apt update -qy; sudo apt install -qy cpio"
+    if [[ $(timedatectl show | grep Timezone | cut -d= -f2) == Asia/Shanghai ]]; then
+        DEBIAN_MIRROR_PATH=${DEBIAN_MIRROR_PATH:-http://mirrors.ustc.edu.cn}
+        cmd=${cmd:+${cmd}; }"sudo sed -i -e 's|http://deb.debian.org|${DEBIAN_MIRROR_PATH}|g' -e 's|https://deb.debian.org|${DEBIAN_MIRROR_PATH}|g' /etc/apt/sources.list"
+    fi
+    if [[ ${PLATFORM} == "x86-64" ]]; then
+        cmd=${cmd:+${cmd}; }"sudo apt update -qy; sudo apt install -qy genisoimage"
+    fi
+    if [[ ${PLATFORM} =~ armvirt ]]; then
+        cmd=${cmd:+${cmd}; }"sudo apt update -qy; sudo apt install -qy cpio"
+    fi
 fi
 
 for item in http_proxy https_proxy no_proxy; do
@@ -324,7 +325,11 @@ fi
 
 makecmd="make image"
 if [[ ${NOCUSTOMIZE:-0} -ne 1 ]]; then
-    makecmd="${makecmd} FILES=/home/build/${DISTRIBUTION}/custom"
+    if [[ ${MAJOR_VERSION_NUMBER} -ge 2305 ]]; then
+        makecmd="${makecmd} FILES=/builder/custom"
+    else
+        makecmd="${makecmd} FILES=/home/build/${DISTRIBUTION}/custom"
+    fi
 fi
 if [[ -n ${NAME} ]]; then
     makecmd="${makecmd} EXTRA_IMAGE_NAME=${NAME}"
@@ -338,7 +343,7 @@ fi
 if [[ ${PLATFORM} == x86-64 || ${PLATFORM} =~ armvirt ]] && [[ ${ROOTFS_PARTSIZE} -gt 0 ]]; then
     makecmd="${makecmd} ROOTFS_PARTSIZE=${ROOTFS_PARTSIZE}"
 fi
-if [[ ${dryrun:-0} -eq 0 ]]; then
+if [[ ${DRYRUN:-0} -eq 0 ]]; then
     docker run "${DOCKER_OPTS[@]}" "${docker_image_name}" bash -c "${cmd}; ${makecmd}"
 else
     echo "${makecmd}"
@@ -346,7 +351,7 @@ else
 fi
 
 # qemu-img convert to make the image as thin provision, do not compress it any more to make backing file across pool
-if [[ $(command -v qemu-img) && ${PLATFORM} == "x86-64" && ${dryrun:-0} -eq 0 ]]; then
+if [[ $(command -v qemu-img) && ${PLATFORM} == "x86-64" && ${DRYRUN:-0} -eq 0 ]]; then
     while IFS= read -r _gz_image; do
         _prefix=$(dirname "${_gz_image}")
         _img=${_prefix}/$(basename -s .gz "${_gz_image}")

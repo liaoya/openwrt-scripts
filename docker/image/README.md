@@ -8,7 +8,7 @@ There're no image after `18.06.7` for `18.06` series
 
 - `23.05`
   - `docker.io/openwrt/imagebuilder:x86-64-23.05.0`
-  - `docker.io/openwrt/imagebuilder:armvirt-64-23.05.0`
+  - `docker.io/openwrt/imagebuilder:armsr-armv8-23.05.0` (<https://openwrt.org/releases/23.05/notes-23.05.0>)
   - `docker.io/openwrt/imagebuilder:ath79-nand-23.05.0`
   - `docker.io/openwrt/imagebuilder:ramips-mt7621-23.05.0`
   - `docker.io/openwrt/imagebuilder:ramips-mt7620-23.05.0`
@@ -36,22 +36,33 @@ There're no image after `18.06.7` for `18.06` series
   - `docker.io/immortalwrt/imagebuilder:ramips-mt7621-openwrt-21.02.7`
   - `docker.io/immortalwrt/imagebuilder:ramips-mt7620-openwrt-21.02.7`
 
-## 22.03 and 23.05
+## OpenWRT 23.05
 
 ```bash
 # The package must be declare external
 unset -v PACKAGES
-PACKAGES="${PACKAGES:+$PACKAGES }-dnsmasq -wpad-mini -wpad-basic -wpad-basic-wolfssl -wpad-basic-mbedtls -wpad-openssl dnsmasq-full wpad"
-PACKAGES="${PACKAGES:+$PACKAGES }atop bash bind-dig coreutils-base64 curl diffutils dropbearconvert fdisk file \
-ip-full ipset \
-lscpu \
+PACKAGES="-dnsmasq -wpad-mini -wpad-basic -wpad-basic-mbedtls \
+dnsmasq-full wpad \
+atop bash bind-dig bzip2 ca-bundle ca-certificates cfdisk coremark coreutils-base64 curl  dropbearconvert file fdisk gzip \
+htop ip-full ipset iptables-mod-tproxy \
+libpthread \
+luci luci-compat luci-lib-ipkg \
+luci-app-uhttpd luci-i18n-uhttpd-zh-cn \
 luci-app-wol luci-i18n-wol-zh-cn \
 luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn \
-luci luci-compat luci-lib-ipkg luci-theme-bootstrap \
-mtr nano pciutils procps-ng-pkill tcpdump tmux \
-uci wget"
+luci-theme-bootstrap \
+mtr nano tmux \
+openssh-client openssh-client-utils openssh-keygen \
+perl perlbase-cpan \
+uci uhttpd-mod-ubus wget xz \
+"
 PACKAGES="${PACKAGES:+$PACKAGES }coremark"
+PACKAGES="${PACKAGES:+$PACKAGES }luci-theme-argon luci-app-argon-config luci-i18n-argon-config-zh-cn"
+PACKAGES="${PACKAGES:+$PACKAGES }luci-app-adbyby-plus luci-i18n-adbyby-plus-zh-cn"
 PACKAGES="${PACKAGES:+$PACKAGES }luci-app-vlmcsd luci-i18n-vlmcsd-zh-cn vlmcsd"
+PACKAGES="${PACKAGES:+$PACKAGES }luci-app-accesscontrol luci-i18n-accesscontrol-zh-cn"
+PACKAGES="${PACKAGES:+$PACKAGES }luci-app-netdata luci-i18n-netdata-zh-cn"
+PACKAGES="${PACKAGES:+$PACKAGES }luci-app-ttyd luci-i18n-ttyd-zh-cn"
 PACKAGES="${PACKAGES:+$PACKAGES }luci-app-ssr-plus luci-i18n-ssr-plus-zh-cn"
 PACKAGES="${PACKAGES:+$PACKAGES }luci-app-passwall luci-i18n-passwall-zh-cn"
 export PACKAGES
@@ -61,9 +72,50 @@ export OPENWRT_MIRROR_PATH=http://mirrors.aliyun.com/openwrt
 
 bash -x build.sh -p x86-64 --dryrun
 
-bash -x build.sh -p x86-64 -c
+bash -x build.sh -p x86-64 -s 512 -c
 bash -x build.sh -p ath79-nand -P netgear_wndr4300 -c
 bash -x build.sh -p ramips-mt7621 -P d-team_newifi-d2
+```
+
+## 22.03
+
+```bash
+# The package must be declare external
+unset -v PACKAGES
+PACKAGES="-dnsmasq -wpad-mini -wpad-basic -wpad-basic-wolfssl \
+dnsmasq-full wpad \
+atop bash bind-dig bzip2 ca-bundle ca-certificates cfdisk coremark coreutils-base64 curl  dropbearconvert file fdisk gzip \
+htop ip-full ipset iptables-mod-tproxy \
+libpthread \
+luci luci-compat luci-lib-ipkg \
+luci-app-uhttpd luci-i18n-uhttpd-zh-cn \
+luci-app-wol luci-i18n-wol-zh-cn \
+luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn \
+luci-theme-bootstrap \
+mtr nano tmux \
+openssh-client openssh-client-utils openssh-keygen \
+perl perlbase-cpan \
+uci uhttpd-mod-ubus wget xz \
+"
+PACKAGES="${PACKAGES:+$PACKAGES }coremark"
+PACKAGES="${PACKAGES:+$PACKAGES }luci-theme-argon luci-app-argon-config luci-i18n-argon-config-zh-cn"
+PACKAGES="${PACKAGES:+$PACKAGES }luci-app-ttyd luci-i18n-ttyd-zh-cn"
+PACKAGES="${PACKAGES:+$PACKAGES }luci-app-vlmcsd luci-i18n-vlmcsd-zh-cn vlmcsd"
+PACKAGES="${PACKAGES:+$PACKAGES }luci-app-accesscontrol luci-i18n-accesscontrol-zh-cn"
+PACKAGES="${PACKAGES:+$PACKAGES }luci-app-netdata luci-i18n-netdata-zh-cn"
+PACKAGES="${PACKAGES:+$PACKAGES }luci-app-ssr-plus luci-i18n-ssr-plus-zh-cn"
+PACKAGES="${PACKAGES:+$PACKAGES }luci-app-passwall luci-i18n-passwall-zh-cn"
+PACKAGES="${PACKAGES:+$PACKAGES }luci-app-adbyby-plus luci-i18n-adbyby-plus-zh-cn"
+export PACKAGES
+
+export OPENWRT_MIRROR_PATH=http://mirrors.cloud.tencent.com/openwrt
+export OPENWRT_MIRROR_PATH=http://mirrors.aliyun.com/openwrt
+
+bash -x build.sh -p x86-64 -v 22.03.5
+
+bash -x build.sh -p x86-64 -s 512 -v 22.03.5
+bash -x build.sh -p ath79-nand -P netgear_wndr4300 -v 22.03.5
+bash -x build.sh -p ramips-mt7621 -P d-team_newifi-d2 -v 22.03.5
 ```
 
 ## 21.02
@@ -72,7 +124,7 @@ bash -x build.sh -p ramips-mt7621 -P d-team_newifi-d2
 unset -v PACKAGES
 PACKAGES="${PACKAGES:+$PACKAGES }-dnsmasq -wpad-mini -wpad-basic -wpad-basic-wolfssl -wpad-basic-mbedtls -wpad-openssl dnsmasq-full wpad"
 PACKAGES="${PACKAGES:+$PACKAGES }atop bash bind-dig coreutils-base64 curl diffutils dropbearconvert fdisk file \
-ip-full ipset \
+ip-full ipset iptables-nft \
 lscpu \
 luci-app-wol luci-i18n-wol-zh-cn \
 luci-app-accesscontrol luci-i18n-accesscontrol-zh-cn \
@@ -86,6 +138,7 @@ PACKAGES="${PACKAGES:+$PACKAGES }luci-app-ssr-plus luci-i18n-ssr-plus-zh-cn"
 PACKAGES="${PACKAGES:+$PACKAGES }luci-app-passwall luci-i18n-passwall-zh-cn"
 export PACKAGES
 
+OPENWRT_MIRROR_PATH=${OPENWRT_MIRROR_PATH:-http://mirror.nju.edu.cn/immortalwrt}
 bash build.sh -p armvirt-64 --distribution immortalwrt -v 21.02.7 --nocustomize
 bash build.sh -p x86-64 --distribution immortalwrt -v 21.02.7
 bash build.sh -p ath79-nand -P netgear_wndr4300 --distribution immortalwrt -v 21.02.7
@@ -130,6 +183,14 @@ cp ramips-mt7621-phicomm_k2p-22.03.5-bin/targets/ramips/mt7621/*.manifest ramips
 cp ramips-mt7621-d-team_newifi-d2-22.03.5-bin/targets/ramips/mt7621/*.manifest ramips-mt7621-d-team_newifi-d2-22.03.5-bin/targets/ramips/mt7621/*.bin /work/openwrt/image/22.03/ramips-mt7621/
 
 cp x86-64-generic-22.03.5-bin/targets/x86/64/*.img x86-64-generic-22.03.5-bin/targets/x86/64/*.manifest /work/openwrt/image/22.03/x86-64/
+```
+
+## nftable
+
+```bash
+opkg install iptables-nft
+
+sed -i 's/iptables/iptables-translate/g' /etc/init.d/mia
 ```
 
 ```text

@@ -6,10 +6,11 @@ THIS_DIR=$(dirname "${THIS_FILE}")
 source "${THIS_DIR}/functions.sh"
 
 function pre_ops() {
+    configure_bypass
     configure_passwall
+    configure_passwall2
     configure_ssr_plus
-    configure_v2ray
-    configure_vssr_plus
+    configure_vssr
 }
 
 if [[ -n ${OPENWRT_MIRROR_PATH} ]]; then

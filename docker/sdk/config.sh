@@ -142,5 +142,4 @@ configure_bypass
 configure_passwall
 configure_passwall2
 configure_ssr_plus
-# configure_v2ray
 configure_vssr
