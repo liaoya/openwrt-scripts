@@ -97,7 +97,6 @@ function configure_ssr_plus() {
         CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Kcptun \
         CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks_Rust_Client \
         CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks_Simple_Obfs \
-        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks_V2ray_Plugin \
         CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Xray \
     ; do
         enable_option "${config}"

@@ -19,7 +19,7 @@ function build() {
             for pkg in "${src_dir}"/*; do
                 _build=1
                 [[ -d ${pkg} ]] || continue
-                for _skip in node-request openssl1.1 filebrowser; do
+                for _skip in node-request openssl1.1 filebrowser luci-app-unblockneteasemusic; do
                     #shellcheck disable=SC2086
                     if [[ "$(basename ${pkg})" == "${_skip}" ]]; then
                         _build=0
@@ -31,6 +31,25 @@ function build() {
                     echo "make V=sc ${pkg}/compile" >> build.log
                 fi
             done
+        fi
+    done
+}
+
+function build1() {
+    src_dir=package/feeds/smpackage
+    for pkg in "${src_dir}"/*; do
+        _build=1
+        [[ -d ${pkg} ]] || continue
+        for _skip in node-request openssl1.1 filebrowser luci-app-unblockneteasemusic; do
+            #shellcheck disable=SC2086
+            if [[ "$(basename ${pkg})" == "${_skip}" ]]; then
+                _build=0
+                break
+            fi
+        done
+        # if [[ "${_build}" -gt 0 ]]; then echo "${pkg}/compile"; fi
+        if [[ "${_build}" -gt 0 ]] && ! make -j "${pkg}"/compile 2>/dev/null; then
+            echo "make V=sc ${pkg}/compile" >> build.log
         fi
     done
 }

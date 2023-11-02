@@ -85,7 +85,7 @@ make defconfig
 - <https://github.com/kenzok8/openwrt-packages>
 - <https://github.com/liuran001/openwrt-packages>
 
-The modified `ssr-plus` also need many dependencies. The good news is it can be built seprately.
+The modified `ssr-plus` also need many dependencies. The good news is it can be built seperately.
 
 ## Reference
 
