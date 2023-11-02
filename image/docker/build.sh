@@ -51,7 +51,7 @@ function _check_param() {
     done
 }
 
-DISTRIBUTION=${DISTRIBUTION:-openwrt}
+DISTRIBUTION=${DISTRIBUTION:-OpenWRT}
 DRYRUN=${DRYRUN:-0}
 NOCUSTOMIZE=${NOCUSTOMIZE:-0}
 ROOTFS_PARTSIZE=${ROOTFS_PARTSIZE:-0}
@@ -76,10 +76,10 @@ OPTIONS
         FILES="<path>" # include extra FILES from <path>. ${FILES:+The default is '"${FILES}"'}
     -n, --name NAME
         EXTRA_IMAGE_NAME="<string>" # Add this to the output image filename (sanitized). ${NAME:+The default is '"${NAME}"'}
-    --nocustomize NO_CUSTOMIZE
+    --nocustomize
         Exclude the common configuration for /etc/uci-defaults. ${NO_CUSTOMIZE:+The default is '"${NO_CUSTOMIZE}"'}
     -p, --platform PLATFORM
-        OpenWRT PLATFORM(used for image tag), e.g. armvirt-64, ath79-nand, ramips-mt7621, x86-64. ${PLATFORM:+The default is '"${PLATFORM}"'}
+        OpenWRT PLATFORM(used for image tag), e.g. armsr-armv8(armvirt-64), ath79-nand, ramips-mt7621, x86-64. ${PLATFORM:+The default is '"${PLATFORM}"'}
     -P, --profile PROFILE
         PROFILE="<profilename>" # override the default target PROFILE. ${PROFILE:+The default is '"${PROFILE}"'}
     -s, --partsize ROOTFS_PARTSIZE
@@ -170,6 +170,7 @@ fi
 _check_param PLATFORM VERSION
 MAJOR_VERSION=$(echo "${VERSION}" | cut -d. -f1,2)
 MAJOR_VERSION_NUMBER=$(echo "${MAJOR_VERSION} * 100 / 1" | bc)
+DISTRIBUTION=${DISTRIBUTION,,}
 
 if [[ -z ${PROFILE} && ${PLATFORM} == "x86-64" ]]; then
     if [[ MAJOR_VERSION_NUMBER -le 1907 ]]; then
@@ -178,7 +179,7 @@ if [[ -z ${PROFILE} && ${PLATFORM} == "x86-64" ]]; then
         PROFILE=generic
     fi
 fi
-if [[ ! ${PLATFORM} =~ armvirt ]]; then
+if [[ ! ${PLATFORM} =~ armvirt || ! ${PLATFORM} =~ armsr ]]; then
     _check_param PROFILE
 fi
 
@@ -190,28 +191,26 @@ if [[ -z ${BINDIR} ]]; then
     if [[ ! -d ${BINDIR} ]]; then mkdir -p "${BINDIR}"; fi
 fi
 
-if [[ ${DISTRIBUTION} == openwrt ]]; then
-    docker_image_name=docker.io/openwrt/imagebuilder:${PLATFORM}-${VERSION}
-elif [[ ${DISTRIBUTION} == immortalwrt ]]; then
-    docker_image_name=docker.io/immortalwrt/imagebuilder:${PLATFORM}-openwrt-${VERSION}
-fi
+docker_image_name=docker.io/${DISTRIBUTION}/imagebuilder:${PLATFORM}-${VERSION}
 docker image pull "${docker_image_name}"
 
 DOCKER_OPTS=(--rm -it -u "$(id -u):$(id -g)")
 
 _TEMP_DIR=$(mktemp -d)
-_add_exit_hook "rm -fr ${_TEMP_DIR}"
-echo "build ALL=(ALL) NOPASSWD: ALL" | tee "${_TEMP_DIR}/build"
-sudo chown 0:0 "${_TEMP_DIR}/build"
-DOCKER_OPTS+=(-v "${_TEMP_DIR}/build:/etc/sudoers.d/build")
+_add_exit_hook "sudo rm -fr ${_TEMP_DIR}"
+mkdir -p "${_TEMP_DIR}/etc/sudoers.d"
+echo "build ALL=(ALL) NOPASSWD: ALL" | tee "${_TEMP_DIR}/etc/sudoers.d/build"
+sudo chown 0:0 "${_TEMP_DIR}/etc/sudoers.d/build"
+DOCKER_OPTS+=(-v "${_TEMP_DIR}/etc/sudoers.d/build:/etc/sudoers.d/build") # Only immortalwrt allow sudo
 if [[ -n ${http_proxy} ]]; then
+    mkdir -p "${_TEMP_DIR}/etc/apt/apt.conf.d"
     #shellcheck disable=SC2154
-    cat <<EOF | sudo tee "${_TEMP_DIR}/90curtin-aptproxy"
+    cat <<EOF | sudo tee "${_TEMP_DIR}/etc/apt/apt.conf.d/90curtin-aptproxy"
 Acquire::http::proxy "${http_proxy}";
 Acquire::https::proxy "${https_proxy}";
 EOF
-    sudo chown 0:0 "${_TEMP_DIR}/90curtin-aptproxy"
-    DOCKER_OPTS+=(-v "${_TEMP_DIR}/90curtin-aptproxy:/etc/apt/apt.conf.d/90curtin-aptproxy")
+    sudo chown 0:0 "${_TEMP_DIR}/etc/apt/apt.conf.d/90curtin-aptproxy"
+    DOCKER_OPTS+=(-v "${_TEMP_DIR}/etc/apt/apt.conf.d/90curtin-aptproxy:/etc/apt/apt.conf.d/90curtin-aptproxy")
 fi
 
 if [[ ${DISTRIBUTION} == openwrt && $(timedatectl show | grep Timezone | cut -d= -f2) == Asia/Shanghai ]]; then
@@ -221,24 +220,25 @@ fi
 if [[ ${DISTRIBUTION} == immortalwrt ]]; then
     if [[ $(timedatectl show | grep Timezone | cut -d= -f2) == Asia/Shanghai ]]; then
         # https://help.mirrors.cernet.edu.cn/immortalwrt
-        # OPENWRT_MIRROR_PATH=${OPENWRT_MIRROR_PATH:-http://mirror.nju.edu.cn/immortalwrt}
         OPENWRT_MIRROR_PATH=${OPENWRT_MIRROR_PATH:-http://mirror.sjtu.edu.cn/immortalwrt}
         cmd=${cmd:+${cmd}; }"sed -i -e 's|http://downloads.immortalwrt.org|${OPENWRT_MIRROR_PATH}|g' -e 's|https://downloads.immortalwrt.org|${OPENWRT_MIRROR_PATH}|g' -e 's|http://mirrors.vsean.net/openwrt|${OPENWRT_MIRROR_PATH}|g' -e 's|https://mirrors.vsean.net/openwrt|${OPENWRT_MIRROR_PATH}|g' repositories.conf"
+
+        DEBIAN_MIRROR_PATH=${DEBIAN_MIRROR_PATH:-http://mirrors.ustc.edu.cn}
+        cmd=${cmd:+${cmd}; }"sudo sed -i -e 's|http://deb.debian.org|${DEBIAN_MIRROR_PATH}|g' -e 's|https://deb.debian.org|${DEBIAN_MIRROR_PATH}|g' /etc/apt/sources.list"
     else
         OPENWRT_MIRROR_PATH=${OPENWRT_MIRROR_PATH:-http://immortalwrt.kyarucloud.moe/}
     fi
-    if [[ $(timedatectl show | grep Timezone | cut -d= -f2) == Asia/Shanghai ]]; then
-        DEBIAN_MIRROR_PATH=${DEBIAN_MIRROR_PATH:-http://mirrors.ustc.edu.cn}
-        cmd=${cmd:+${cmd}; }"sudo sed -i -e 's|http://deb.debian.org|${DEBIAN_MIRROR_PATH}|g' -e 's|https://deb.debian.org|${DEBIAN_MIRROR_PATH}|g' /etc/apt/sources.list"
-    fi
     if [[ ${PLATFORM} == "x86-64" ]]; then
-        cmd=${cmd:+${cmd}; }"sudo apt update -qy; sudo apt install -qy genisoimage"
+        cmd=${cmd:+${cmd}; }"sudo apt update -qy; sudo apt install -qy genisoimage" # Fix the missing package
     fi
-    if [[ ${PLATFORM} =~ armvirt ]]; then
-        cmd=${cmd:+${cmd}; }"sudo apt update -qy; sudo apt install -qy cpio"
+    if [[ ${PLATFORM} =~ armvirt || ${PLATFORM} =~ armsr ]]; then
+        cmd=${cmd:+${cmd}; }"sudo apt update -qy; sudo apt install -qy cpio" # Fix the missing package
     fi
 fi
 
+if [[ -n ${no_proxy} ]]; then
+    no_proxy=${no_proxy//,cn,/,}
+fi
 for item in http_proxy https_proxy no_proxy; do
     if [[ -n ${!item} ]]; then
         DOCKER_OPTS+=(--env "${item}=${!item}")
@@ -246,48 +246,40 @@ for item in http_proxy https_proxy no_proxy; do
     fi
 done
 if [[ -n ${BINDIR} ]]; then
-    if [[ ${DISTRIBUTION} == openwrt ]]; then
-        if [[ ${MAJOR_VERSION_NUMBER} -ge 2203 ]]; then
-            DOCKER_OPTS+=(-v "${BINDIR}:/builder/bin")
-        else
-            DOCKER_OPTS+=(-v "${BINDIR}:/home/build/openwrt/bin")
-        fi
-    elif [[ ${DISTRIBUTION} == immortalwrt ]]; then
-        DOCKER_OPTS+=(-v "${BINDIR}:/home/build/immortalwrt/bin")
+    if [[ ${MAJOR_VERSION_NUMBER} -ge 2203 ]]; then
+        DOCKER_OPTS+=(-v "${BINDIR}:/builder/bin")
+    else
+        DOCKER_OPTS+=(-v "${BINDIR}:/home/build/${DISTRIBUTION}/bin")
     fi
 fi
 
 if [[ ${NOCUSTOMIZE:-0} -ne 1 ]]; then
     CONFIG_TEMP_DIR=${_TEMP_DIR}/config
     mkdir -p "${CONFIG_TEMP_DIR}/etc/uci-defaults"
-    if [[ ${DISTRIBUTION} == openwrt ]]; then
-        if [[ ${MAJOR_VERSION_NUMBER} -ge 2305 ]]; then
-            DOCKER_OPTS+=(-v "${CONFIG_TEMP_DIR}:/builder/custom")
-        else
-            DOCKER_OPTS+=(-v "${CONFIG_TEMP_DIR}:/home/build/openwrt/custom")
-        fi
-    elif [[ ${DISTRIBUTION} == immortalwrt ]]; then
-        DOCKER_OPTS+=(-v "${CONFIG_TEMP_DIR}:/home/build/immortalwrt/custom")
+    if [[ ${MAJOR_VERSION_NUMBER} -ge 2305 ]]; then
+        DOCKER_OPTS+=(-v "${CONFIG_TEMP_DIR}:/builder/custom")
+    else
+        DOCKER_OPTS+=(-v "${CONFIG_TEMP_DIR}:/home/build/${DISTRIBUTION}/custom")
     fi
     if [[ -d "${FILES}" ]]; then
         cp -p "${FILES}"/* "${CONFIG_TEMP_DIR}"/
     fi
-    if [[ -d "${THIS_DIR}/config/common" ]]; then
-        cp -p "${THIS_DIR}/config/common"/*common "${CONFIG_TEMP_DIR}/etc/uci-defaults/"
+    if [[ -d "${THIS_DIR}/../config/common" ]]; then
+        cp -p "${THIS_DIR}/../config/common"/*common "${CONFIG_TEMP_DIR}/etc/uci-defaults/"
     fi
-    if [[ -d "${THIS_DIR}/config/common/${PLATFORM}/${PROFILE}" ]]; then
-        cp -pr "${THIS_DIR}/config/common/${PLATFORM}/${PROFILE}"/* "${CONFIG_TEMP_DIR}"/
+    if [[ -d "${THIS_DIR}/../config/common/${PLATFORM}/${PROFILE}" ]]; then
+        cp -pr "${THIS_DIR}/../config/common/${PLATFORM}/${PROFILE}"/* "${CONFIG_TEMP_DIR}"/
     fi
-    if [[ -d "${THIS_DIR}/config/${MAJOR_VERSION}" ]]; then
-        cp -pr "${THIS_DIR}/config/${MAJOR_VERSION}"/*common "${CONFIG_TEMP_DIR}/etc/uci-defaults/" || true
+    if [[ -d "${THIS_DIR}/../config/${MAJOR_VERSION}" ]]; then
+        cp -pr "${THIS_DIR}/../config/${MAJOR_VERSION}"/*common "${CONFIG_TEMP_DIR}/etc/uci-defaults/" || true
     fi
-    if [[ -d "${THIS_DIR}/config/${MAJOR_VERSION}/${PLATFORM}/${PROFILE}" ]]; then
-        cp -pr "${THIS_DIR}/config/${MAJOR_VERSION}/${PLATFORM}/${PROFILE}"/* "${CONFIG_TEMP_DIR}"/
+    if [[ -d "${THIS_DIR}/../config/${MAJOR_VERSION}/${PLATFORM}/${PROFILE}" ]]; then
+        cp -pr "${THIS_DIR}/../config/${MAJOR_VERSION}/${PLATFORM}/${PROFILE}"/* "${CONFIG_TEMP_DIR}"/
     fi
     echo -e "#!/bin/sh\n\ncat <<EOF | tee /etc/dropbear/authorized_keys" >>"${CONFIG_TEMP_DIR}/etc/uci-defaults/10_dropbear"
     while IFS= read -r -d '' _id_rsa; do
-        cat <"${_id_rsa}" >"${CONFIG_TEMP_DIR}/etc/uci-defaults/10_dropbear"
-    done < <(find ~/.ssh/ -iname id_rsa.pub -print0)
+        cat <"${_id_rsa}" >>"${CONFIG_TEMP_DIR}/etc/uci-defaults/10_dropbear"
+    done < <(find ~/.ssh \( -iname id_rsa.pub -o -iname id_ed25519.pub \) -print0)
     echo -e "EOF\n\nexit 0" >>"${CONFIG_TEMP_DIR}/etc/uci-defaults/10_dropbear"
     if [[ -n ${OPENWRT_MIRROR_PATH} ]]; then
         cat <<EOF | tee "${CONFIG_TEMP_DIR}/etc/uci-defaults/10_opkg"
@@ -344,10 +336,10 @@ if [[ ${PLATFORM} == x86-64 || ${PLATFORM} =~ armvirt ]] && [[ ${ROOTFS_PARTSIZE
     makecmd="${makecmd} ROOTFS_PARTSIZE=${ROOTFS_PARTSIZE}"
 fi
 if [[ ${DRYRUN:-0} -eq 0 ]]; then
-    docker run "${DOCKER_OPTS[@]}" "${docker_image_name}" bash -c "${cmd}; ${makecmd}"
+    docker run "${DOCKER_OPTS[@]}" "${docker_image_name}" bash -c "${cmd:+${cmd};} ${makecmd}"
 else
     echo "${makecmd}"
-    docker run "${DOCKER_OPTS[@]}" "${docker_image_name}" bash -c "${cmd}; bash"
+    docker run "${DOCKER_OPTS[@]}" "${docker_image_name}" bash -c "${cmd:+${cmd};} bash"
 fi
 
 # qemu-img convert to make the image as thin provision, do not compress it any more to make backing file across pool

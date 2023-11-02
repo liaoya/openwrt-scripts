@@ -44,8 +44,7 @@ function configure_bypass() {
         CONFIG_PACKAGE_luci-app-bypass_INCLUDE_Shadowsocks_Libev_Client \
         CONFIG_PACKAGE_luci-app-bypass_INCLUDE_Simple_Obfs \
         CONFIG_PACKAGE_luci-app-bypass_INCLUDE_V2ray_plugin \
-        CONFIG_PACKAGE_luci-app-bypass_INCLUDE_Xray \
-    ; do
+        CONFIG_PACKAGE_luci-app-bypass_INCLUDE_Xray; do
         enable_option "${option}"
     done
 
@@ -65,8 +64,7 @@ function configure_passwall() {
         CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Shadowsocks_Rust_Client \
         CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Simple_Obfs \
         CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Xray \
-        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Xray_Plugin \
-    ; do
+        CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Xray_Plugin; do
         enable_option "${config}"
     done
 }
@@ -80,8 +78,7 @@ function configure_passwall2() {
     for config in \
         CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Shadowsocks_Rust_Client \
         CONFIG_PACKAGE_luci-app-passwall2_INCLUDE_Simple_Obfs \
-        CONFIG_PACKAGE_luci-app-passwall2_INCLUDE_V2ray_Plugin \
-    ; do
+        CONFIG_PACKAGE_luci-app-passwall2_INCLUDE_V2ray_Plugin; do
         enable_option "${config}"
     done
 }
@@ -97,8 +94,7 @@ function configure_ssr_plus() {
         CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks_Rust_Client \
         CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks_Simple_Obfs \
         CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks_V2ray_Plugin \
-        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Xray \
-    ; do
+        CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Xray; do
         enable_option "${config}"
     done
 }
@@ -122,8 +118,7 @@ function configure_vssr() {
     for config in \
         CONFIG_PACKAGE_luci-app-vssr_INCLUDE_Kcptun \
         CONFIG_PACKAGE_luci-app-vssr_INCLUDE_Xray \
-        CONFIG_PACKAGE_luci-app-vssr_INCLUDE_Xray_plugin \
-    ; do
+        CONFIG_PACKAGE_luci-app-vssr_INCLUDE_Xray_plugin; do
         enable_option "${config}"
     done
 }

@@ -54,7 +54,7 @@ function build() {
                 done
                 # if [[ "${_build}" -gt 0 ]]; then echo "${pkg}/compile"; fi
                 if [[ "${_build}" -gt 0 ]] && ! make -j "${pkg}"/compile 2>/dev/null; then
-                    echo "make V=sc ${pkg}/compile" >> build.log
+                    echo "make V=sc ${pkg}/compile" >>build.log
                 fi
             done
         fi
@@ -192,7 +192,7 @@ else
 fi
 
 BASE_URL=${OPENWRT_MIRROR_PATH}/releases/${VERSION}/targets
-IFS='-' read -r -a array <<< "${TARGET}"
+IFS='-' read -r -a array <<<"${TARGET}"
 for item in "${array[@]}"; do
     BASE_URL=${BASE_URL}/${item}
 done

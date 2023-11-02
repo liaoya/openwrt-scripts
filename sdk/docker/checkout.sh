@@ -47,10 +47,10 @@ sed -e 's|git.openwrt.org/openwrt/openwrt|github.com/openwrt/openwrt|g' \
 # _add_feed packages "https://github.com/Lienol/openwrt-packages;${MAJOR_VERSION}"
 
 # Add the third party repo
-_add_feed kenzo https://github.com/kenzok8/openwrt-packages
-_add_feed small https://github.com/kenzok8/small
+# _add_feed kenzo https://github.com/kenzok8/openwrt-packages
+# _add_feed small https://github.com/kenzok8/small
 # _add_feed smpackage "https://github.com/kenzok8/small-package;main"
-# _add_feed jell "https://github.com/kenzok8/jell;main"
+_add_feed jell "https://github.com/kenzok8/jell;main"
 # _add_feed Lienol https://github.com/Lienol/openwrt-package
 # _add_feed xiaorouji https://github.com/xiaorouji/openwrt-passwall
 # _add_feed liuran001 "https://github.com/liuran001/openwrt-packages;packages"

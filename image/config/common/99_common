@@ -57,9 +57,6 @@ EOF
     fi
 fi
 
-if [ ! -d /usr/local/bin ]; then
-    mkdir -p /usr/bin
-fi
 cat <<'EOF' | tee /usr/bin/switch-gw.sh
 #!/bin/sh
 

@@ -58,5 +58,5 @@ bash -x run.sh -p ramips-mt7620 -r
 Clean the images
 
 ```bash
-docker image ls --format "{{.ID}} {{.Repository}}:{{.Tag}}" | grep openwrtorg | grep 22.03.5 | cut -d" " -f1 | xargs docker image rm
+docker image ls --format "{{.ID}} {{.Repository}}:{{.Tag}}" | grep -E 'openwrt|immortalwrt' | cut -d" " -f1 | xargs docker image rm
 ```

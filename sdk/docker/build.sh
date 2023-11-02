@@ -28,7 +28,7 @@ function build() {
                 done
                 # if [[ "${_build}" -gt 0 ]]; then echo "${pkg}/compile"; fi
                 if [[ "${_build}" -gt 0 ]] && ! make -j "${pkg}"/compile 2>/dev/null; then
-                    echo "make V=sc ${pkg}/compile" >> build.log
+                    echo "make V=sc ${pkg}/compile" >>build.log
                 fi
             done
         fi
@@ -49,7 +49,7 @@ function build1() {
         done
         # if [[ "${_build}" -gt 0 ]]; then echo "${pkg}/compile"; fi
         if [[ "${_build}" -gt 0 ]] && ! make -j "${pkg}"/compile 2>/dev/null; then
-            echo "make V=sc ${pkg}/compile" >> build.log
+            echo "make V=sc ${pkg}/compile" >>build.log
         fi
     done
 }

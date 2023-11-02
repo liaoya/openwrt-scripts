@@ -112,6 +112,9 @@ if [[ -n ${GIT_PROXY} ]]; then
     insteadOf = https://
 EOF
     DOCKER_OPTS+=(-v "${_TEMP_DIR}/.gitconfig:/builder/.gitconfig")
+    if [[ -n ${no_proxy} ]]; then
+        no_proxy=${no_proxy}:$(echo "${GIT_PROXY}" | cut -d/ -f3 | cut -d: -f1)
+    fi
 fi
 DOCKER_OPTS+=(--env "MAJOR_VERSION=${MAJOR_VERSION}")
 for item in http_proxy https_proxy no_proxy; do
