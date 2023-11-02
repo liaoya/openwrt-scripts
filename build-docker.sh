@@ -1,6 +1,6 @@
 #!/bin/bash
-#shellcheck disable=SC1091,SC2154
-# VERSION: 0.1
+#shellcheck disable=SC1091,SC2154,SC2312
+# VERSION: 0.1.5
 # Usage
 # Put pre.sh and post.sh in the ${WORK_DIR} folder
 
@@ -10,16 +10,51 @@
 # add_image "${_image_prefix}/squid:${SQUID_VERSION}"
 # add_image "${_image_prefix}/squid:latest"
 
+# download_url example
+# THRIFT_VERSION=${THRIFT_VERSION:-0.17.0}
+# download_url "https://dlcdn.apache.org/thrift/${THRIFT_VERSION}/thrift-${THRIFT_VERSION}.tar.gz" thrift
+# Does not change HOSTNAME and HTTP_PORT
+# THRIFT_URL=http://${HOSTNAME}:${HTTP_PORT}/thrift/thrift-${THRIFT_VERSION}.tar.gz
+# for start http server
+# export HTTP_FOLDER=${DOCKER_BUILD_CACHE_DIR}
+
+# Multi Dockerfile example
+# _this_dir=$(readlink -f "${BASH_SOURCE[0]}")
+# _this_dir=$(dirname "${_this_dir}")
+# if [[ ${DOCKERFILE} == "${_this_dir}/Dockerfile.ubuntu" ]]; then
+# ...
+# elif [[ ${DOCKERFILE} == "${_this_dir}/Dockerfile" ]]; then
+# ...
+# fi
+# unset -v _this_dir
+
 set -e
 
 export DOCKER_BUILD_CACHE_DIR=${DOCKER_BUILD_CACHE_DIR:-"${HOME}/.cache/docker/build"}
-export DOCKER_BUILD_ARG=${DOCKER_BUILD_ARG:-""}
+declare -a DOCKER_BUILD_OPTS=()
+export DOCKER_BUILD_OPTS
+
+declare -a _EXIT_HOOKS=()
+trap hook::_exec_exit_hook ERR EXIT
+function hook::_exec_exit_hook() {
+    local _idx
+    for ((_idx = ${#_EXIT_HOOKS[@]} - 1; _idx >= 0; _idx--)); do
+        eval "${_EXIT_HOOKS[_idx]}" || true
+    done
+}
+
+function hook::add_exit_hook() {
+    while (($#)); do
+        _EXIT_HOOKS+=("$1")
+        shift
+    done
+}
 
 function check_command() {
     while (($#)); do
-        if ! command -v "${1}"; then
+        if ! command -v "${1}" >/dev/null 2>&1; then
             echo "Command ${1} is required"
-            return 1
+            exit 1
         fi
         shift
     done
@@ -29,7 +64,7 @@ function check_dir() {
     while (($#)); do
         if [[ ! -d "${1}" ]]; then
             echo "${1} does not exist"
-            return 1
+            exit 1
         fi
         shift
     done
@@ -39,7 +74,7 @@ function check_file() {
     while (($#)); do
         if [[ ! -f "${1}" ]]; then
             echo "${1} does not exist"
-            return 1
+            exit 1
         fi
         shift
     done
@@ -49,19 +84,22 @@ function check_param() {
     while (($#)); do
         if [[ -z ${!1} ]]; then
             echo "\${$1} is required"
-            return 1
+            exit 1
         fi
-        shift 1
+        shift
     done
 }
 
 function concat_docker_build_arg() {
     if [[ $# -eq 1 ]]; then
-        if [[ -n ${!1} ]]; then
-            export DOCKER_BUILD_ARG="${DOCKER_BUILD_ARG:+$DOCKER_BUILD_ARG }--build-arg ${1}=${!1}"
+        if [[ -n ${!1+x} ]]; then
+            export DOCKER_BUILD_OPTS+=(--build-arg "${1}=${!1}")
         fi
+        # if [[ -n ${!1} ]]; then
+        #     export DOCKER_BUILD_OPTS+=(--build-arg "${1}=${!1}")
+        # fi
     elif [[ $# -eq 2 ]]; then
-        export DOCKER_BUILD_ARG="${DOCKER_BUILD_ARG:+$DOCKER_BUILD_ARG }--build-arg ${1}=${2}"
+        export DOCKER_BUILD_OPTS=(--build-arg "${1}=${2}")
     fi
 }
 
@@ -84,6 +122,7 @@ function download_url() {
     fi
 }
 
+# Capture ARG directive in Dockerfile and find it in environtment variables
 function handle_build_arg() {
     while IFS= read -r key; do
         concat_docker_build_arg "${key}"
@@ -94,53 +133,43 @@ function start_http_server() {
     local folder port
     folder=$1
     port=$2
-    if [[ $(command -v python3) ]]; then
+    if command -v python3 >/dev/null 2>&1; then
+        eval nohup python3 -m http.server --directory "${folder}" "${port}" >/dev/null 2>&1 &
+    elif command -v python2 >/dev/null 2>&1; then
         #shellcheck disable=SC2164
         (
             cd "${folder}"
-            eval nohup python3 -m http.server "${port}" 1>/dev/null 2>&1 &
-        )
-    elif [[ $(command -v python2) ]]; then
-        #shellcheck disable=SC2164
-        (
-            cd "${folder}"
-            eval nohup python2 -m SimpleHTTPServer "${port}" 1>/dev/null 2>&1 &
+            eval nohup python2 -m SimpleHTTPServer "${port}" >/dev/null 2>&1 &
         )
     else
-        echo "Can't find python"
+        echo "Can't start a http server"
         exit 1
     fi
-}
-
-function stop_http_server() {
-    PYTHON_EXEC=$(find /usr/bin -type f -iname "python3.*" | grep -v "m$" | sort | head -1)
-    if [[ -z ${PYTHON_EXEC} ]]; then
-        PYTHON_EXEC=$(find /usr/bin -type f -iname "python2.*" | grep -v "m$" | sort | head -1)
-    fi
-    #shellcheck disable=SC2046
-    pkill $(basename "${PYTHON_EXEC}") || true
+    hook::add_exit_hook "fuser -k ${port}/tcp"
 }
 
 function check_port_used() {
     local port used
     port=$1
     used=0
-    if [[ $(command -v netstat) ]]; then
-        if netstat -tulpn | grep -w "${port}"; then used=1; fi
-    elif [[ $(command -v lsof) ]]; then
+    if command -v lsof >/dev/null 2>&1; then
         if lsof -i:"${port}" >/dev/null; then used=1; fi
+    elif command -v ss >/dev/null 2>&1; then
+        if ss -tl | grep -w "${port}"; then used=1; fi
+    elif command -v netstat >/dev/null 2>&1; then
+        if netstat -tl | grep -w "${port}"; then used=1; fi
     else
         if [[ ! -x /tmp/busybox ]]; then
-            curl -sL https://busybox.net/downloads/binaries/1.31.0-i686-uclibc/busybox -o /tmp/busybox
+            curl -sL https://busybox.net/downloads/binaries/1.35.0-x86_64-linux-musl/busybox -o /tmp/busybox
             chmod a+x /tmp/busybox
         fi
-        if /tmp/busybox netstat -tulpn | grep -w "${port}"; then used=1; fi
+        if /tmp/busybox netstat -tl | grep -w "${port}"; then used=1; fi
     fi
-    return ${used}
+    return "${used}"
 }
 
 # We always use IP since it's accesible by container
-if [[ $(command -v hostname) ]]; then
+if command -v hostname >/dev/null 2>&1; then
     if hostname -f | grep -s -q "\."; then
         HOSTNAME=$(hostname -f)
     else
@@ -150,6 +179,8 @@ elif [[ -f /.dockerenv ]]; then
     # Handle Docker In Docker
     HOSTNAME=$(ip -o -4 addr show eth0 | grep -o "inet [0-9]*\.[0-9]*\.[0-9]*\.[0-9]*" | grep -o "[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*")
 fi
+
+check_command fuser python3
 
 DOCKERFILE=${DOCKERFILE:-""}
 declare -a IMAGE_NAME=()
@@ -169,6 +200,12 @@ function add_image() {
     fi
 }
 
+function push_image() {
+    for name in "${IMAGE_NAME[@]}"; do
+        docker image push "${name}"
+    done
+}
+
 function remove_image() {
     local find name
     find=0
@@ -186,17 +223,26 @@ function _print_help() {
     cat <<EOF
 $(basename "${BASH_SOURCE[0]}") OPTIONS
     -h, show the help
-    -f, the Dockerfile name, it can be full path, the default is '${DOCKERFILE}'
-    -n, the full path as image name including tag, can be multiple
-    -w, the working directory for docker build, the default is '${WORK_DIR}'
+    -v, verbose mode
+    -f, the Dockerfile name, it can be full path. ${DOCKERFILE:+the default is ${DOCKERFILE}}
+    -n, the full path as image name including tag, can be multiple.
+    -p, push the image to register, need login at first. ${PUSH:+the default is ${PUSH}}
+    -w, the working directory for docker build. ${WORK_DIR:+the default is ${WORK_DIR}}
 EOF
 }
 
-while getopts :hf:n:w: OPTION; do
-    case $OPTION in
+while getopts :hvpf:n:w: OPTION; do
+    case ${OPTION} in
     h)
         _print_help
         exit 0
+        ;;
+    v)
+        set -x
+        export PS4='+(${BASH_SOURCE[0]}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+        ;;
+    p)
+        PUSH=1
         ;;
     f)
         DOCKERFILE=$(readlink -f "${OPTARG}")
@@ -225,9 +271,9 @@ fi
 
 # Set ${WORK_DIR} if a Dockerilfe found
 if [[ -z ${WORK_DIR} && -z ${DOCKERFILE} ]]; then
-    if [[ -f "$PWD/Dockerfile" ]]; then
-        DOCKERFILE=$(readlink -f "$PWD"/Dockerfile)
-        WORK_DIR=$(readlink -f "$PWD")
+    if [[ -f "${PWD}/Dockerfile" ]]; then
+        DOCKERFILE=$(readlink -f "${PWD}"/Dockerfile)
+        WORK_DIR=$(readlink -f "${PWD}")
     elif [[ -f "${THIS_DIR}/Dockerfile" ]]; then
         DOCKERFILE=$(readlink -f "${THIS_DIR}"/Dockerfile)
         WORK_DIR=${THIS_DIR}
@@ -237,11 +283,13 @@ fi
 check_param DOCKERFILE WORK_DIR
 check_file "${DOCKERFILE}"
 check_dir "${WORK_DIR}"
+DOCKERFILE_DIR=$(dirname "${DOCKERFILE}")
 
 if [[ -f /tmp/docker_build_port ]]; then
     HTTP_PORT=$(cat /tmp/docker_build_port)
 else
     HTTP_PORT=${HTTP_PORT:-54321}
+    #shellcheck disable=SC2310
     if ! check_port_used "${HTTP_PORT}"; then
         HTTP_PORT=$((RANDOM % 10000 + 10000))
     fi
@@ -254,8 +302,8 @@ export HTTP_PORT
 # pre.sh can call download_url to download file in a cached folder
 # pre.sh must export HTTP_FOLDER if it need start a python http server for local file for decrease the layer number of image
 # pre.sh know the HOSTNAME and HTTP_PORT so that it can provide the url for local files
-# pre.sh can set IMAGE_NAME if it know the image name
-if [[ -f "${WORK_DIR}/pre.sh" ]]; then source "${WORK_DIR}/pre.sh"; fi
+# pre.sh can set IMAGE_NAME
+if [[ -f "${DOCKERFILE_DIR}/pre.sh" ]]; then source "${DOCKERFILE_DIR}/pre.sh"; fi
 if [[ ${#IMAGE_NAME[@]} -eq 0 ]]; then
     echo "No image name given"
     exit 1
@@ -266,26 +314,23 @@ if [[ -n ${no_proxy} && -n ${HOSTNAME} ]]; then
     NO_PROXY=${no_proxy}
 fi
 for key in http_proxy https_proxy no_proxy HTTP_PROXY HTTPS_PROXY NO_PROXY; do
-    concat_docker_build_arg ${key}
+    concat_docker_build_arg "${key}"
 done
 if [[ -n ${HTTP_FOLDER} ]]; then
     start_http_server "${HTTP_FOLDER}" "${HTTP_PORT}"
 fi
 
 handle_build_arg "${DOCKERFILE}"
-declare -a opts=()
 for name in "${IMAGE_NAME[@]}"; do
-    # ${DOCKER_BUILD_ARG} can not be wrap by quote
-    opts+=(-t "$name")
+    DOCKER_BUILD_OPTS+=(-t "${name}")
 done
-#shellcheck disable=SC2086
-docker build --force-rm ${DOCKER_BUILD_ARG} -f "${DOCKERFILE}" "${opts[@]}" "${WORK_DIR}"
+docker build --force-rm "${DOCKER_BUILD_OPTS[@]}" -f "${DOCKERFILE}" "${WORK_DIR}"
 
 # source the file so that it can export some values
-if [[ -f "${WORK_DIR}/post.sh" ]]; then
-    source "${WORK_DIR}/post.sh"
+if [[ -f "${DOCKERFILE_DIR}/post.sh" ]]; then
+    source "${DOCKERFILE_DIR}/post.sh"
 fi
 
-if [[ -n ${HTTP_FOLDER} ]]; then
-    stop_http_server
+if [[ ${PUSH:-0} -gt 0 ]]; then
+    push_image
 fi

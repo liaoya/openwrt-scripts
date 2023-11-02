@@ -117,8 +117,13 @@ DOCKER_OPTS+=(--env "MAJOR_VERSION=${MAJOR_VERSION}")
 for item in http_proxy https_proxy no_proxy; do
     if [[ -n ${!item} ]]; then
         DOCKER_OPTS+=(--env "${item^^}=${!item}")
+        DOCKER_OPTS+=(--env "${item}=${!item}")
     fi
 done
+if [[ $(timedatectl show | grep Timezone | cut -d= -f2) == Asia/Shanghai ]]; then
+    DOCKER_OPTS+=(--env "GO111MODULE=auto")
+    DOCKER_OPTS+=(--env "GOPROXY=https://goproxy.cn,direct")
+fi
 # GOSU=$(command -v gosu)
 # if [[ -n ${GOSU} ]]; then
 #     DOCKER_OPTS+=(-v "${GOSU}:/usr/local/bin/gosu:ro")
