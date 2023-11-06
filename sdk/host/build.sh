@@ -165,7 +165,7 @@ _check_param VERSION TARGET
 MAJOR_VERSION=$(echo "${VERSION}" | cut -d. -f1,2)
 MAJOR_VERSION_NUMBER=$(echo "${MAJOR_VERSION} * 100 / 1" | bc)
 if [[ ${MAJOR_VERSION_NUMBER} -lt 2102 ]]; then
-    echo "Too old SDK"
+    echo "SDK is too old"
     exit 1
 fi
 if [[ ${DISTRIBUTION,,} == openwrt ]]; then
@@ -244,11 +244,12 @@ fi
 sed -e 's|git.openwrt.org/openwrt/openwrt|github.com/openwrt/openwrt|g' \
     -e 's|git.openwrt.org/feed/packages|github.com/openwrt/packages|g' \
     -e 's|git.openwrt.org/project/luci|github.com/openwrt/luci|g' \
+    -e 's|git.openwrt.org/feed/routing|github.com/openwrt/routing|g' \
     -e 's|git.openwrt.org/feed/telephony|github.com/openwrt/telephony|g' \
     -i "${SDK_DIR}"/feeds.conf.default
 # echo "src-git kenzo https://github.com/kenzok8/jell;main" >>"${SDK_DIR}"/feeds.conf.default
-# echo "src-git jell https://github.com/kenzok8/openwrt-packages" >>"${SDK_DIR}"/feeds.conf.default
-# echo "src-git small https://github.com/kenzok8/small" >>"${SDK_DIR}"/feeds.conf.default
+echo "src-git jell https://github.com/kenzok8/openwrt-packages" >>"${SDK_DIR}"/feeds.conf.default
+echo "src-git small https://github.com/kenzok8/small" >>"${SDK_DIR}"/feeds.conf.default
 # echo "src-git smpackage https://github.com/kenzok8/small-package;main" >>"${SDK_DIR}"/feeds.conf.default
 
 pushd "${SDK_DIR}"
