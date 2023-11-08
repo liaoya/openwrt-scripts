@@ -67,7 +67,7 @@ CACHE_DIR="${HOME}/.cache/openwrt"
 mkdir -p "${CACHE_DIR}"
 
 BASE_URL=${BASE_URL:-""}
-DISTRIBUTION=${DISTRIBUTION:-openwrt}
+DISTRIBUTION=${DISTRIBUTION:-OpenWRT}
 DRYRUN=${DRYRUN:-0}
 OPENWRT_MIRROR_PATH=${OPENWRT_MIRROR_PATH:-""}
 if [[ -d /work/openwrt/dl ]]; then
@@ -248,7 +248,7 @@ sed -e 's|git.openwrt.org/openwrt/openwrt|github.com/openwrt/openwrt|g' \
     -e 's|git.openwrt.org/feed/telephony|github.com/openwrt/telephony|g' \
     -i "${SDK_DIR}"/feeds.conf.default
 # echo "src-git kenzo https://github.com/kenzok8/jell;main" >>"${SDK_DIR}"/feeds.conf.default
-echo "src-git jell https://github.com/kenzok8/openwrt-packages" >>"${SDK_DIR}"/feeds.conf.default
+# echo "src-git jell https://github.com/kenzok8/openwrt-packages" >>"${SDK_DIR}"/feeds.conf.default
 echo "src-git small https://github.com/kenzok8/small" >>"${SDK_DIR}"/feeds.conf.default
 # echo "src-git smpackage https://github.com/kenzok8/small-package;main" >>"${SDK_DIR}"/feeds.conf.default
 

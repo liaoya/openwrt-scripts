@@ -24,7 +24,7 @@ luci-theme-bootstrap \
 luci-theme-argon luci-app-argon-config luci-i18n-argon-config-zh-cn \
 mtr nano tmux \
 perl perlbase-cpan \
-uci uhttpd-mod-ubus wget xz \
+uci uhttpd-mod-ubus wget xray-plugin xz \
 "
 
 bash build.sh -p armvirt-64 --distribution immortalwrt -v 21.02.7

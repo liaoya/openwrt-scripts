@@ -28,6 +28,8 @@ Run `git config --global url."http://127.0.0.1:9080/".insteadOf https://` if `gi
 - `bash build.sh -d /work/openwrt/dl -n /work/openwrt/sdk/mt7620 -t mt7620 -c`
 - `bash build.sh -t /work/openwrt/dl -n /work/openwrt/sdk/x64 -t x64 -c`
 
+- `bash build.sh --distribution ImmortalWrt -t armvirt-64 -v 21.02.7`
+
 ## Handle Package conflicts
 
 `kcptun` in `lienol` feed will be conflict with that in `package` feed. Refer <https://openwrt.org/docs/guide-developer/feeds>.
