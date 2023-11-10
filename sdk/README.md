@@ -2,8 +2,8 @@
 
 - `"src-git helloworld https://github.com/fw876/helloworld.git;main"`
 - `"src-git small https://github.com/kenzok8/small"`
-- `"src-git jell https://github.com/kenzok8/openwrt-packages"`
-- `"src-git kenzo https://github.com/kenzok8/jell;main"`
+- `"src-git kenzok8 https://github.com/kenzok8/openwrt-packages"`
+- `"src-git jell https://github.com/kenzok8/jell;main"`
 - `"src-git smpackage https://github.com/kenzok8/small-package;main"`
 - `"src-git passwall https://github.com/xiaorouji/openwrt-passwall`
 - `"src-git passwall2 https://github.com/xiaorouji/openwrt-passwall2`

@@ -52,16 +52,16 @@ make -j package/feeds/luci/luci-base/compile
 ```bash
 # export GIT_PROXY=http://192.168.1.202:9080/
 export GIT_PROXY=http://10.245.91.190:9080/
-bash -x run.sh -t x86-64 "src-git kenzo https://github.com/kenzok8/jell;main"
-bash -x run.sh -t armsr-armv8 "src-git kenzo https://github.com/kenzok8/jell;main"
-bash -x run.sh -t ramips-mt7621 "src-git kenzo https://github.com/kenzok8/jell;main"
-bash -x run.sh -t ath79-nand "src-git kenzo https://github.com/kenzok8/jell;main"
+bash -x run.sh -t x86-64 "src-git jell https://github.com/kenzok8/jell;main"
+bash -x run.sh -t armsr-armv8 "src-git jell https://github.com/kenzok8/jell;main"
+bash -x run.sh -t ramips-mt7621 "src-git jell https://github.com/kenzok8/jell;main"
+bash -x run.sh -t ath79-nand "src-git jell https://github.com/kenzok8/jell;main"
 
-bash -x run.sh -t ramips-mt7620 -v 22.03.5 "src-git kenzo https://github.com/kenzok8/jell;main"
+bash -x run.sh -t ramips-mt7620 -v 22.03.5 "src-git jell https://github.com/kenzok8/jell;main"
 
-bash -x run.sh -t armvirt-64 -v 21.02.7 "src-git kenzo https://github.com/kenzok8/jell;main"
+bash -x run.sh -t armvirt-64 -v 21.02.7 "src-git jell https://github.com/kenzok8/jell;main"
 
-bash -x run.sh -d ImmortalWrt -t armvirt-64 -v 21.02.7 "src-git kenzo https://github.com/kenzok8/jell;main"
+bash -x run.sh -d ImmortalWrt -t armvirt-64 -v 21.02.7 "src-git jell https://github.com/kenzok8/jell;main"
 ```
 
 Clean the images

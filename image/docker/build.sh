@@ -189,11 +189,11 @@ fi
 
 if [[ -z ${BINDIR} ]]; then
     BINDIR=${THIS_DIR}/${DISTRIBUTION}-${PLATFORM}${PROFILE:+"-${PROFILE}"}-${VERSION}-bin
-    if [[ ${CLEAN:-0} -gt 0 ]] && [[ -d "${BINDIR}" ]]; then
-        rm -fr "${BINDIR}"
-    fi
-    if [[ ! -d ${BINDIR} ]]; then mkdir -p "${BINDIR}"; fi
 fi
+if [[ ${CLEAN:-0} -gt 0 ]] && [[ -d "${BINDIR}" ]]; then
+    rm -fr "${BINDIR}"
+fi
+if [[ ! -d ${BINDIR} ]]; then mkdir -p "${BINDIR}"; fi
 if [[ ${DISTRIBUTION} == immortalwrt ]]; then
     docker_image_name=docker.io/${DISTRIBUTION}/imagebuilder:${PLATFORM}-openwrt-${VERSION}
 else
@@ -252,22 +252,19 @@ for item in http_proxy https_proxy no_proxy; do
         DOCKER_OPTS+=(--env "${item^^}=${!item}")
     fi
 done
-if [[ -n ${BINDIR} ]]; then
-    if [[ ${MAJOR_VERSION_NUMBER} -ge 2203 ]]; then
-        DOCKER_OPTS+=(-v "${BINDIR}:/builder/bin")
-    else
-        DOCKER_OPTS+=(-v "${BINDIR}:/home/build/${DISTRIBUTION}/bin")
-    fi
+
+if [[ ${MAJOR_VERSION_NUMBER} -lt 2203 ]]; then
+    MOUNT_DIR=/home/build/${DISTRIBUTION}
+else
+    MOUNT_DIR=/builder
 fi
+DOCKER_OPTS+=(-v "${BINDIR}:${MOUNT_DIR}/bin")
 
 if [[ ${NOCUSTOMIZE:-0} -ne 1 ]]; then
     CONFIG_TEMP_DIR=${_TEMP_DIR}/config
+    DOCKER_OPTS+=(-v "${CONFIG_TEMP_DIR}:{MOUNT_DIR}/custom")
+
     mkdir -p "${CONFIG_TEMP_DIR}/etc/uci-defaults"
-    if [[ ${MAJOR_VERSION_NUMBER} -ge 2305 ]]; then
-        DOCKER_OPTS+=(-v "${CONFIG_TEMP_DIR}:/builder/custom")
-    else
-        DOCKER_OPTS+=(-v "${CONFIG_TEMP_DIR}:/home/build/${DISTRIBUTION}/custom")
-    fi
     if [[ -d "${FILES}" ]]; then
         cp -p "${FILES}"/* "${CONFIG_TEMP_DIR}"/
     fi
