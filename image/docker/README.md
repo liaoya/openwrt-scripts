@@ -43,17 +43,16 @@ There're no image after `18.06.7` for `18.06` series
 unset -v PACKAGES
 PACKAGES="-dnsmasq -wpad-mini -wpad-basic -wpad-basic-mbedtls \
 dnsmasq-full wpad \
-atop bash bind-dig bzip2 ca-bundle ca-certificates cfdisk coremark coreutils-base64 curl  dropbearconvert file fdisk gzip \
+atop bash bind-dig bzip2 ca-bundle ca-certificates cfdisk coremark coreutils-base64 curl dropbearconvert file fdisk gzip \
 htop ip-full ipset iptables-mod-tproxy \
 libpthread \
 luci luci-compat luci-lib-ipkg \
 luci-app-uhttpd luci-i18n-uhttpd-zh-cn \
+luci-app-upnp luci-i18n-upnp-zh-cn \
 luci-app-wol luci-i18n-wol-zh-cn \
 luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn \
 luci-theme-bootstrap \
 mtr nano tmux \
-openssh-client openssh-client-utils openssh-keygen \
-perl perlbase-cpan \
 uci uhttpd-mod-ubus wget xz \
 "
 PACKAGES="${PACKAGES:+$PACKAGES }coremark"

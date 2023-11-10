@@ -34,11 +34,10 @@ function _check_param() {
 function _print_help() {
     #shellcheck disable=SC2016
     cat <<EOF
-Usage: $(basename "${BASH_SOURCE[0]}") [OPTIONS]
+Usage: $(basename "${BASH_SOURCE[0]}") [OPTIONS] <addtional feed> ...
 OPTIONS
     -h, show help.
     -b, the bin directory binding for image output. ${BIN_DIR:+The default is '"${BIN_DIR}"'}
-    -c, clean build. ${CLEAN:+The default is "${CLEAN}"}
     -d, the dl download directory. ${DL_DIR:+The default is '"${DL_DIR}"'}
     -p, the platform. ${PLATFORM:+The default is '"${PLATFORM}"'}
     -r, dry run. ${DRYRUN:+The default is '"${DRYRUN}"'}
@@ -49,14 +48,11 @@ EOF
 DL_DIR=${DL_DIR:-/work/openwrt/dl}
 VERSION=${VERSION:-"23.05.0"}
 
-while getopts "hb:cd:p:rv:" OPTION; do
+while getopts "hb:d:p:rv:" OPTION; do
     case ${OPTION} in
     h)
         _print_help
         exit 0
-        ;;
-    c)
-        CLEAN=1
         ;;
     b)
         BIN_DIR=$(readlink -f "${OPTARG}")
@@ -80,16 +76,21 @@ while getopts "hb:cd:p:rv:" OPTION; do
     esac
 done
 
+shift $((OPTIND - 1))
+if [[ $# -eq 0 ]]; then
+    echo "No custom feed"
+    exit 1
+fi
+
 _check_param PLATFORM VERSION
 MAJOR_VERSION=$(echo "${VERSION}" | cut -d. -f1,2)
-# MAJOR_VERSION_NUMBER=$(echo "${MAJOR_VERSION} * 100 / 1" | bc)
+MAJOR_VERSION_NUMBER=$(echo "${MAJOR_VERSION} * 100 / 1" | bc)
 _TEMP_DIR=$(mktemp -d)
 _add_exit_hook "rm -fr ${_TEMP_DIR}"
 
 DOCKER_IMAGE=docker.io/openwrt/sdk:${PLATFORM}-${VERSION}
 docker image pull "${DOCKER_IMAGE}"
 if [[ -z ${BIN_DIR} ]]; then BIN_DIR=${THIS_DIR}/${PLATFORM}-${MAJOR_VERSION}-bin; fi
-if [[ ${CLEAN} -gt 0 && -d "${BIN_DIR}" ]]; then rm -fr "${BIN_DIR}"; fi
 if [[ ! -d "${BIN_DIR}" ]]; then mkdir -p "${BIN_DIR}"; fi
 
 MOUNT_DIR=/builder
@@ -103,8 +104,9 @@ if [[ -d "${DL_DIR}" ]]; then
     DOCKER_OPTS+=(-v "${DL_DIR}:${MOUNT_DIR}/dl")
 fi
 
-for script in build.sh checkout.sh config.sh; do
-    DOCKER_OPTS+=(-v "${THIS_DIR}/${script}:${SCRIPT_DIR}/${script}")
+for script in ../build.sh ../checkout.sh ../config.sh; do
+    #shellcheck disable=SC2086
+    DOCKER_OPTS+=(-v "$(readlink -f ${THIS_DIR}/${script}):${SCRIPT_DIR}/$(basename ${script})")
 done
 if [[ -n ${GIT_PROXY} ]]; then
     cat <<EOF | tee "${_TEMP_DIR}/.gitconfig"
@@ -117,12 +119,21 @@ EOF
     fi
 fi
 DOCKER_OPTS+=(--env "MAJOR_VERSION=${MAJOR_VERSION}")
+DOCKER_OPTS+=(--env "MAJOR_VERSION_NUMBER=${MAJOR_VERSION_NUMBER}")
 for item in http_proxy https_proxy no_proxy; do
     if [[ -n ${!item} ]]; then
         DOCKER_OPTS+=(--env "${item^^}=${!item}")
         DOCKER_OPTS+=(--env "${item}=${!item}")
     fi
 done
+if [[ -n ${https_proxy} ]]; then
+    cat <<EOF | tee "${_TEMP_DIR}/servers"
+[global]
+http-proxy-host=$(echo "${https_proxy}" | cut -d/ -f3 | cut -d: -f1)
+http-proxy-port=$(echo "${https_proxy}" | cut -d/ -f3 | cut -d: -f2)
+EOF
+    DOCKER_OPTS+=(-v "${_TEMP_DIR}/servers:/builder/.subversion/servers")
+fi
 if [[ $(timedatectl show | grep Timezone | cut -d= -f2) == Asia/Shanghai ]]; then
     DOCKER_OPTS+=(--env "GO111MODULE=auto")
     DOCKER_OPTS+=(--env "GOPROXY=https://goproxy.cn,direct")
@@ -132,8 +143,16 @@ fi
 #     DOCKER_OPTS+=(-v "${GOSU}:/usr/local/bin/gosu:ro")
 # fi
 
+cmd="${cmd:+${cmd}; }[ -f feeds.conf.default.origin ] || cp feeds.conf.default feeds.conf.default.origin"
+cmd="${cmd:+${cmd}; }cp feeds.conf.default.origin feeds.conf.default"
+while (($#)); do
+    #shellcheck disable=SC2016
+    cmd="${cmd:+${cmd}; echo '$1' >>feeds.conf.default}"
+    shift
+done
+
 if [[ ${DRYRUN:-0} -eq 0 ]]; then
-    docker run "${DOCKER_OPTS[@]}" "${DOCKER_IMAGE}" bash -c "${SCRIPT_DIR}/checkout.sh; ${SCRIPT_DIR}/config.sh; ${SCRIPT_DIR}/build.sh"
+    docker run "${DOCKER_OPTS[@]}" "${DOCKER_IMAGE}" bash -c "${cmd}; ${SCRIPT_DIR}/checkout.sh; ${SCRIPT_DIR}/config.sh; ${SCRIPT_DIR}/build.sh"
 else
-    docker run "${DOCKER_OPTS[@]}" "${DOCKER_IMAGE}" bash
+    docker run "${DOCKER_OPTS[@]}" "${DOCKER_IMAGE}" bash -c "${cmd}; bash"
 fi

@@ -1,8 +1,5 @@
 # Ignore everything in this directory
 *
 !.gitignore
-!build.sh
-!checkout.sh
-!config.sh
 !README.md
 !run.sh

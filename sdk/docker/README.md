@@ -53,6 +53,8 @@ bash -x run.sh -p ramips-mt7621
 bash -x run.sh -p ath79-nand
 
 bash -x run.sh -p ramips-mt7620 -r
+
+bash -x run.sh -p armvirt-64 -v 21.02.7 "src-git helloworld https://github.com/fw876/helloworld.git;main"
 ```
 
 Clean the images

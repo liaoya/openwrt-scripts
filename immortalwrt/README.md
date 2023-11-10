@@ -17,6 +17,7 @@ luci-app-passwall luci-i18n-passwall-zh-cn \
 luci-app-ssr-plus luci-i18n-ssr-plus-zh-cn \
 luci-app-ttyd luci-i18n-ttyd-zh-cn \
 luci-app-uhttpd luci-i18n-uhttpd-zh-cn \
+luci-app-upnp luci-i18n-upnp-zh-cn \
 luci-app-vlmcsd luci-i18n-vlmcsd-zh-cn \
 luci-app-wol luci-i18n-wol-zh-cn \
 luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn \
@@ -35,8 +36,12 @@ grep shadowsock immortalwrt-armvirt-64-21.02.7-bin/targets/armvirt/64/immortalwr
 ```
 
 ```bash
-OPENWRT_MIRROR_PATH=http://mirror.nju.edu.cn/immortalwrt
-sed -i -e "s|http://downloads.immortalwrt.org|${OPENWRT_MIRROR_PATH}|g" -e "s|https://downloads.immortalwrt.org|${OPENWRT_MIRROR_PATH}|g" -e "s|http://mirrors.vsean.net/openwrt|${OPENWRT_MIRROR_PATH}|g" -e "s|https://mirrors.vsean.net/openwrt|${OPENWRT_MIRROR_PATH}|g" /etc/opkg/distfeeds.conf
+OPENWRT_MIRROR_PATH=http://mirror.sjtu.edu.cn/immortalwrt
+sed -i /etc/opkg/distfeeds.conf \
+    -e "s|http://downloads.immortalwrt.org|${OPENWRT_MIRROR_PATH}|g" \
+    -e "s|https://downloads.immortalwrt.org|${OPENWRT_MIRROR_PATH}|g" \
+    -e "s|http://mirrors.vsean.net/openwrt|${OPENWRT_MIRROR_PATH}|g" \
+    -e "s|https://mirrors.vsean.net/openwrt|${OPENWRT_MIRROR_PATH}|g"
 ```
 
 in ophub

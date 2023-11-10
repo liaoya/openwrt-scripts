@@ -11,24 +11,16 @@ sudo apt install -y build-essential ccache ecj fastjar file g++ gawk \
 
 ## Prepare
 
-```bash
-mkdir -p /work/github/{coolsnowwolf,Lienol,liaoya,pymumu}
-(cd /work/github/coolsnowwolf; git clone https://github.com/coolsnowwolf/lede.git)
-(cd /work/github/liaoya; git clone https://github.com/liaoya/openwrt-scripts.git)
-(cd /work/github/pymumu; git clone https://github.com/pymumu/smartdns.git)
-```
-
-I find some package build issue when build with SDK `18.06`
-
 Run `git config --global url."http://127.0.0.1:9080/".insteadOf https://` if `git-cache-http-server` installed
 
-- `bash build.sh -d /work/openwrt/dl -n /work/openwrt/sdk/armsr-armv8 -t armsr-armv8 -c` (`bash build.sh -d /work/openwrt/dl -n /work/openwrt/sdk/armvirt -t armvirt -c`)
-- `bash build.sh -d /work/openwrt/dl -n /work/openwrt/sdk/ar71xx -t ar71xx -c`
-- `bash build.sh -d /work/openwrt/dl -n /work/openwrt/sdk/mt7621 -t mt7621 -c`
-- `bash build.sh -d /work/openwrt/dl -n /work/openwrt/sdk/mt7620 -t mt7620 -c`
-- `bash build.sh -t /work/openwrt/dl -n /work/openwrt/sdk/x64 -t x64 -c`
+- `bash run.sh -d /work/openwrt/dl -n /work/openwrt/sdk/armsr-armv8 -t armsr-armv8 -c "src-git small https://github.com/kenzok8/small"`
+  - `bash run.sh -d /work/openwrt/dl -n /work/openwrt/sdk/armvirt-64 -v 22.03.5 -t armvirt-x64 -c "src-git small https://github.com/kenzok8/small"`
+- `bash run.sh -d /work/openwrt/dl -n /work/openwrt/sdk/ath79-nand -t ath79-nand -c "src-git small https://github.com/kenzok8/small"`
+- `bash run.sh -d /work/openwrt/dl -n /work/openwrt/sdk/ramips-mt7621 -t ramips-mt7621 -c "src-git small https://github.com/kenzok8/small"`
+- `bash run.sh -d /work/openwrt/dl -n /work/openwrt/sdk/ramips-mt7620 -t ramips-mt7620 -c "src-git small https://github.com/kenzok8/small"`
+- `bash run.sh -t /work/openwrt/dl -n /work/openwrt/sdk/x86-64 -t x86-64 -c "src-git small https://github.com/kenzok8/small"`
 
-- `bash build.sh --distribution ImmortalWrt -t armvirt-64 -v 21.02.7`
+- `bash run.sh --distribution ImmortalWrt -t armvirt-64 -v 21.02.7 "src-git small https://github.com/kenzok8/small"`
 
 ## Handle Package conflicts
 
@@ -66,12 +58,10 @@ make defconfig
 
 ## Other Packages
 
-- <https://github.com/cnsilvan/luci-app-unblockneteasemusic>
 - <https://github.com/kuoruan/luci-app-kcptun>
 - <https://github.com/kuoruan/luci-app-v2ray>
 - <https://github.com/kuoruan/openwrt-kcptun>
 - <https://github.com/kuoruan/openwrt-v2ray>
-- <https://github.com/Leo-Jo-My/luci-app-ssr-plus-Jo/tree/master>
 - <https://github.com/mwarning/openwrt-examples>
 - <https://github.com/pexcn/openwrt-chinadns-ng>
 - <https://github.com/project-openwrt/luci-app-vssr-1>
@@ -85,7 +75,7 @@ make defconfig
 
 - <https://github.com/project-openwrt>: all valued packages
 - <https://github.com/kenzok8/openwrt-packages>
-- <https://github.com/liuran001/openwrt-packages>
+- <https://github.com/liuran001/openwrt-packages>: archived
 
 The modified `ssr-plus` also need many dependencies. The good news is it can be built seperately.
 

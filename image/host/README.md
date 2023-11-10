@@ -1,5 +1,7 @@
 # Build OpenWrt Custom Image
 
+Depreciate since we can use imagebuilder docker always
+
 Speed the build via
 
 - start squid cache server

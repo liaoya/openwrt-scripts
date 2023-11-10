@@ -1,7 +1,7 @@
 #!/bin/bash
 #shellcheck disable=SC2034
 
-set -aex
+set -ae
 
 trap _exec_exit_hook EXIT
 function _exec_exit_hook() {
@@ -25,34 +25,6 @@ function _check_param() {
             return 1
         fi
         shift 1
-    done
-}
-
-function build() {
-    # build coremark explicitly
-    find package -iname "coremark" -print0 | xargs -0 -I % make -j %/compile 2>/dev/null || true
-
-    for src_dir in feeds/*/; do
-        if [[ ! -d "${src_dir}" || $(basename -s .tmp "${src_dir}") != $(basename "${src_dir}") ]]; then
-            continue
-        fi
-        _build=1
-        for official in base freifunk luci packages routing telephony; do
-            if [[ ${src_dir} == "feeds/${official}/" ]]; then
-                _build=0
-                break
-            fi
-        done
-        if [[ "${_build}" -gt 0 ]]; then
-            for pkg in "${src_dir}"/*/; do
-                pkg=$(basename "${pkg}")
-                while IFS= read -r -d '' pkg_path; do
-                    if make -j "${pkg_path}"/compile 2>/dev/null; then
-                        echo "make V=sc ${pkg_path}/compile" >>build.log
-                    fi
-                done < <(find package -iname "${pkg}" -print0)
-            done
-        fi
     done
 }
 
@@ -151,9 +123,14 @@ while true; do
     shift "${shift_step}"
 done
 
-if [[ $(command -v pyenv) ]] && ! pyenv versions | grep -F '* 3.8'; then
+if [[ $# -eq 0 ]]; then
+    echo "No custom feed"
+    exit 1
+fi
+
+if [[ $(command -v pyenv) ]] && ! pyenv versions | grep -F '* 3.10'; then
     #shellcheck disable=SC2046
-    pyenv local $(pyenv versions | grep "3.8.")
+    pyenv local $(pyenv versions | grep "3.10.")
 fi
 _check_param VERSION TARGET
 
@@ -176,14 +153,6 @@ if [[ ${DISTRIBUTION,,} == immortalwrt ]]; then
     else
         OPENWRT_MIRROR_PATH=${OPENWRT_MIRROR_PATH:-downloads.immortalwrt.org}
     fi
-fi
-
-if [[ -f "${ROOT_DIR}/target/${TARGET}.sh" ]]; then
-    #shellcheck disable=SC1090
-    source "${ROOT_DIR}/target/${TARGET}.sh"
-else
-    echo "Require customized ${ROOT_DIR}/target/${TARGET}.sh"
-    exit 1
 fi
 
 BASE_URL=${OPENWRT_MIRROR_PATH}/releases/${VERSION}/targets
@@ -236,36 +205,17 @@ fi
 [[ -f "${SDK_DIR}"/feeds.conf.default.origin ]] || cp "${SDK_DIR}"/feeds.conf.default "${SDK_DIR}"/feeds.conf.default.origin
 [[ -f "${SDK_DIR}"/feeds.conf.default.origin ]] && cp "${SDK_DIR}"/feeds.conf.default.origin "${SDK_DIR}"/feeds.conf.default
 
-sed -e 's|git.openwrt.org/openwrt/openwrt|github.com/openwrt/openwrt|g' \
-    -e 's|git.openwrt.org/feed/packages|github.com/openwrt/packages|g' \
-    -e 's|git.openwrt.org/project/luci|github.com/openwrt/luci|g' \
-    -e 's|git.openwrt.org/feed/routing|github.com/openwrt/routing|g' \
-    -e 's|git.openwrt.org/feed/telephony|github.com/openwrt/telephony|g' \
-    -i "${SDK_DIR}"/feeds.conf.default
-# echo "src-git kenzo https://github.com/kenzok8/jell;main" >>"${SDK_DIR}"/feeds.conf.default
-# echo "src-git jell https://github.com/kenzok8/openwrt-packages" >>"${SDK_DIR}"/feeds.conf.default
-echo "src-git small https://github.com/kenzok8/small" >>"${SDK_DIR}"/feeds.conf.default
-# echo "src-git smpackage https://github.com/kenzok8/small-package;main" >>"${SDK_DIR}"/feeds.conf.default
+while (($#)); do
+    echo "$1" >>"${SDK_DIR}"/feeds.conf.default
+    shift
+done
 
 pushd "${SDK_DIR}"
-mkdir -p staging_dir/host/bin
-if [[ $(command -v upx) && ! -L staging_dir/host/bin/upx ]]; then ln -s "$(command -v upx)" staging_dir/host/bin; fi
-if [[ $(command -v upx-ucl) && ! -L staging_dir/host/bin/upx-ucl ]]; then ln -s "$(command -v upx-ucl)" staging_dir/host/bin; fi
-
-./scripts/feeds clean
-./scripts/feeds update -a
-
-./scripts/feeds update -i
-./scripts/feeds install -a
-
-make defconfig
-
-if [[ $(command -v pre_ops) ]]; then pre_ops; fi
-
-make -j"$(nproc)" package/feeds/luci/luci-base/compile
 
 if [[ ${DRYRUN} -lt 1 ]]; then
-    build
+    "${ROOT_DIR}/../checkout.sh"
+    "${ROOT_DIR}/../config.sh"
+    "${ROOT_DIR}/../build.sh"
 fi
 
 popd
