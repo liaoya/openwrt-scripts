@@ -44,17 +44,24 @@ make -j package/feeds/luci/luci-base/compile
 - `docker.io/openwrt/sdk:ramips-mt7621-22.03.5`
 - `docker.io/openwrt/sdk:ramips-mt7621-21.02.7`
 
+- `docker.io/immortalwrt/sdk:armvirt-64-openwrt-21.02.7`
+- `docker.io/immortalwrt/sdk:ath79-nand-openwrt-21.02.7`
+- `docker.io/immortalwrt/sdk:ramips-mt7621-openwrt-21.02.7`
+- `docker.io/immortalwrt/sdk:x86-64-openwrt-21.02.7`
+
 ```bash
 # export GIT_PROXY=http://192.168.1.202:9080/
 export GIT_PROXY=http://10.245.91.190:9080/
-bash -x run.sh -p x86-64
-bash -x run.sh -p armsr-armv8
-bash -x run.sh -p ramips-mt7621
-bash -x run.sh -p ath79-nand
+bash -x run.sh -t x86-64 "src-git kenzo https://github.com/kenzok8/jell;main"
+bash -x run.sh -t armsr-armv8 "src-git kenzo https://github.com/kenzok8/jell;main"
+bash -x run.sh -t ramips-mt7621 "src-git kenzo https://github.com/kenzok8/jell;main"
+bash -x run.sh -t ath79-nand "src-git kenzo https://github.com/kenzok8/jell;main"
 
-bash -x run.sh -p ramips-mt7620 -r
+bash -x run.sh -t ramips-mt7620 -v 22.03.5 "src-git kenzo https://github.com/kenzok8/jell;main"
 
-bash -x run.sh -p armvirt-64 -v 21.02.7 "src-git helloworld https://github.com/fw876/helloworld.git;main"
+bash -x run.sh -t armvirt-64 -v 21.02.7 "src-git kenzo https://github.com/kenzok8/jell;main"
+
+bash -x run.sh -d ImmortalWrt -t armvirt-64 -v 21.02.7 "src-git kenzo https://github.com/kenzok8/jell;main"
 ```
 
 Clean the images

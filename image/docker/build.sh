@@ -167,10 +167,14 @@ if [[ -n ${FILES} && ${NOCUSTOMIZE} -gt 0 ]]; then
     echo "${FILES} will not be used as \${NOCUSTOMIZE} is ${NOCUSTOMIZE}"
 fi
 
+DISTRIBUTION=${DISTRIBUTION,,}
+if [[ ${DISTRIBUTION} != openwrt && ${DISTRIBUTION} != immortalwrt ]]; then
+    echo "Only OpenWRT or ImmortalWrt is supported"
+fi
+
 _check_param PLATFORM VERSION
 MAJOR_VERSION=$(echo "${VERSION}" | cut -d. -f1,2)
 MAJOR_VERSION_NUMBER=$(echo "${MAJOR_VERSION} * 100 / 1" | bc)
-DISTRIBUTION=${DISTRIBUTION,,}
 
 if [[ -z ${PROFILE} && ${PLATFORM} == "x86-64" ]]; then
     if [[ MAJOR_VERSION_NUMBER -le 1907 ]]; then
@@ -179,7 +183,7 @@ if [[ -z ${PROFILE} && ${PLATFORM} == "x86-64" ]]; then
         PROFILE=generic
     fi
 fi
-if [[ ! ${PLATFORM} =~ armvirt || ! ${PLATFORM} =~ armsr ]]; then
+if [[ ! ${PLATFORM} =~ armvirt && ! ${PLATFORM} =~ armsr ]]; then
     _check_param PROFILE
 fi
 
@@ -190,8 +194,11 @@ if [[ -z ${BINDIR} ]]; then
     fi
     if [[ ! -d ${BINDIR} ]]; then mkdir -p "${BINDIR}"; fi
 fi
-
-docker_image_name=docker.io/${DISTRIBUTION}/imagebuilder:${PLATFORM}-${VERSION}
+if [[ ${DISTRIBUTION} == immortalwrt ]]; then
+    docker_image_name=docker.io/${DISTRIBUTION}/imagebuilder:${PLATFORM}-openwrt-${VERSION}
+else
+    docker_image_name=docker.io/${DISTRIBUTION}/imagebuilder:${PLATFORM}-${VERSION}
+fi
 docker image pull "${docker_image_name}"
 
 DOCKER_OPTS=(--rm -it -u "$(id -u):$(id -g)")
@@ -306,9 +313,13 @@ if [[ -n ${THIRDPARTY} ]]; then
     if [[ ${THIRDPARTY:0:4} == http ]]; then
         cmd="${cmd:+${cmd}; }sed -i -e '\|^## This is the local package repository.*|a src custom ${THIRDPARTY}' -e 's/^option check_signature$/# &/' repositories.conf"
     else
-        THIRDPARTY=$(readlink -f "${THIRDPARTY}")
-        DOCKER_OPTS+=(-v "${THIRDPARTY}:/home/build/${DISTRIBUTION}/THIRDPARTY")
-        cmd="${cmd:+${cmd}; }sed -i -e '\|^## Place your custom repositories here.*|a src custom file:///home/build/${DISTRIBUTION}/THIRDPARTY' -e 's/^option check_signature$/# &/' repositories.conf"
+        if [[ ${MAJOR_VERSION_NUMBER} -ge 2305 ]]; then
+            DOCKER_OPTS+=(-v "${THIRDPARTY}:/builder/thirdparty")
+            cmd="${cmd:+${cmd}; }sed -i -e '\|^## Place your custom repositories here.*|a src custom file:///builder/thirdparty' -e 's/^option check_signature$/# &/' repositories.conf"
+        else
+            DOCKER_OPTS+=(-v "${THIRDPARTY}:/home/build/${DISTRIBUTION}/thirdparty")
+            cmd="${cmd:+${cmd}; }sed -i -e '\|^## Place your custom repositories here.*|a src custom file:///home/build/${DISTRIBUTION}/thirdparty' -e 's/^option check_signature$/# &/' repositories.conf"
+        fi
     fi
 fi
 if [[ ${PLATFORM} == "x86-64" ]]; then

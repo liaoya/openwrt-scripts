@@ -37,18 +37,20 @@ function _print_help() {
 Usage: $(basename "${BASH_SOURCE[0]}") [OPTIONS] <addtional feed> ...
 OPTIONS
     -h, show help.
-    -b, the bin directory binding for image output. ${BIN_DIR:+The default is '"${BIN_DIR}"'}
-    -d, the dl download directory. ${DL_DIR:+The default is '"${DL_DIR}"'}
-    -p, the platform. ${PLATFORM:+The default is '"${PLATFORM}"'}
+    -b BIN_DIR, the bin directory binding for image output. ${BIN_DIR:+The default is '"${BIN_DIR}"'}
+    -c DL_DIR, the dl download directory. ${DL_DIR:+The default is '"${DL_DIR}"'}
+    -d DISTRIBUTION, OpenWRT or ImmortalWrt. ${DISTRIBUTION:+The default is '"${DISTRIBUTION}"'}
+    -t TARGET, the platform. ${TARGET:+The default is '"${TARGET}"'}
     -r, dry run. ${DRYRUN:+The default is '"${DRYRUN}"'}
-    -v, the openwrt version. ${VERSION:+The default is '"${VERSION}"'}
+    -v VERSION, the openwrt version. ${VERSION:+The default is '"${VERSION}"'}
 EOF
 }
 
+DISTRIBUTION=${DISTRIBUTION:-OpenWRT}
 DL_DIR=${DL_DIR:-/work/openwrt/dl}
 VERSION=${VERSION:-"23.05.0"}
 
-while getopts "hb:d:p:rv:" OPTION; do
+while getopts "hb:c:d:t:rv:" OPTION; do
     case ${OPTION} in
     h)
         _print_help
@@ -57,11 +59,14 @@ while getopts "hb:d:p:rv:" OPTION; do
     b)
         BIN_DIR=$(readlink -f "${OPTARG}")
         ;;
-    d)
+    c)
         DL_DIR=$(readlink -f "${OPTARG}")
         ;;
-    p)
-        PLATFORM=${OPTARG}
+    d)
+        DISTRIBUTION=${OPTARG}
+        ;;
+    t)
+        TARGET=${OPTARG}
         ;;
     r)
         DRYRUN=1
@@ -82,15 +87,24 @@ if [[ $# -eq 0 ]]; then
     exit 1
 fi
 
-_check_param PLATFORM VERSION
+DISTRIBUTION=${DISTRIBUTION,,}
+if [[ ${DISTRIBUTION} != openwrt && ${DISTRIBUTION} != immortalwrt ]]; then
+    echo "Only OpenWRT or ImmortalWrt is supported"
+fi
+
+_check_param TARGET VERSION
 MAJOR_VERSION=$(echo "${VERSION}" | cut -d. -f1,2)
 MAJOR_VERSION_NUMBER=$(echo "${MAJOR_VERSION} * 100 / 1" | bc)
 _TEMP_DIR=$(mktemp -d)
 _add_exit_hook "rm -fr ${_TEMP_DIR}"
 
-DOCKER_IMAGE=docker.io/openwrt/sdk:${PLATFORM}-${VERSION}
+if [[ ${DISTRIBUTION} == openwrt ]]; then
+    DOCKER_IMAGE=docker.io/openwrt/sdk:${TARGET}-${VERSION}
+else
+    DOCKER_IMAGE=docker.io/immortalwrt/sdk:${TARGET}-openwrt-${VERSION}
+fi
 docker image pull "${DOCKER_IMAGE}"
-if [[ -z ${BIN_DIR} ]]; then BIN_DIR=${THIS_DIR}/${PLATFORM}-${MAJOR_VERSION}-bin; fi
+if [[ -z ${BIN_DIR} ]]; then BIN_DIR=${THIS_DIR}/${TARGET}-${MAJOR_VERSION}-bin; fi
 if [[ ! -d "${BIN_DIR}" ]]; then mkdir -p "${BIN_DIR}"; fi
 
 MOUNT_DIR=/builder

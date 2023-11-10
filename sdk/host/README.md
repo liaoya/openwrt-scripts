@@ -13,14 +13,14 @@ sudo apt install -y build-essential ccache ecj fastjar file g++ gawk \
 
 Run `git config --global url."http://127.0.0.1:9080/".insteadOf https://` if `git-cache-http-server` installed
 
-- `bash run.sh -d /work/openwrt/dl -n /work/openwrt/sdk/armsr-armv8 -t armsr-armv8 -c "src-git small https://github.com/kenzok8/small"`
-  - `bash run.sh -d /work/openwrt/dl -n /work/openwrt/sdk/armvirt-64 -v 22.03.5 -t armvirt-x64 -c "src-git small https://github.com/kenzok8/small"`
-- `bash run.sh -d /work/openwrt/dl -n /work/openwrt/sdk/ath79-nand -t ath79-nand -c "src-git small https://github.com/kenzok8/small"`
-- `bash run.sh -d /work/openwrt/dl -n /work/openwrt/sdk/ramips-mt7621 -t ramips-mt7621 -c "src-git small https://github.com/kenzok8/small"`
-- `bash run.sh -d /work/openwrt/dl -n /work/openwrt/sdk/ramips-mt7620 -t ramips-mt7620 -c "src-git small https://github.com/kenzok8/small"`
-- `bash run.sh -t /work/openwrt/dl -n /work/openwrt/sdk/x86-64 -t x86-64 -c "src-git small https://github.com/kenzok8/small"`
+- `bash run.sh -d /work/openwrt/dl -n /work/openwrt/sdk/armsr-armv8 -t armsr-armv8 -c "src-git kenzo https://github.com/kenzok8/jell;main"`
+  - `bash run.sh -d /work/openwrt/dl -n /work/openwrt/sdk/armvirt-64 -v 22.03.5 -t armvirt-x64 -c "src-git kenzo https://github.com/kenzok8/jell;main"`
+- `bash run.sh -d /work/openwrt/dl -n /work/openwrt/sdk/ath79-nand -t ath79-nand -c "src-git kenzo https://github.com/kenzok8/jell;main"`
+- `bash run.sh -d /work/openwrt/dl -n /work/openwrt/sdk/ramips-mt7621 -t ramips-mt7621 -c "src-git kenzo https://github.com/kenzok8/jell;main"`
+- `bash run.sh -d /work/openwrt/dl -n /work/openwrt/sdk/ramips-mt7620 -t ramips-mt7620 -c "src-git kenzo https://github.com/kenzok8/jell;main"`
+- `bash run.sh -t /work/openwrt/dl -n /work/openwrt/sdk/x86-64 -t x86-64 -c "src-git kenzo https://github.com/kenzok8/jell;main"`
 
-- `bash run.sh --distribution ImmortalWrt -t armvirt-64 -v 21.02.7 "src-git small https://github.com/kenzok8/small"`
+- `bash run.sh --distribution ImmortalWrt -t armvirt-64 -v 21.02.7 "src-git kenzo https://github.com/kenzok8/jell;main"`
 
 ## Handle Package conflicts
 

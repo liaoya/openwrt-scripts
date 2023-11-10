@@ -10,8 +10,10 @@ htop ip-full ipset iptables-mod-tproxy \
 libpthread \
 kcptun-client xray-plugin \
 luci luci-compat luci-lib-ipkg \
+luci-app-amlogic luci-i18n-amlogic-zh-cn \
 luci-app-accesscontrol luci-i18n-accesscontrol-zh-cn \
 luci-app-adbyby-plus luci-i18n-adbyby-plus-zh-cn \
+luci-app-bypass luci-i18n-bypass-zh-cn \
 luci-app-netdata luci-i18n-netdata-zh-cn \
 luci-app-passwall luci-i18n-passwall-zh-cn \
 luci-app-ssr-plus luci-i18n-ssr-plus-zh-cn \
@@ -48,4 +50,5 @@ in ophub
 
 ```bash
 sudo ./make -b firefly -k 6.1.60
+sudo ./make -b s905d -k 6.1.60
 ```

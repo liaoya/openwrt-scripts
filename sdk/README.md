@@ -5,9 +5,10 @@
 - `"src-git jell https://github.com/kenzok8/openwrt-packages"`
 - `"src-git kenzo https://github.com/kenzok8/jell;main"`
 - `"src-git smpackage https://github.com/kenzok8/small-package;main"`
-- `"passwall https://github.com/xiaorouji/openwrt-passwall`
-- `"passwall2 https://github.com/xiaorouji/openwrt-passwall2`
-- `"Lienol https://github.com/Lienol/openwrt-package"`
+- `"src-git passwall https://github.com/xiaorouji/openwrt-passwall`
+- `"src-git passwall2 https://github.com/xiaorouji/openwrt-passwall2`
+- `"src-git Lienol https://github.com/Lienol/openwrt-package"`
+- `"src-git ophub https://github.com/ophub/luci-app-amlogic"`
 
 ```bash
 # The following is time consuming
