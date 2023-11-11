@@ -5,6 +5,7 @@
 ```bash
 export PACKAGES="-dnsmasq -wpad-mini -wpad-basic \
 dnsmasq-full wpad \
+btrfs-progs dosfstools e2fsprogs mkf2fs xfs-mkfs \
 atop bash bind-dig bzip2 ca-bundle ca-certificates cfdisk coremark coreutils-base64 curl dropbearconvert file fdisk gzip \
 htop ip-full ipset iptables-mod-tproxy \
 libpthread \

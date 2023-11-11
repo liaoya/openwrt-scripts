@@ -262,7 +262,7 @@ DOCKER_OPTS+=(-v "${BINDIR}:${MOUNT_DIR}/bin")
 
 if [[ ${NOCUSTOMIZE:-0} -ne 1 ]]; then
     CONFIG_TEMP_DIR=${_TEMP_DIR}/config
-    DOCKER_OPTS+=(-v "${CONFIG_TEMP_DIR}:{MOUNT_DIR}/custom")
+    DOCKER_OPTS+=(-v "${CONFIG_TEMP_DIR}:${MOUNT_DIR}/custom")
 
     mkdir -p "${CONFIG_TEMP_DIR}/etc/uci-defaults"
     if [[ -d "${FILES}" ]]; then
