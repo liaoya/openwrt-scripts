@@ -107,11 +107,7 @@ docker image pull "${DOCKER_IMAGE}"
 if [[ -z ${BIN_DIR} ]]; then BIN_DIR=${THIS_DIR}/${DISTRIBUTION}-${TARGET}-${MAJOR_VERSION}-bin; fi
 if [[ ! -d "${BIN_DIR}" ]]; then mkdir -p "${BIN_DIR}"; fi
 
-if [[ ${MAJOR_VERSION_NUMBER} -lt 2203 ]]; then
-    MOUNT_DIR=/home/build/${DISTRIBUTION}
-else
-    MOUNT_DIR=/builder
-fi
+MOUNT_DIR=$(docker run --rm -it "${DOCKER_IMAGE}" sh -c "pwd" | tr -d '\r')
 SCRIPT_DIR=$(dirname "${MOUNT_DIR}")
 if [[ / == "${SCRIPT_DIR}" ]]; then
     SCRIPT_DIR=""

@@ -14,3 +14,5 @@ ipkg-make-index.sh . > Packages && gzip -9nc Packages > Packages.gz
 rsync -aq /work/openwrt /mnt/usb/
 rsync -aq /work/immortalwrt /mnt/usb/
 ```
+
+`kmod-oaf`

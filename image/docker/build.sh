@@ -195,11 +195,11 @@ if [[ ${CLEAN:-0} -gt 0 ]] && [[ -d "${BINDIR}" ]]; then
 fi
 if [[ ! -d ${BINDIR} ]]; then mkdir -p "${BINDIR}"; fi
 if [[ ${DISTRIBUTION} == immortalwrt ]]; then
-    docker_image_name=docker.io/${DISTRIBUTION}/imagebuilder:${PLATFORM}-openwrt-${VERSION}
+    DOCKER_IMAGE=docker.io/${DISTRIBUTION}/imagebuilder:${PLATFORM}-openwrt-${VERSION}
 else
-    docker_image_name=docker.io/${DISTRIBUTION}/imagebuilder:${PLATFORM}-${VERSION}
+    DOCKER_IMAGE=docker.io/${DISTRIBUTION}/imagebuilder:${PLATFORM}-${VERSION}
 fi
-docker image pull "${docker_image_name}"
+docker image pull "${DOCKER_IMAGE}"
 
 DOCKER_OPTS=(--rm -it -u "$(id -u):$(id -g)")
 
@@ -253,11 +253,7 @@ for item in http_proxy https_proxy no_proxy; do
     fi
 done
 
-if [[ ${MAJOR_VERSION_NUMBER} -lt 2203 ]]; then
-    MOUNT_DIR=/home/build/${DISTRIBUTION}
-else
-    MOUNT_DIR=/builder
-fi
+MOUNT_DIR=$(docker run --rm -it "${DOCKER_IMAGE}" sh -c "pwd" | tr -d '\r')
 DOCKER_OPTS+=(-v "${BINDIR}:${MOUNT_DIR}/bin")
 
 if [[ ${NOCUSTOMIZE:-0} -ne 1 ]]; then
@@ -344,10 +340,10 @@ if [[ ${PLATFORM} == x86-64 || ${PLATFORM} =~ armvirt ]] && [[ ${ROOTFS_PARTSIZE
     makecmd="${makecmd} ROOTFS_PARTSIZE=${ROOTFS_PARTSIZE}"
 fi
 if [[ ${DRYRUN:-0} -eq 0 ]]; then
-    docker run "${DOCKER_OPTS[@]}" "${docker_image_name}" bash -c "${cmd:+${cmd};} ${makecmd}"
+    docker run "${DOCKER_OPTS[@]}" "${DOCKER_IMAGE}" bash -c "${cmd:+${cmd};} ${makecmd}"
 else
     echo "${makecmd}"
-    docker run "${DOCKER_OPTS[@]}" "${docker_image_name}" bash -c "${cmd:+${cmd};} bash"
+    docker run "${DOCKER_OPTS[@]}" "${DOCKER_IMAGE}" bash -c "${cmd:+${cmd};} bash"
 fi
 
 # qemu-img convert to make the image as thin provision, do not compress it any more to make backing file across pool

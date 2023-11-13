@@ -8,7 +8,8 @@
 - `"src-git passwall https://github.com/xiaorouji/openwrt-passwall`
 - `"src-git passwall2 https://github.com/xiaorouji/openwrt-passwall2`
 - `"src-git Lienol https://github.com/Lienol/openwrt-package"`
-- `"src-git ophub https://github.com/ophub/luci-app-amlogic"`
+- `"src-git ophub https://github.com/ophub/luci-app-amlogic"` (has been include in )
+- `"src-git oaf https://github.com/destan19/OpenAppFilter"`
 
 ```bash
 # The following is time consuming

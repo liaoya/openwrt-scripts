@@ -50,6 +50,6 @@ sed -i /etc/opkg/distfeeds.conf \
 in ophub
 
 ```bash
-sudo ./make -b firefly -k 6.1.60
+sudo ./make -b firefly-rk3399 -k 6.1.60
 sudo ./make -b s905d -k 6.1.60
 ```

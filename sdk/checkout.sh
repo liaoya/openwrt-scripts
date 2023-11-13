@@ -41,4 +41,6 @@ done < <(./scripts/feeds list -n | grep -v -e 'base\|packages\|luci\|routing\|te
 rm -fr .config ./tmp || true
 make defconfig || true
 
-make -j package/feeds/luci/luci-base/compile
+if [[ -d package/feeds/luci/luci-base ]]; then
+    make -j package/feeds/luci/luci-base/compile
+fi
