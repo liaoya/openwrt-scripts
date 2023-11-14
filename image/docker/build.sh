@@ -306,12 +306,8 @@ if [[ -n ${THIRDPARTY} ]]; then
     if [[ ${THIRDPARTY:0:4} == http ]]; then
         cmd="${cmd:+${cmd}; }sed -i -e '\|^## This is the local package repository.*|a src custom ${THIRDPARTY}' -e 's/^option check_signature$/# &/' repositories.conf"
     else
-        if [[ ${MAJOR_VERSION_NUMBER} -ge 2305 ]]; then
-            DOCKER_OPTS+=(-v "${THIRDPARTY}:/builder/thirdparty")
-            cmd="${cmd:+${cmd}; }sed -i -e '\|^## Place your custom repositories here.*|a src custom file:///builder/thirdparty' -e 's/^option check_signature$/# &/' repositories.conf"
-        else
-            DOCKER_OPTS+=(-v "${THIRDPARTY}:/home/build/${DISTRIBUTION}/thirdparty")
-            cmd="${cmd:+${cmd}; }sed -i -e '\|^## Place your custom repositories here.*|a src custom file:///home/build/${DISTRIBUTION}/thirdparty' -e 's/^option check_signature$/# &/' repositories.conf"
+        DOCKER_OPTS+=(-v "${THIRDPARTY}:${MOUNT_DIR}/thirdparty")
+        cmd="${cmd:+${cmd}; }sed -i -e '\|^## Place your custom repositories here.*|a src custom file://${MOUNT_DIR}/thirdparty' -e 's/^option check_signature$/# &/' repositories.conf"
         fi
     fi
 fi
@@ -321,11 +317,7 @@ fi
 
 makecmd="make image"
 if [[ ${NOCUSTOMIZE:-0} -ne 1 ]]; then
-    if [[ ${MAJOR_VERSION_NUMBER} -ge 2305 ]]; then
-        makecmd="${makecmd} FILES=/builder/custom"
-    else
-        makecmd="${makecmd} FILES=/home/build/${DISTRIBUTION}/custom"
-    fi
+    makecmd="${makecmd} FILES=${MOUNT_DIR}/custom"
 fi
 if [[ -n ${NAME} ]]; then
     makecmd="${makecmd} EXTRA_IMAGE_NAME=${NAME}"

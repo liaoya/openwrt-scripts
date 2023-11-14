@@ -82,7 +82,7 @@ while getopts "hb:c:d:t:rv:" OPTION; do
 done
 
 shift $((OPTIND - 1))
-if [[ $# -eq 0 ]]; then
+if [[ $# -eq 0 && -z ${NO_FEEDS} ]]; then
     echo "No custom feed"
     exit 1
 fi
@@ -107,6 +107,7 @@ docker image pull "${DOCKER_IMAGE}"
 if [[ -z ${BIN_DIR} ]]; then BIN_DIR=${THIS_DIR}/${DISTRIBUTION}-${TARGET}-${MAJOR_VERSION}-bin; fi
 if [[ ! -d "${BIN_DIR}" ]]; then mkdir -p "${BIN_DIR}"; fi
 
+HOME_DIR=$(docker run --rm -it "${DOCKER_IMAGE}" sh -c "cd ~; pwd" | tr -d '\r')
 MOUNT_DIR=$(docker run --rm -it "${DOCKER_IMAGE}" sh -c "pwd" | tr -d '\r')
 SCRIPT_DIR=$(dirname "${MOUNT_DIR}")
 if [[ / == "${SCRIPT_DIR}" ]]; then
@@ -127,10 +128,13 @@ if [[ -n ${GIT_PROXY} ]]; then
 [url "${GIT_PROXY}"]
     insteadOf = https://
 EOF
-    DOCKER_OPTS+=(-v "${_TEMP_DIR}/.gitconfig:/builder/.gitconfig")
+    DOCKER_OPTS+=(-v "${_TEMP_DIR}/.gitconfig:/${HOME_DIR}/.gitconfig")
     if [[ -n ${no_proxy} ]]; then
         no_proxy=${no_proxy}:$(echo "${GIT_PROXY}" | cut -d/ -f3 | cut -d: -f1)
     fi
+elif [[ -z ${NO_GIT_PROXY} ]]; then
+    echo "GIT_PROXY is required"
+    exit 1
 fi
 DOCKER_OPTS+=(--env "MAJOR_VERSION=${MAJOR_VERSION}")
 DOCKER_OPTS+=(--env "MAJOR_VERSION_NUMBER=${MAJOR_VERSION_NUMBER}")
@@ -146,7 +150,7 @@ if [[ -n ${https_proxy} ]]; then
 http-proxy-host=$(echo "${https_proxy}" | cut -d/ -f3 | cut -d: -f1)
 http-proxy-port=$(echo "${https_proxy}" | cut -d/ -f3 | cut -d: -f2)
 EOF
-    DOCKER_OPTS+=(-v "${_TEMP_DIR}/servers:/builder/.subversion/servers")
+    DOCKER_OPTS+=(-v "${_TEMP_DIR}/servers:/${HOME_DIR}/.subversion/servers")
 fi
 if [[ $(timedatectl show | grep Timezone | cut -d= -f2) == Asia/Shanghai ]]; then
     DOCKER_OPTS+=(--env "GO111MODULE=auto")

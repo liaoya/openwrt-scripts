@@ -1,9 +1,23 @@
 #!/bin/bash
 
+declare -a SLOW_PACKAGES=()
+SLOW_PACKAGES+=(naiveproxy)
+SLOW_PACKAGES+=(trojan trojan-plus)
+
 function build_one_dir() {
+    local _build=1
     #shellcheck disable=SC2012
     while IFS= read -r pkg; do
         pkg=$(basename "${pkg}")
+        for item in "${SLOW_PACKAGES[@]}"; do
+            if [[ ${item} == "${pkg}" ]]; then
+                _build=0
+                break
+            fi
+        done
+        if [[ ${_build} -lt 1 ]]; then
+            continue
+        fi
         while IFS= read -r -d '' pkg_path; do
             start=$(date +%s)
             if ! make -j "${pkg_path}"/compile 2>/dev/null; then
