@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# cut -d" " -f3 openwrt-armsr-armv8-23.05-bin/fail.log | cut -d/ -f4 | tr -t '\n' ' '
 declare -a FAILURE_PACKAGES=(adguardhome airconnect alist amule-dlp ariang asterisk-chan-quectel cloudflared dns-proxy fibocom_QMI_WWAN frp homebox joker luci-app-adguardhome luci-app-airconnect luci-app-amule luci-app-aria2 luci-app-bypass luci-app-frpc luci-app-frps luci-app-homebox luci-app-kodexplorer luci-app-netspeedtest luci-app-nginx-manager luci-app-npc luci-app-nps luci-app-pcimodem luci-app-smartdns luci-app-spdmodem luci-app-speedtest-web luci-app-unblockmusic luci-app-usbmodem luci-app-webd luci-app-wifidog luci-app-xunyou)
 
 declare -a SLOW_PACKAGES=()
