@@ -68,6 +68,8 @@ OPTIONS
         Clean the previous build
     -b, --bindir BINDIR
         BIN_DIR="<path>" # alternative output directory for the images. ${BINDIR:+The default is '"${BINDIR}"'}
+    --build-dir BUILD_DIR
+        the build_dir directory binding for temporary output, cache it for speed build. ${BUILD_DIR:+The default is '"${BUILD_DIR}"'}
     -d, --disableservice DISABLESERVICE
         DISABLED_SERVICES="<svc1> [<svc2> [<svc3> ..]]" # Which services in /etc/init.d/ should be disabled. ${DISABLESERVICE:+The default is '"${DISABLESERVICE}"'}
     --distribution DISTRIBUTION
@@ -255,6 +257,12 @@ done
 
 MOUNT_DIR=$(docker run --rm -it "${DOCKER_IMAGE}" sh -c "pwd" | tr -d '\r')
 DOCKER_OPTS+=(-v "${BINDIR}:${MOUNT_DIR}/bin")
+if [[ -n ${BUILD_DIR} ]]; then
+    if [[ ! -d ${BUILD_DIR} ]]; then
+        mkdir -p "${BUILD_DIR}"
+    fi
+    DOCKER_OPTS=(--rm -it -u "$(id -u):$(id -g)" -v "${BUILD_DIR}:${MOUNT_DIR}/build_dir")
+fi
 
 if [[ ${NOCUSTOMIZE:-0} -ne 1 ]]; then
     CONFIG_TEMP_DIR=${_TEMP_DIR}/config
@@ -308,7 +316,6 @@ if [[ -n ${THIRDPARTY} ]]; then
     else
         DOCKER_OPTS+=(-v "${THIRDPARTY}:${MOUNT_DIR}/thirdparty")
         cmd="${cmd:+${cmd}; }sed -i -e '\|^## Place your custom repositories here.*|a src custom file://${MOUNT_DIR}/thirdparty' -e 's/^option check_signature$/# &/' repositories.conf"
-        fi
     fi
 fi
 if [[ ${PLATFORM} == "x86-64" ]]; then

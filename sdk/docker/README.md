@@ -60,6 +60,7 @@ bash -x run.sh -t ath79-nand "src-git jell https://github.com/kenzok8/jell;main"
 bash -x run.sh -t ramips-mt7620 -v 22.03.5 "src-git jell https://github.com/kenzok8/jell;main"
 
 bash -x run.sh -t armvirt-64 -v 21.02.7 "src-git jell https://github.com/kenzok8/jell;main"
+bash -x run.sh -t armvirt-64 -v 21.02.7 --build-dir openwrt-armvirt-64-21.02-build_dir  --dryrun "src-git jell https://github.com/kenzok8/jell;main"
 
 bash -x run.sh -d ImmortalWrt -t armvirt-64 -v 21.02.7 "src-git jell https://github.com/kenzok8/jell;main"
 ```

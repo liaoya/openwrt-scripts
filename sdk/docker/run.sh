@@ -36,13 +36,26 @@ function _print_help() {
     cat <<EOF
 Usage: $(basename "${BASH_SOURCE[0]}") [OPTIONS] <addtional feed> ...
 OPTIONS
-    -h, show help.
-    -b BIN_DIR, the bin directory binding for image output. ${BIN_DIR:+The default is '"${BIN_DIR}"'}
-    -c DL_DIR, the dl download directory. ${DL_DIR:+The default is '"${DL_DIR}"'}
-    -d DISTRIBUTION, OpenWRT or ImmortalWrt. ${DISTRIBUTION:+The default is '"${DISTRIBUTION}"'}
-    -t TARGET, the platform. ${TARGET:+The default is '"${TARGET}"'}
-    -r, dry run. ${DRYRUN:+The default is '"${DRYRUN}"'}
-    -v VERSION, the openwrt version. ${VERSION:+The default is '"${VERSION}"'}
+    -h
+        Show help.
+    --verbose
+        More information
+    -b, --bin-dir BIN_DIR
+        the bin directory binding for build output. ${BIN_DIR:+The default is '"${BIN_DIR}"'}
+    --build-dir BUILD_DIR
+        the build_dir directory binding for temporary output, cache it for speed build. ${BUILD_DIR:+The default is '"${BUILD_DIR}"'}
+    -c, --clean
+        clean build. ${CLEAN:+The default is '"${CLEAN}"'}
+    --dl-dir DL_DIR
+        the dl download cache directory. ${DL_DIR:+The default is '"${DL_DIR}"'}
+    -d, --distribution DISTRIBUTION
+        OpenWRT or ImmortalWrt. ${DISTRIBUTION:+The default is '"${DISTRIBUTION}"'}
+    --dryrun
+        dry run. ${DRYRUN:+The default is '"${DRYRUN}"'}
+    -t, --target TARGET
+        the platform. ${TARGET:+The default is '"${TARGET}"'}
+    -v, --version VERSION
+        the OpenWRT or ImmortalWrt version. ${VERSION:+The default is '"${VERSION}"'}
 EOF
 }
 
@@ -50,49 +63,70 @@ DISTRIBUTION=${DISTRIBUTION:-OpenWRT}
 DL_DIR=${DL_DIR:-/work/openwrt/dl}
 VERSION=${VERSION:-"23.05.0"}
 
-while getopts "hb:c:d:t:rv:" OPTION; do
-    case ${OPTION} in
-    h)
+TEMP=$(getopt -o hcb:d:t:v: --long bin-dir:,build-dir:,clean,dl-dir:,distribution:,dryrun,target:,version: -- "$@")
+eval set -- "$TEMP"
+while true; do
+    shift_step=2
+    case "$1" in
+    -b | --bin-dir)
+        BIN_DIR=$(readlink -f "$2")
+        ;;
+    --build-dir)
+        BUILD_DIR=$(readlink -f "$2")
+        ;;
+    -c | --clean)
+        shift_step=1
+        CLEAN=1
+        ;;
+    --distribution)
+        DISTRIBUTION=$2
+        ;;
+    --dryrun)
+        shift_step=1
+        DRYRUN=1
+        ;;
+    -t | --target)
+        TARGET=$2
+        ;;
+    -v | --version)
+        VERSION=$2
+        ;;
+    -h | --help)
         _print_help
         exit 0
         ;;
-    b)
-        BIN_DIR=$(readlink -f "${OPTARG}")
+    --verbose)
+        shift_step=1
+        set -x
+        export PS4='+(${BASH_SOURCE[0]}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
         ;;
-    c)
-        DL_DIR=$(readlink -f "${OPTARG}")
-        ;;
-    d)
-        DISTRIBUTION=${OPTARG}
-        ;;
-    t)
-        TARGET=${OPTARG}
-        ;;
-    r)
-        DRYRUN=1
-        ;;
-    v)
-        VERSION=${OPTARG}
+    --)
+        shift
+        break
         ;;
     *)
         _print_help
         exit 1
         ;;
     esac
+    shift "${shift_step}"
 done
 
-shift $((OPTIND - 1))
-if [[ $# -eq 0 && -z ${NO_FEEDS} ]]; then
-    echo "No custom feed"
-    exit 1
-fi
-
+_check_param TARGET VERSION
 DISTRIBUTION=${DISTRIBUTION,,}
 if [[ ${DISTRIBUTION} != openwrt && ${DISTRIBUTION} != immortalwrt ]]; then
     echo "Only OpenWRT or ImmortalWrt is supported"
 fi
 
-_check_param TARGET VERSION
+if [[ -z ${NO_GIT_PROXY} && -z ${GIT_PROXY} ]]; then
+    echo "GIT_PROXY is required"
+    exit 1
+fi
+if [[ ! -d "${DL_DIR}" ]]; then
+    echo "DL_DIR is required"
+    exit 1
+fi
+
 MAJOR_VERSION=$(echo "${VERSION}" | cut -d. -f1,2)
 MAJOR_VERSION_NUMBER=$(echo "${MAJOR_VERSION} * 100 / 1" | bc)
 _TEMP_DIR=$(mktemp -d)
@@ -104,8 +138,12 @@ else
     DOCKER_IMAGE=docker.io/immortalwrt/sdk:${TARGET}-openwrt-${VERSION}
 fi
 docker image pull "${DOCKER_IMAGE}"
-if [[ -z ${BIN_DIR} ]]; then BIN_DIR=${THIS_DIR}/${DISTRIBUTION}-${TARGET}-${MAJOR_VERSION}-bin; fi
-if [[ ! -d "${BIN_DIR}" ]]; then mkdir -p "${BIN_DIR}"; fi
+if [[ -z ${BIN_DIR} ]]; then
+    BIN_DIR=${THIS_DIR}/${DISTRIBUTION}-${TARGET}-${MAJOR_VERSION}-bin
+fi
+if [[ ! -d "${BIN_DIR}" ]]; then
+    mkdir -p "${BIN_DIR}"
+fi
 
 HOME_DIR=$(docker run --rm -it "${DOCKER_IMAGE}" sh -c "cd ~; pwd" | tr -d '\r')
 MOUNT_DIR=$(docker run --rm -it "${DOCKER_IMAGE}" sh -c "pwd" | tr -d '\r')
@@ -115,9 +153,13 @@ if [[ / == "${SCRIPT_DIR}" ]]; then
 fi
 
 DOCKER_OPTS=(--rm -it -u "$(id -u):$(id -g)" -v "${BIN_DIR}:${MOUNT_DIR}/bin")
-if [[ -d "${DL_DIR}" ]]; then
-    DOCKER_OPTS+=(-v "${DL_DIR}:${MOUNT_DIR}/dl")
+if [[ -n ${BUILD_DIR} ]]; then
+    if [[ ! -d ${BUILD_DIR} ]]; then
+        mkdir -p "${BUILD_DIR}"
+    fi
+    DOCKER_OPTS=(--rm -it -u "$(id -u):$(id -g)" -v "${BUILD_DIR}:${MOUNT_DIR}/build_dir")
 fi
+DOCKER_OPTS+=(-v "${DL_DIR}:${MOUNT_DIR}/dl")
 
 for script in ../build.sh ../checkout.sh ../config.sh; do
     #shellcheck disable=SC2086
@@ -132,9 +174,6 @@ EOF
     if [[ -n ${no_proxy} ]]; then
         no_proxy=${no_proxy}:$(echo "${GIT_PROXY}" | cut -d/ -f3 | cut -d: -f1)
     fi
-elif [[ -z ${NO_GIT_PROXY} ]]; then
-    echo "GIT_PROXY is required"
-    exit 1
 fi
 DOCKER_OPTS+=(--env "MAJOR_VERSION=${MAJOR_VERSION}")
 DOCKER_OPTS+=(--env "MAJOR_VERSION_NUMBER=${MAJOR_VERSION_NUMBER}")

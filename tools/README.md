@@ -16,3 +16,15 @@ rsync -aq /work/immortalwrt /mnt/usb/
 ```
 
 `kmod-oaf`
+
+```bash
+find . -type f -iname "*oaf*.ipk" -exec cp {} /work/immortalwrt/package/21.02/armvirt-64/ \;
+
+find . -type d -exec chmod 755 {} \;
+
+find . -type f -exec chmod 644 {} \;
+
+python3 make-index.py -i /work/openwrt/package
+
+python3 make-index.py -i /work/immortalwrt/package
+```
