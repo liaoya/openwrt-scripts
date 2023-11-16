@@ -69,11 +69,11 @@ export PACKAGES
 export OPENWRT_MIRROR_PATH=http://mirrors.cloud.tencent.com/openwrt
 export OPENWRT_MIRROR_PATH=http://mirrors.aliyun.com/openwrt
 
-bash -x build.sh -p x86-64 --dryrun
+bash -x build.sh -t x86-64 --dryrun
 
-bash -x build.sh -p x86-64 -s 512 -c
-bash -x build.sh -p ath79-nand -P netgear_wndr4300 -c
-bash -x build.sh -p ramips-mt7621 -P d-team_newifi-d2
+bash -x build.sh -t x86-64 -s 512 -c
+bash -x build.sh -t ath79-nand -P netgear_wndr4300 -c
+bash -x build.sh -t ramips-mt7621 -P d-team_newifi-d2
 ```
 
 ## 22.03
@@ -110,11 +110,11 @@ export PACKAGES
 export OPENWRT_MIRROR_PATH=http://mirrors.cloud.tencent.com/openwrt
 export OPENWRT_MIRROR_PATH=http://mirrors.aliyun.com/openwrt
 
-bash -x build.sh -p x86-64 -v 22.03.5
+bash -x build.sh -t x86-64 -v 22.03.5
 
-bash -x build.sh -p x86-64 -s 512 -v 22.03.5
-bash -x build.sh -p ath79-nand -P netgear_wndr4300 -v 22.03.5
-bash -x build.sh -p ramips-mt7621 -P d-team_newifi-d2 -v 22.03.5
+bash -x build.sh -t x86-64 -s 512 -v 22.03.5
+bash -x build.sh -t ath79-nand -P netgear_wndr4300 -v 22.03.5
+bash -x build.sh -t ramips-mt7621 -P d-team_newifi-d2 -v 22.03.5
 ```
 
 ## 21.02
@@ -138,10 +138,10 @@ PACKAGES="${PACKAGES:+$PACKAGES }luci-app-passwall luci-i18n-passwall-zh-cn"
 export PACKAGES
 
 OPENWRT_MIRROR_PATH=${OPENWRT_MIRROR_PATH:-http://mirror.nju.edu.cn/immortalwrt}
-bash build.sh -p armvirt-64 --distribution immortalwrt -v 21.02.7 --nocustomize
-bash build.sh -p x86-64 --distribution immortalwrt -v 21.02.7
-bash build.sh -p ath79-nand -P netgear_wndr4300 --distribution immortalwrt -v 21.02.7
-bash build.sh -p ramips-mt7621 -P d-team_newifi-d2 --distribution immortalwrt -v 21.02.7
+bash build.sh -t armvirt-64 --distribution immortalwrt -v 21.02.7 --nocustomize
+bash build.sh -t x86-64 --distribution immortalwrt -v 21.02.7
+bash build.sh -t ath79-nand -P netgear_wndr4300 --distribution immortalwrt -v 21.02.7
+bash build.sh -t ramips-mt7621 -P d-team_newifi-d2 --distribution immortalwrt -v 21.02.7
 ```
 
 ## Backup

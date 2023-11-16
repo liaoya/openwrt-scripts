@@ -80,13 +80,13 @@ OPTIONS
         EXTRA_IMAGE_NAME="<string>" # Add this to the output image filename (sanitized). ${NAME:+The default is '"${NAME}"'}
     --nocustomize
         Exclude the common configuration for /etc/uci-defaults. ${NO_CUSTOMIZE:+The default is '"${NO_CUSTOMIZE}"'}
-    -p, --platform PLATFORM
-        OpenWRT PLATFORM(used for image tag), e.g. armsr-armv8(armvirt-64), ath79-nand, ramips-mt7621, x86-64. ${PLATFORM:+The default is '"${PLATFORM}"'}
-    -P, --profile PROFILE
+    -p, --profile PROFILE
         PROFILE="<profilename>" # override the default target PROFILE. ${PROFILE:+The default is '"${PROFILE}"'}
     -s, --partsize ROOTFS_PARTSIZE
         ROOTFS_PARTSIZE="<size>" # override the default rootfs partition size in MegaBytes. ${ROOTFS_PARTSIZE:+The default is '"${ROOTFS_PARTSIZE}"'}
-    -t, --thirdparty THIRDPARTY
+    -t, --target TARGET
+        OpenWRT TARGET(used for image tag), e.g. armsr-armv8(armvirt-64), ath79-nand, ramips-mt7621, x86-64. ${TARGET:+The default is '"${TARGET}"'}
+    -T, --thirdparty THIRDPARTY
         Thirdparty package directory. ${THIRDPARTY:+The default is '"${THIRDPARTY}"'}
     -v, --VERSION VERSION
        OpenWRT or ImmortalWrt version(used for image tag). ${VERSION:+The default is '"${VERSION}"'}
@@ -97,7 +97,7 @@ OPTIONS
 EOF
 }
 
-TEMP=$(getopt -o b:d:f:n:p:P:s:t:v:hc --long bindir:,disableservice:,distribution:,files:,name:,partsize,platform:,profile:,thirdparty:,VERSION:,verbose,help,clean,dryrun,nocustomize -- "$@")
+TEMP=$(getopt -o b:d:f:n:p:s:t:T:v:hc --long bindir:,disableservice:,distribution:,files:,name:,partsize,target:,profile:,thirdparty:,VERSION:,verbose,help,clean,dryrun,nocustomize -- "$@")
 eval set -- "${TEMP}"
 while true; do
     shift_step=2
@@ -117,16 +117,16 @@ while true; do
     -n | --name)
         NAME=$2
         ;;
-    -p | --platform)
-        PLATFORM=$2
-        ;;
     -P | --profile)
         PROFILE=$2
         ;;
     -s | --partsize)
         ROOTFS_PARTSIZE=$2
         ;;
-    -t | --thirdparty)
+    -t | --platform)
+        TARGET=$2
+        ;;
+    -T | --thirdparty)
         THIRDPARTY=$2
         ;;
     -v | --VERSION)
@@ -174,32 +174,32 @@ if [[ ${DISTRIBUTION} != openwrt && ${DISTRIBUTION} != immortalwrt ]]; then
     echo "Only OpenWRT or ImmortalWrt is supported"
 fi
 
-_check_param PLATFORM VERSION
+_check_param TARGET VERSION
 MAJOR_VERSION=$(echo "${VERSION}" | cut -d. -f1,2)
 MAJOR_VERSION_NUMBER=$(echo "${MAJOR_VERSION} * 100 / 1" | bc)
 
-if [[ -z ${PROFILE} && ${PLATFORM} == "x86-64" ]]; then
+if [[ -z ${PROFILE} && ${TARGET} == "x86-64" ]]; then
     if [[ MAJOR_VERSION_NUMBER -le 1907 ]]; then
         PROFILE=Generic
     else
         PROFILE=generic
     fi
 fi
-if [[ ! ${PLATFORM} =~ armvirt && ! ${PLATFORM} =~ armsr ]]; then
+if [[ ! ${TARGET} =~ armvirt && ! ${TARGET} =~ armsr ]]; then
     _check_param PROFILE
 fi
 
 if [[ -z ${BINDIR} ]]; then
-    BINDIR=${THIS_DIR}/${DISTRIBUTION}-${PLATFORM}${PROFILE:+"-${PROFILE}"}-${VERSION}-bin
+    BINDIR=${THIS_DIR}/${DISTRIBUTION}-${TARGET}${PROFILE:+"-${PROFILE}"}-${VERSION}-bin
 fi
 if [[ ${CLEAN:-0} -gt 0 ]] && [[ -d "${BINDIR}" ]]; then
     rm -fr "${BINDIR}"
 fi
 if [[ ! -d ${BINDIR} ]]; then mkdir -p "${BINDIR}"; fi
 if [[ ${DISTRIBUTION} == immortalwrt ]]; then
-    DOCKER_IMAGE=docker.io/${DISTRIBUTION}/imagebuilder:${PLATFORM}-openwrt-${VERSION}
+    DOCKER_IMAGE=docker.io/${DISTRIBUTION}/imagebuilder:${TARGET}-openwrt-${VERSION}
 else
-    DOCKER_IMAGE=docker.io/${DISTRIBUTION}/imagebuilder:${PLATFORM}-${VERSION}
+    DOCKER_IMAGE=docker.io/${DISTRIBUTION}/imagebuilder:${TARGET}-${VERSION}
 fi
 docker image pull "${DOCKER_IMAGE}"
 
@@ -237,10 +237,10 @@ if [[ ${DISTRIBUTION} == immortalwrt ]]; then
     else
         OPENWRT_MIRROR_PATH=${OPENWRT_MIRROR_PATH:-http://immortalwrt.kyarucloud.moe/}
     fi
-    if [[ ${PLATFORM} == "x86-64" ]]; then
+    if [[ ${TARGET} == "x86-64" ]]; then
         cmd=${cmd:+${cmd}; }"sudo apt update -qy; sudo apt install -qy genisoimage" # Fix the missing package
     fi
-    if [[ ${PLATFORM} =~ armvirt || ${PLATFORM} =~ armsr ]]; then
+    if [[ ${TARGET} =~ armvirt || ${TARGET} =~ armsr ]]; then
         cmd=${cmd:+${cmd}; }"sudo apt update -qy; sudo apt install -qy cpio" # Fix the missing package
     fi
 fi
@@ -275,14 +275,14 @@ if [[ ${NOCUSTOMIZE:-0} -ne 1 ]]; then
     if [[ -d "${THIS_DIR}/../config/common" ]]; then
         cp -p "${THIS_DIR}/../config/common"/*common "${CONFIG_TEMP_DIR}/etc/uci-defaults/"
     fi
-    if [[ -d "${THIS_DIR}/../config/common/${PLATFORM}/${PROFILE}" ]]; then
-        cp -pr "${THIS_DIR}/../config/common/${PLATFORM}/${PROFILE}"/* "${CONFIG_TEMP_DIR}"/
+    if [[ -d "${THIS_DIR}/../config/common/${TARGET}/${PROFILE}" ]]; then
+        cp -pr "${THIS_DIR}/../config/common/${TARGET}/${PROFILE}"/* "${CONFIG_TEMP_DIR}"/
     fi
     if [[ -d "${THIS_DIR}/../config/${MAJOR_VERSION}" ]]; then
         cp -pr "${THIS_DIR}/../config/${MAJOR_VERSION}"/*common "${CONFIG_TEMP_DIR}/etc/uci-defaults/" || true
     fi
-    if [[ -d "${THIS_DIR}/../config/${MAJOR_VERSION}/${PLATFORM}/${PROFILE}" ]]; then
-        cp -pr "${THIS_DIR}/../config/${MAJOR_VERSION}/${PLATFORM}/${PROFILE}"/* "${CONFIG_TEMP_DIR}"/
+    if [[ -d "${THIS_DIR}/../config/${MAJOR_VERSION}/${TARGET}/${PROFILE}" ]]; then
+        cp -pr "${THIS_DIR}/../config/${MAJOR_VERSION}/${TARGET}/${PROFILE}"/* "${CONFIG_TEMP_DIR}"/
     fi
     echo -e "#!/bin/sh\n\ncat <<EOF | tee /etc/dropbear/authorized_keys" >>"${CONFIG_TEMP_DIR}/etc/uci-defaults/10_dropbear"
     while IFS= read -r -d '' _id_rsa; do
@@ -306,8 +306,8 @@ EOF
     fi
 fi
 
-if [[ -z ${THIRDPARTY} && -d /work/${DISTRIBUTION}/package/"${MAJOR_VERSION}/${PLATFORM}" ]]; then
-    THIRDPARTY=/work/${DISTRIBUTION}/package/"${MAJOR_VERSION}/${PLATFORM}"
+if [[ -z ${THIRDPARTY} && -d /work/${DISTRIBUTION}/package/"${MAJOR_VERSION}/${TARGET}" ]]; then
+    THIRDPARTY=/work/${DISTRIBUTION}/package/"${MAJOR_VERSION}/${TARGET}"
 fi
 
 if [[ -n ${THIRDPARTY} ]]; then
@@ -318,7 +318,7 @@ if [[ -n ${THIRDPARTY} ]]; then
         cmd="${cmd:+${cmd}; }sed -i -e '\|^## Place your custom repositories here.*|a src custom file://${MOUNT_DIR}/thirdparty' -e 's/^option check_signature$/# &/' repositories.conf"
     fi
 fi
-if [[ ${PLATFORM} == "x86-64" ]]; then
+if [[ ${TARGET} == "x86-64" ]]; then
     _add_package kmod-dax kmod-dm
 fi
 
@@ -335,7 +335,7 @@ fi
 if [[ -n ${PROFILE} ]]; then
     makecmd="${makecmd} PROFILE=${PROFILE}"
 fi
-if [[ ${PLATFORM} == x86-64 || ${PLATFORM} =~ armvirt ]] && [[ ${ROOTFS_PARTSIZE} -gt 0 ]]; then
+if [[ ${TARGET} == x86-64 || ${TARGET} =~ armvirt ]] && [[ ${ROOTFS_PARTSIZE} -gt 0 ]]; then
     makecmd="${makecmd} ROOTFS_PARTSIZE=${ROOTFS_PARTSIZE}"
 fi
 if [[ ${DRYRUN:-0} -eq 0 ]]; then
@@ -346,7 +346,7 @@ else
 fi
 
 # qemu-img convert to make the image as thin provision, do not compress it any more to make backing file across pool
-if [[ $(command -v qemu-img) && ${PLATFORM} == "x86-64" && ${DRYRUN:-0} -eq 0 ]]; then
+if [[ $(command -v qemu-img) && ${TARGET} == "x86-64" && ${DRYRUN:-0} -eq 0 ]]; then
     while IFS= read -r _gz_image; do
         _prefix=$(dirname "${_gz_image}")
         _img=${_prefix}/$(basename -s .gz "${_gz_image}")

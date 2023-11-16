@@ -78,7 +78,7 @@ while true; do
         shift_step=1
         CLEAN=1
         ;;
-    --distribution)
+    -d | --distribution)
         DISTRIBUTION=$2
         ;;
     --dryrun)

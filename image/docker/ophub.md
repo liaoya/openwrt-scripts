@@ -2,6 +2,8 @@
 
 - <https://bingmeme.github.io/OpenWrt_CN/release/ImmortalWrtSource.html>
 
+## ImmortalWRT
+
 ```bash
 export PACKAGES="-dnsmasq -wpad-mini -wpad-basic \
 dnsmasq-full wpad \
@@ -14,7 +16,6 @@ luci luci-compat luci-lib-ipkg \
 luci-app-amlogic luci-i18n-amlogic-zh-cn \
 luci-app-accesscontrol luci-i18n-accesscontrol-zh-cn \
 luci-app-adbyby-plus luci-i18n-adbyby-plus-zh-cn \
-luci-app-bypass luci-i18n-bypass-zh-cn \
 luci-app-netdata luci-i18n-netdata-zh-cn \
 luci-app-passwall luci-i18n-passwall-zh-cn \
 luci-app-ssr-plus luci-i18n-ssr-plus-zh-cn \
@@ -27,11 +28,13 @@ luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn \
 luci-theme-bootstrap \
 luci-theme-argon luci-app-argon-config luci-i18n-argon-config-zh-cn \
 mtr nano tmux \
-perl perlbase-cpan \
+perl perlbase-cpan python3 \
 uci uhttpd-mod-ubus wget xray-plugin xz \
 "
 
-bash build.sh -p armvirt-64 --distribution immortalwrt -v 21.02.7
+bash build.sh -t armvirt-64 -v 21.02.7 -s 1024
+
+bash build.sh -t armvirt-64 -v 21.02.7 -s 1024 --distribution immortalwrt -v 21.02.7
 
 wc -l bin/targets/armvirt/64/immortalwrt-21.02.7-armvirt-64-default.manifest
 
