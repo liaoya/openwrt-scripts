@@ -18,7 +18,7 @@ rsync -aq /work/immortalwrt /mnt/usb/
 `kmod-oaf`
 
 ```bash
-find . -type f -iname "*oaf*.ipk" -exec cp {} /work/immortalwrt/package/21.02/armvirt-64/ \;
+find . -type f -iname "kmod-oaf*.ipk" -exec cp {} /work/immortalwrt/package/21.02/armvirt-64/ \;
 
 find . -type d -exec chmod 755 {} \;
 

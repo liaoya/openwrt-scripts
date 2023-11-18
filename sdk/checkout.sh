@@ -25,10 +25,9 @@ sed -e 's|git.openwrt.org/openwrt/openwrt|github.com/openwrt/openwrt|g' \
 scripts/feeds clean || true
 ./scripts/feeds update -a || true
 
-if [[ ${MAJOR_VERSION_NUMBER} -lt 2305 ]]; then
-    rm -rf feeds/packages/lang/golang
-    svn co https://github.com/openwrt/packages/branches/openwrt-23.05/lang/golang feeds/packages/lang/golang
-fi
+# Even on OpenWrt 23.05, we need use latest golang for xray and xray-plugin build
+rm -rf feeds/packages/lang/golang
+svn co https://github.com/openwrt/packages/branches/openwrt-23.05/lang/golang feeds/packages/lang/golang
 
 while IFS= read -r feedname; do
     ./scripts/feeds install -a -p "${feedname}" -d y -f
