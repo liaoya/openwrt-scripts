@@ -32,9 +32,10 @@ perl perlbase-cpan python3 \
 uci uhttpd-mod-ubus wget xray-plugin xz \
 "
 
-bash build.sh -t armvirt-64 -v 21.02.7 -s 1024
+bash build.sh -t armvirt-64 -v 21.02.7 -s 512
 
-bash build.sh -t armvirt-64 -v 21.02.7 -s 1024 --distribution immortalwrt -v 21.02.7
+export OPENWRT_MIRROR_PATH=http://mirror.nju.edu.cn/immortalwrt
+bash build.sh -t armvirt-64 -v 21.02.7 -s 512 --distribution immortalwrt
 
 wc -l bin/targets/armvirt/64/immortalwrt-21.02.7-armvirt-64-default.manifest
 
@@ -53,6 +54,8 @@ sed -i /etc/opkg/distfeeds.conf \
 in ophub
 
 ```bash
+mkdir -p openwrt-armvirt
+
 sudo ./make -b firefly-rk3399 -k 6.1.60
-sudo ./make -b s905d -k 6.1.60
+sudo ./make -b s905d -k 6.1.62
 ```

@@ -1,6 +1,6 @@
 # Build OpenWrt Custom Image
 
-Depreciate since we can use imagebuilder docker always
+OpenWrt official imagebuilder docker image for armvirt-64 miss `cpio` package
 
 Speed the build via
 
@@ -19,6 +19,10 @@ Run the following command to install the image build requirements for Ubuntu 18.
 `sudo apt-get install -y -qq subversion build-essential libncurses5-dev zlib1g-dev gawk git ccache gettext libssl-dev xsltproc wget unzip python time ocaml-nox help2man texinfo yui-compressor`
 
 ## Build
+
+```bash
+./build.sh --verbose -t armsr-armv8
+```
 
 Some examples, read `build.sh` for usage.
 
@@ -63,15 +67,6 @@ luci-app-smartdns luci-i18n-smartdns-zh-cn \
 luci-app-ssr-plus luci-i18n-ssr-plus-zh-cn \
 luci-app-vlmcsd luci-i18n-vlmcsd-zh-cn \
 tcping"
-```
-
-## Shadowsocks
-
-<http://openwrt-dist.sourceforge.net/packages> is the best shadowsocks solution I found for openwrt.
-
-```bash
-wget http://openwrt-dist.sourceforge.net/openwrt-dist.pub
-opkg-key add openwrt-dist.pub
 ```
 
 ## Issues

@@ -30,7 +30,16 @@ rm -rf feeds/packages/lang/golang
 svn co https://github.com/openwrt/packages/branches/openwrt-23.05/lang/golang feeds/packages/lang/golang
 
 while IFS= read -r feedname; do
-    ./scripts/feeds install -a -p "${feedname}" -d y -f
+    for item in \
+        https://github.com/destan19/OpenAppFilter \
+        https://github.com/fw876/helloworld \
+        https://github.com/kenzok8/openwrt-packages \
+        https://github.com/kenzok8/small \
+        https://github.com/ophub/luci-app-amlogic; do
+        if [[ $(./scripts/feeds list -s | grep -e "^${feedname} " | tr -s " " | cut -d " " -f 4) == "${item}" ]]; then
+            ./scripts/feeds install -a -p "${feedname}" -d y -f
+        fi
+    done
 done < <(./scripts/feeds list -n | grep -v -e 'base\|packages\|luci\|routing\|telephony')
 
 # python3 "${ROOT_DIR}/../remove-duplicate.py" --feeds "${SDK_DIR}"/feeds --dryrun

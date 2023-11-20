@@ -61,7 +61,7 @@ EOF
 
 DISTRIBUTION=${DISTRIBUTION:-OpenWRT}
 DL_DIR=${DL_DIR:-/work/openwrt/dl}
-VERSION=${VERSION:-"23.05.0"}
+VERSION=${VERSION:-"23.05.2"}
 
 TEMP=$(getopt -o hcb:d:t:v: --long bin-dir:,build-dir:,clean,dl-dir:,distribution:,dryrun,target:,version: -- "$@")
 eval set -- "$TEMP"
@@ -141,9 +141,11 @@ docker image pull "${DOCKER_IMAGE}"
 if [[ -z ${BIN_DIR} ]]; then
     BIN_DIR=${THIS_DIR}/${DISTRIBUTION}-${TARGET}-${MAJOR_VERSION}-bin
 fi
-if [[ ! -d "${BIN_DIR}" ]]; then
-    mkdir -p "${BIN_DIR}"
+if [[ ${CLEAN} -gt 0 ]]; then
+    if [[ -d "${BIN_DIR}" ]]; then rm -fr "${BIN_DIR}"; fi
+    if [[ -d ${BUILD_DIR} ]]; then rm -fr "${BUILD_DIR}"; fi
 fi
+if [[ ! -d "${BIN_DIR}" ]]; then mkdir -p "${BIN_DIR}"; fi
 
 HOME_DIR=$(docker run --rm -it "${DOCKER_IMAGE}" sh -c "cd ~; pwd" | tr -d '\r')
 MOUNT_DIR=$(docker run --rm -it "${DOCKER_IMAGE}" sh -c "pwd" | tr -d '\r')
@@ -152,14 +154,12 @@ if [[ / == "${SCRIPT_DIR}" ]]; then
     SCRIPT_DIR=""
 fi
 
-DOCKER_OPTS=(--rm -it -u "$(id -u):$(id -g)" -v "${BIN_DIR}:${MOUNT_DIR}/bin")
+DOCKER_OPTS=(--rm -it -u "$(id -u):$(id -g)" -v "${BIN_DIR}:${MOUNT_DIR}/bin" -v "${DL_DIR}:${MOUNT_DIR}/dl")
+DOCKER_OPTS+=(--env "DISTRIBUTION:${DISTRIBUTION}" --env "MAJOR_VERSION=${MAJOR_VERSION}" --env "MAJOR_VERSION_NUMBER=${MAJOR_VERSION_NUMBER}")
 if [[ -n ${BUILD_DIR} ]]; then
-    if [[ ! -d ${BUILD_DIR} ]]; then
-        mkdir -p "${BUILD_DIR}"
-    fi
+    if [[ ! -d ${BUILD_DIR} ]]; then mkdir -p "${BUILD_DIR}"; fi
     DOCKER_OPTS=(--rm -it -u "$(id -u):$(id -g)" -v "${BUILD_DIR}:${MOUNT_DIR}/build_dir")
 fi
-DOCKER_OPTS+=(-v "${DL_DIR}:${MOUNT_DIR}/dl")
 
 for script in ../build.sh ../checkout.sh ../config.sh; do
     #shellcheck disable=SC2086
@@ -175,8 +175,6 @@ EOF
         no_proxy=${no_proxy}:$(echo "${GIT_PROXY}" | cut -d/ -f3 | cut -d: -f1)
     fi
 fi
-DOCKER_OPTS+=(--env "MAJOR_VERSION=${MAJOR_VERSION}")
-DOCKER_OPTS+=(--env "MAJOR_VERSION_NUMBER=${MAJOR_VERSION_NUMBER}")
 for item in http_proxy https_proxy no_proxy; do
     if [[ -n ${!item} ]]; then
         DOCKER_OPTS+=(--env "${item^^}=${!item}")
@@ -192,8 +190,7 @@ EOF
     DOCKER_OPTS+=(-v "${_TEMP_DIR}/servers:/${HOME_DIR}/.subversion/servers")
 fi
 if [[ $(timedatectl show | grep Timezone | cut -d= -f2) == Asia/Shanghai ]]; then
-    DOCKER_OPTS+=(--env "GO111MODULE=auto")
-    DOCKER_OPTS+=(--env "GOPROXY=https://goproxy.cn,direct")
+    DOCKER_OPTS+=(--env "GO111MODULE=auto" --env "GOPROXY=https://goproxy.cn,direct")
 fi
 # GOSU=$(command -v gosu)
 # if [[ -n ${GOSU} ]]; then

@@ -3,7 +3,7 @@
 - <https://github.com/topics/openwrt-feed>
 
 ```bash
-docker run --rm -it -u $(id -u):$(id -g) -v $PWD/bin:/builder/bin -v /work/openwrt/dl:/builder/dl docker.io/openwrt/sdk:x86-64-23.05.0 bash
+docker run --rm -it -u $(id -u):$(id -g) -v $PWD/bin:/builder/bin -v /work/openwrt/dl:/builder/dl docker.io/openwrt/sdk:x86-64-23.05.2 bash
 
 export GIT_PROXY=http://192.168.1.202:9080/
 git config --global url."${GIT_PROXY}".insteadOf https://
@@ -26,21 +26,21 @@ echo "src-git jell https://github.com/kenzok8/jell" >>feeds.conf.default
 make -j package/feeds/luci/luci-base/compile
 ```
 
-- `docker.io/openwrt/sdk:x86-64-23.05.0`
+- `docker.io/openwrt/sdk:x86-64-23.05.2`
 - `docker.io/openwrt/sdk:x86-64-22.03.5`
 - `docker.io/openwrt/sdk:x86-64-21.02.7`
 - `docker.io/openwrt/sdk:x86-64-19.07.10`
 - `docker.io/openwrt/sdk:x86-64-18.06.7`
 
-- `docker.io/openwrt/sdk:armsr-armv8-23.05.0`
+- `docker.io/openwrt/sdk:armsr-armv8-23.05.2`
 - `docker.io/openwrt/sdk:armvirt-64-22.03.5`
 - `docker.io/openwrt/sdk:armvirt-64-21.02.7`
 
-- `docker.io/openwrt/sdk:ath79-nand-23.05.0`
+- `docker.io/openwrt/sdk:ath79-nand-23.05.2`
 - `docker.io/openwrt/sdk:ath79-nand-22.03.5`
 - `docker.io/openwrt/sdk:ath79-nand-21.02.7`
 
-- `docker.io/openwrt/sdk:ramips-mt7621-23.05.0`
+- `docker.io/openwrt/sdk:ramips-mt7621-23.05.2`
 - `docker.io/openwrt/sdk:ramips-mt7621-22.03.5`
 - `docker.io/openwrt/sdk:ramips-mt7621-21.02.7`
 
@@ -63,6 +63,7 @@ bash -x run.sh -t armvirt-64 -v 21.02.7 "src-git jell https://github.com/kenzok8
 bash -x run.sh -t armvirt-64 -v 21.02.7 --build-dir openwrt-armvirt-64-21.02-build_dir "src-git jell https://github.com/kenzok8/jell;main"
 
 bash -x run.sh -d ImmortalWrt -v 21.02.7 -t armvirt-64 "src-git jell https://github.com/kenzok8/jell;main"
+bash -x run.sh -d ImmortalWrt -t armsr-armv8 "src-git jell https://github.com/kenzok8/jell;main"
 ```
 
 Clean the images

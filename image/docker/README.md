@@ -7,11 +7,11 @@ User OpenWRT docker image to build firmware
 There're no image after `18.06.7` for `18.06` series
 
 - `23.05`
-  - `docker.io/openwrt/imagebuilder:x86-64-23.05.0`
-  - `docker.io/openwrt/imagebuilder:armsr-armv8-23.05.0` (<https://openwrt.org/releases/23.05/notes-23.05.0>)
-  - `docker.io/openwrt/imagebuilder:ath79-nand-23.05.0`
-  - `docker.io/openwrt/imagebuilder:ramips-mt7621-23.05.0`
-  - `docker.io/openwrt/imagebuilder:ramips-mt7620-23.05.0`
+  - `docker.io/openwrt/imagebuilder:x86-64-23.05.2`
+  - `docker.io/openwrt/imagebuilder:armsr-armv8-23.05.2` (<https://openwrt.org/releases/23.05/notes-23.05.2>)
+  - `docker.io/openwrt/imagebuilder:ath79-nand-23.05.2`
+  - `docker.io/openwrt/imagebuilder:ramips-mt7621-23.05.2`
+  - `docker.io/openwrt/imagebuilder:ramips-mt7620-23.05.2`
 - `22.03`
   - `docker.io/openwrt/imagebuilder:x86-64-22.03.5`
   - `docker.io/openwrt/imagebuilder:armvirt-64-22.03.5`
@@ -113,8 +113,8 @@ export OPENWRT_MIRROR_PATH=http://mirrors.aliyun.com/openwrt
 bash -x build.sh -t x86-64 -v 22.03.5
 
 bash -x build.sh -t x86-64 -s 512 -v 22.03.5
-bash -x build.sh -t ath79-nand -P netgear_wndr4300 -v 22.03.5
-bash -x build.sh -t ramips-mt7621 -P d-team_newifi-d2 -v 22.03.5
+bash -x build.sh -t ath79-nand -p netgear_wndr4300 -v 22.03.5
+bash -x build.sh -t ramips-mt7621 -p d-team_newifi-d2 -v 22.03.5
 ```
 
 ## 21.02

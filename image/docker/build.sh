@@ -5,57 +5,16 @@ set -e
 
 THIS_DIR=$(readlink -f "${BASH_SOURCE[0]}")
 THIS_DIR=$(dirname "${THIS_DIR}")
-
-trap _exec_exit_hook EXIT
-function _exec_exit_hook() {
-    local _idx
-    for ((_idx = ${#_EXIT_HOOKS[@]} - 1; _idx >= 0; _idx--)); do
-        eval "${_EXIT_HOOKS[_idx]}" || true
-    done
-}
-
-function _add_exit_hook() {
-    while (($#)); do
-        _EXIT_HOOKS+=("$1")
-        shift
-    done
-}
+#shellcheck disable=SC1091
+source "${THIS_DIR}/../common.sh"
 
 PACKAGES=${PACKAGES:-""}
-
-function _add_package() {
-    local _before=0
-    if [[ ${1} == "-b" ]]; then
-        _before=1
-        shift
-    fi
-    while (($#)); do
-        if [[ ${PACKAGES} != *"${1}"* ]]; then
-            if [[ ${_before} -gt 0 ]]; then
-                PACKAGES="${1}${PACKAGES:+ ${PACKAGES}}"
-            else
-                PACKAGES="${PACKAGES:+${PACKAGES} }${1}"
-            fi
-        fi
-        shift
-    done
-}
-
-function _check_param() {
-    while (($#)); do
-        if [[ -z ${!1} ]]; then
-            echo "\${$1} is required"
-            return 1
-        fi
-        shift 1
-    done
-}
 
 DISTRIBUTION=${DISTRIBUTION:-OpenWRT}
 DRYRUN=${DRYRUN:-0}
 NOCUSTOMIZE=${NOCUSTOMIZE:-0}
 ROOTFS_PARTSIZE=${ROOTFS_PARTSIZE:-0}
-VERSION=${VERSION:-23.05.0}
+VERSION=${VERSION:-23.05.2}
 
 function _print_help() {
     #shellcheck disable=SC2016
@@ -97,13 +56,16 @@ OPTIONS
 EOF
 }
 
-TEMP=$(getopt -o b:d:f:n:p:s:t:T:v:hc --long bindir:,disableservice:,distribution:,files:,name:,partsize,target:,profile:,thirdparty:,VERSION:,verbose,help,clean,dryrun,nocustomize -- "$@")
+TEMP=$(getopt -o b:d:f:n:p:s:t:T:v:hc --long bindir:,build-dir:,disableservice:,distribution:,files:,name:,partsize,profile:,target:,thirdparty:,VERSION:,verbose,help,clean,dryrun,nocustomize -- "$@")
 eval set -- "${TEMP}"
 while true; do
     shift_step=2
     case "$1" in
     -b | --bindir)
         BINDIR=$(readlink -f "$2")
+        ;;
+    --build-dir)
+        BUILD_DIR=$(readlink -f "$2")
         ;;
     -d | --disableservice)
         DISABLESERVICE=$2
@@ -117,13 +79,13 @@ while true; do
     -n | --name)
         NAME=$2
         ;;
-    -P | --profile)
+    -p | --profile)
         PROFILE=$2
         ;;
     -s | --partsize)
         ROOTFS_PARTSIZE=$2
         ;;
-    -t | --platform)
+    -t | --target)
         TARGET=$2
         ;;
     -T | --thirdparty)

@@ -1,83 +1,120 @@
 #!/bin/bash
 #shellcheck disable=SC1090,SC1091,SC2034,SC2164
 
-set -a -e -x
+set -ae
 
-ROOT_DIR=$(readlink -f "${BASH_SOURCE[0]}")
-ROOT_DIR=$(dirname "${ROOT_DIR}")
+THIS_DIR=$(readlink -f "${BASH_SOURCE[0]}")
+THIS_DIR=$(dirname "${THIS_DIR}")
+#shellcheck disable=SC1091
+source "${THIS_DIR}/../common.sh"
+
 CACHE_DIR="${HOME}/.cache/openwrt"
 mkdir -p "${CACHE_DIR}"
 
-BASE_URL=${BASE_URL:-""}
-OPENWRT_MIRROR_PATH=${OPENWRT_MIRROR_PATH:-""}
-DEVICE=${OPENWRT_DEVICE:-""}
-REPOSITORY=${REPOSITORY:-""}
-IMAGE_DIR=${IMAGE_DIR:-/work/openwrt/imagebuilder}
-VARIANT=${OPENWRT_VARIANT:-"custom"}
-VERSION=${OPENWRT_VERSION:-"23.05.0"}
-CLEAN=0
+DISTRIBUTION=${DISTRIBUTION:-OpenWRT}
+DRYRUN=${DRYRUN:-0}
+NOCUSTOMIZE=${NOCUSTOMIZE:-0}
+ROOTFS_PARTSIZE=${ROOTFS_PARTSIZE:-0}
+VERSION=${VERSION:-23.05.2}
 
 function _print_help() {
+    #shellcheck disable=SC2016
     cat <<EOF
 Usage: $(basename "${BASH_SOURCE[0]}") [OPTIONS]
 OPTIONS
-    -d, --device, DEVICE NAME
-    -p, --repository, the local repository
-    -r, --root, the root directory of uncompress folder
-    -u, --url, provide the openwrt image builder url directly since the version
-    -v, --variant, IMAGE VARIANT
-    -V, --version, OpenWRT VERSION
-    -c, --clean, clean build
-    -h, --help, show help
+    -h, --help
+        Display help text and exit. No other output is generated.
+    -c, --clean
+        Clean the previous build
+    -b, --bindir BINDIR
+        BIN_DIR="<path>" # alternative output directory for the images. ${BINDIR:+The default is '"${BINDIR}"'}
+    --build-dir BUILD_DIR
+        the build_dir directory binding for temporary output, cache it for speed build. ${BUILD_DIR:+The default is '"${BUILD_DIR}"'}
+    -d, --disableservice DISABLESERVICE
+        DISABLED_SERVICES="<svc1> [<svc2> [<svc3> ..]]" # Which services in /etc/init.d/ should be disabled. ${DISABLESERVICE:+The default is '"${DISABLESERVICE}"'}
+    --distribution DISTRIBUTION
+        OpenWRT or ImmortalWrt. ${DISTRIBUTION:+The default is '"${DISTRIBUTION}"'}
+    -f, --files FILES
+        FILES="<path>" # include extra FILES from <path>. ${FILES:+The default is '"${FILES}"'}
+    -n, --name NAME
+        EXTRA_IMAGE_NAME="<string>" # Add this to the output image filename (sanitized). ${NAME:+The default is '"${NAME}"'}
+    --nocustomize
+        Exclude the common configuration for /etc/uci-defaults. ${NO_CUSTOMIZE:+The default is '"${NO_CUSTOMIZE}"'}
+    -p, --profile PROFILE
+        PROFILE="<profilename>" # override the default target PROFILE. ${PROFILE:+The default is '"${PROFILE}"'}
+    -s, --partsize ROOTFS_PARTSIZE
+        ROOTFS_PARTSIZE="<size>" # override the default rootfs partition size in MegaBytes. ${ROOTFS_PARTSIZE:+The default is '"${ROOTFS_PARTSIZE}"'}
+    -t, --target TARGET
+        OpenWRT TARGET(used for image tag), e.g. armsr-armv8(armvirt-64), ath79-nand, ramips-mt7621, x86-64. ${TARGET:+The default is '"${TARGET}"'}
+    -T, --thirdparty THIRDPARTY
+        Thirdparty package directory. ${THIRDPARTY:+The default is '"${THIRDPARTY}"'}
+    -v, --VERSION VERSION
+       OpenWRT or ImmortalWrt version(used for image tag). ${VERSION:+The default is '"${VERSION}"'}
+    --verbose
+        More information
+    --dryrun
+        Only kick start the shell, skip the final build step. ${DRYRUN:+The default is '"${DRYRUN}"'}
 EOF
 }
 
-PACKAGES=${PACKAGES:-""}
-
-function _add_package() {
-    while (($#)); do
-        if [[ ${PACKAGES} != *"${1}"* ]]; then
-            PACKAGES="${PACKAGES:+${PACKAGES} }${1}"
-        fi
-        shift
-    done
-}
-
-TEMP=$(getopt -o d:p:r:v:V:ch --long device:repository:,root:,variant:,version:,clean,help -- "$@")
-eval set -- "$TEMP"
+TEMP=$(getopt -o b:d:f:n:p:s:t:T:v:hc --long bindir:,build-dir:,disableservice:,distribution:,files:,name:,,partsize,profile:,target:,thirdparty:,version:,verbose,help,clean,dryrun,nocustomize -- "$@")
+eval set -- "${TEMP}"
 while true; do
+    shift_step=2
     case "$1" in
-    -d | --device)
-        shift
-        DEVICE=$1
+    -b | --bindir)
+        BINDIR=$(readlink -f "$2")
         ;;
-    -p | --repository)
-        shift
-        REPOSITORY=$1
+    --build-dir)
+        BUILD_DIR=$(readlink -f "$2")
         ;;
-    -r | --root)
-        shift
-        IMAGE_DIR=$(readlink -f "$1")
+    -d | --disableservice)
+        DISABLESERVICE=$2
         ;;
-    -u | --url)
-        shift
-        BASE_URL=$1
+    --distribution)
+        DISTRIBUTION=$2
         ;;
-    -v | --variant)
-        shift
-        VARIANT=$1
+    -f | --files)
+        FILES=$(readlink -f "$2")
         ;;
-    -V | --version)
-        #shellcheck disable=SC2034
-        shift
-        VERSION=$1
+    -n | --name)
+        NAME=$2
         ;;
-    -c | --clean)
-        CLEAN=1
+    -p | --profile)
+        PROFILE=$2
+        ;;
+    -s | --partsize)
+        ROOTFS_PARTSIZE=$2
+        ;;
+    -t | --target)
+        TARGET=$2
+        ;;
+    -T | --thirdparty)
+        THIRDPARTY=$2
+        ;;
+    -v | --VERSION)
+        VERSION=$2
+        ;;
+    --verbose)
+        shift_step=1
+        set -x
+        export PS4='+(${BASH_SOURCE[0]}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
         ;;
     -h | --help)
         _print_help
         exit 0
+        ;;
+    -c | --clean)
+        shift_step=1
+        CLEAN=1
+        ;;
+    --dryrun)
+        shift_step=1
+        DRYRUN=1
+        ;;
+    --nocustomize)
+        shift_step=1
+        NOCUSTOMIZE=1
         ;;
     --)
         shift
@@ -88,48 +125,67 @@ while true; do
         exit 1
         ;;
     esac
-    shift
+    shift "${shift_step}"
 done
 
-if [[ -z ${DEVICE} ]]; then
-    echo "Please assign the device type"
-    exit 1
+if [[ -n ${FILES} && ${NOCUSTOMIZE} -gt 0 ]]; then
+    echo "${FILES} will not be used as \${NOCUSTOMIZE} is ${NOCUSTOMIZE}"
 fi
 
-if [[ $(timedatectl show | grep Timezone | cut -d= -f2) == Asia/Shanghai ]]; then
-    OPENWRT_MIRROR_PATH=http://mirrors.ustc.edu.cn/openwrt
-else
-    OPENWRT_MIRROR_PATH=http://downloads.openwrt.org
+DISTRIBUTION=${DISTRIBUTION,,}
+if [[ ${DISTRIBUTION} != openwrt && ${DISTRIBUTION} != immortalwrt ]]; then
+    echo "Only OpenWRT or ImmortalWrt is supported"
+fi
+if [[ -z ${BINDIR} ]]; then
+    BINDIR=${THIS_DIR}/${DISTRIBUTION}-${TARGET}${PROFILE:+"-${PROFILE}"}-${VERSION}-bin
+fi
+if [[ ${CLEAN:-0} -gt 0 ]] && [[ -d "${BINDIR}" ]]; then
+    rm -fr "${BINDIR}"
+fi
+if [[ ! -d ${BINDIR} ]]; then mkdir -p "${BINDIR}"; fi
+if [[ -n ${BUILD_DIR} ]]; then
+    if [[ ! -d ${BUILD_DIR} ]]; then
+        mkdir -p "${BUILD_DIR}"
+    fi
 fi
 
-if [[ -f "${ROOT_DIR}/devices/${DEVICE}.sh" ]]; then
-    source "${ROOT_DIR}/devices/${DEVICE}.sh"
-elif [[ -f "${ROOT_DIR}/devices/${DEVICE}/${VARIANT}.sh" ]]; then
-    source "${ROOT_DIR}/devices/${DEVICE}/${VARIANT}.sh"
-else
-    echo "Require customized ${ROOT_DIR}/devices/${DEVICE}.sh or ${ROOT_DIR}/devices/${DEVICE}/${VARIANT}.sh"
-    exit 1
+_check_param TARGET VERSION
+MAJOR_VERSION=$(echo "${VERSION}" | cut -d. -f1,2)
+MAJOR_VERSION_NUMBER=$(echo "${MAJOR_VERSION} * 100 / 1" | bc)
+
+if [[ -z ${PROFILE} && ${TARGET} == "x86-64" ]]; then
+    if [[ MAJOR_VERSION_NUMBER -le 1907 ]]; then
+        PROFILE=Generic
+    else
+        PROFILE=generic
+    fi
+fi
+if [[ ! ${TARGET} =~ armvirt && ! ${TARGET} =~ armsr ]]; then
+    _check_param PROFILE
 fi
 
-if [[ -z ${BASE_URL} ]]; then
-    echo "Please provide \$BASE_URL"
-    exit 1
+if [[ ${DISTRIBUTION} == openwrt ]]; then
+    if [[ $(timedatectl show | grep Timezone | cut -d= -f2) == Asia/Shanghai ]]; then
+        OPENWRT_MIRROR_PATH=${OPENWRT_MIRROR_PATH:-http://mirrors.ustc.edu.cn/openwrt}
+    else
+        OPENWRT_MIRROR_PATH=${OPENWRT_MIRROR_PATH:-https://downloads.openwrt.org}
+    fi
+elif [[ ${DISTRIBUTION} == immortalwrt ]]; then
+    if [[ $(timedatectl show | grep Timezone | cut -d= -f2) == Asia/Shanghai ]]; then
+        OPENWRT_MIRROR_PATH=${OPENWRT_MIRROR_PATH:-http://mirror.sjtu.edu.cn/immortalwrt}
+    else
+        OPENWRT_MIRROR_PATH=${OPENWRT_MIRROR_PATH:-http://immortalwrt.kyarucloud.moe/}
+    fi
 fi
 
-if [[ ! -d "${IMAGE_DIR}" ]]; then mkdir -p "${IMAGE_DIR}"; fi
-pushd "${IMAGE_DIR}"
+_TEMP_DIR=$(mktemp -d)
+_add_exit_hook "sudo rm -fr ${_TEMP_DIR}"
+BASE_URL=${OPENWRT_MIRROR_PATH}/releases/${VERSION}/targets/${TARGET/-/\/}
 
-curl -sLO "${BASE_URL}/sha256sums"
-# curl -sLO "${BASE_URL}/sha256sums.asc"
-# curl -sLO "${BASE_URL}/sha256sums.sig"
-# if [ ! -f sha256sums.asc ] && [ ! -f sha256sums.sig ]; then
-#     echo "Missing sha256sums signature files"
-#     exit 1
-# fi
-# [ ! -f sha256sums.asc ] || gpg --with-fingerprint --verify sha256sums.asc sha256sums
+curl -sL -o "${_TEMP_DIR}/sha256sums"  "${BASE_URL}/sha256sums"
 
-SHA256_VALUE=$(grep "openwrt-imagebuilder-${VERSION}" sha256sums | cut -d' ' -f1)
-IMAGE_BUILDER_FILE=$(grep "openwrt-imagebuilder-${VERSION}" sha256sums | cut -d'*' -f2)
+SHA256_VALUE=$(grep "openwrt-imagebuilder-${VERSION}" "${_TEMP_DIR}/sha256sums" | cut -d' ' -f1)
+IMAGE_BUILDER_FILE=$(grep "openwrt-imagebuilder-${VERSION}" "${_TEMP_DIR}/sha256sums" | cut -d'*' -f2)
 if [[ -f "${CACHE_DIR}/${IMAGE_BUILDER_FILE}" ]]; then
     if [[ $(sha256sum "${CACHE_DIR}/${IMAGE_BUILDER_FILE}" | cut -d' ' -f1) != "${SHA256_VALUE}" ]]; then
         rm -f "${CACHE_DIR}/${IMAGE_BUILDER_FILE}"
@@ -140,48 +196,49 @@ if [[ ! -f "${CACHE_DIR}/${IMAGE_BUILDER_FILE}" ]]; then
     curl -sL "${BASE_URL}/${IMAGE_BUILDER_FILE}" -o "${CACHE_DIR}/${IMAGE_BUILDER_FILE}"
 fi
 
-if [[ ! -d ${IMAGE_DIR} ]]; then
-    mkdir -p "${IMAGE_DIR}"
-fi
-IMAGE_BUILDER_DIR=${IMAGE_DIR}/$(basename -s .tar.xz "${IMAGE_BUILDER_FILE}")
+IMAGE_BUILDER_DIR=${_TEMP_DIR}/$(basename -s .tar.xz "${IMAGE_BUILDER_FILE}")
 if [[ ${CLEAN} -gt 0 && -d ${IMAGE_BUILDER_DIR} ]]; then
     rm -fr "${IMAGE_BUILDER_DIR}"
 fi
 if [[ ! -d "${IMAGE_BUILDER_DIR}" || -z $(ls -A "${IMAGE_BUILDER_DIR}") ]]; then
-    tar -C "${IMAGE_DIR}" -xf "${CACHE_DIR}/${IMAGE_BUILDER_FILE}"
+    tar -C "${_TEMP_DIR}" -xf "${CACHE_DIR}/${IMAGE_BUILDER_FILE}"
 fi
 
+exit 0
+
 cd "${IMAGE_BUILDER_DIR}"
-# if [[ $(command -v pyenv) ]]; then
-#     pyenv local 3.8.13
-# fi
+if [[ $(command -v pyenv) ]] && ! pyenv versions | grep -F '* 3.10'; then
+    #shellcheck disable=SC2046
+    pyenv local $(pyenv versions | grep "3.10.")
+fi
 if [[ -f repositories.conf.bak ]]; then
     cp -r repositories.conf.bak repositories.conf
 fi
 if [[ ! -f repositories.conf.bak ]]; then
     cp -r repositories.conf repositories.conf.bak
 fi
-sed -i -e "s|http://downloads.openwrt.org|${OPENWRT_MIRROR_PATH}|g" -e "s|https://downloads.openwrt.org|${OPENWRT_MIRROR_PATH}|g" repositories.conf
-if [[ -n ${REPOSITORY} && -d ${REPOSITORY} ]]; then
-    REPOSITORY=$(readlink -f "${REPOSITORY}")
-    if [[ -f ${REPOSITORY}/Packages.gz ]]; then
-        echo "src custom_repo file://${REPOSITORY}" >>repositories.conf
-        # https://openwrt.org/docs/guide-user/additional-software/imagebuilder
-        sed -i 's/^option check_signature$/# &/' repositories.conf
+sed -i repositories.conf \
+    -e "s|http://downloads.openwrt.org|${OPENWRT_MIRROR_PATH}|g" \
+    -e "s|https://downloads.openwrt.org|${OPENWRT_MIRROR_PATH}|g" \
+    -e "s|http://downloads.immortalwrt.org|${OPENWRT_MIRROR_PATH}|g" \
+    -e "s|https://downloads.immortalwrt.org|${OPENWRT_MIRROR_PATH}|g" \
+    -e "s|http://mirrors.vsean.net/openwrt|${OPENWRT_MIRROR_PATH}|g" \
+    -e "s|https://mirrors.vsean.net/openwrt|${OPENWRT_MIRROR_PATH}|g"
+if [[ -n ${THIRDPARTY} ]]; then
+    if [[ ${THIRDPARTY:0:4} == http ]]; then
+        sed -i repositories.conf \
+            -e "\|^## This is the local package repository.*|a src custom ${THIRDPARTY}" \
+            -e 's/^option check_signature$/# &/'
     else
-        _PACKAGES=$(for pkg in "${REPOSITORY}"/*.ipk; do basename "$pkg" | cut -d'_' -f1; done | paste -sd " " -)
-        PACKAGES="${PACKAGES:+$PACKAGES }${_PACKAGES}"
-        unset -n _PACKAGES
-        [[ -d packages ]] || mkdir -p packages
-        cp "${REPOSITORY}"/*.ipk packages/
+        sed -i repositories.conf \
+            -e "\|^## Place your custom repositories here.*|a src custom file://${MOUNT_DIR}/thirdparty" \
+            -e 's/^option check_signature$/# &/'
     fi
 fi
 
-# if [[ -f ~/.ssh/id_rsa.pub ]]; then
-#     [[ -d "${ROOT_DIR}/custom/etc/dropbear" ]] || mkdir "${ROOT_DIR}/custom/etc/dropbear"
-#     cat ~/.ssh/id_rsa.pub > "${ROOT_DIR}/custom/etc/dropbear/authorized_keys"
-# fi
-if [[ $(command -v pre_ops) ]]; then pre_ops; fi
+if [[ ${TARGET} == "x86-64" ]]; then
+    _add_package kmod-dax kmod-dm
+fi
 
 [[ ${CLEAN} -gt 0 ]] && make clean
 if [[ ${DEVICE} == "x86-64" || ${DEVICE} == "armvirt-64" ]]; then
@@ -191,33 +248,25 @@ else
 fi
 
 # The following is only for x86 image
-if [[ $(command -v qemu-img) && -d bin/targets/x86/64 ]]; then
-    while IFS= read -r -d '' _gz_image; do
+if [[ $(command -v qemu-img) && ${TARGET} == "x86-64" && ${DRYRUN:-0} -eq 0 ]]; then
+    while IFS= read -r _gz_image; do
         _prefix=$(dirname "${_gz_image}")
         _img=${_prefix}/$(basename -s .gz "${_gz_image}")
-        _qcow2c=${_prefix}/$(basename -s .img.gz "${_gz_image}").qcow2c
-        if [[ ! -f "${_qcow2c}" ]]; then
-            if [[ ! -f "${_img}" ]]; then
-                gunzip -k "${_gz_image}"
-            fi
-            qemu-img convert -c -O qcow2 "${_img}" "${_qcow2c}"
-            qemu-img convert -O qcow2 "${_qcow2c}" "${_img}" # Ventoy use img
-            unset -v _prefix _img _qcow2c
+        _qcow=${_prefix}/$(basename -s .img.gz "${_gz_image}").qcow2c
+        if [[ -f "${_qcow}" && ${_gz_image} != *"squashfs"* ]] || [[ -f "${_img}" && ${_gz_image} == *"squashfs"* ]]; then
+            continue
         fi
-    done < <(find bin/targets/x86/64 -iname '*-combined-ext4.img.gz' -print0)
+        if [[ ! -f "${_img}" ]]; then
+            gunzip -k "${_gz_image}" || true
+        fi
+        # Ventoy use img
+        if [[ ${_gz_image} == *"squashfs"* ]]; then
+            qemu-img convert -O qcow2 "${_img}" "${_qcow}"
+            mv "${_qcow}" "${_img}"
+        else
+            qemu-img convert -c -O qcow2 "${_img}" "${_qcow}"
+            qemu-img convert -O qcow2 "${_qcow}" "${_img}"
+        fi
+        unset -v _prefix _img _qcow
+    done < <(find "${BINDIR}/targets/x86/64" -iname "*-combined*.img.gz" | grep -v efi | sort)
 fi
-
-for item in "${ROOT_DIR}/custom/etc/chinadns_chnroute.txt" \
-    "${ROOT_DIR}/custom/etc/config/wireless" \
-    "${ROOT_DIR}/custom/etc/dropbear/authorized_keys" \
-    "${ROOT_DIR}/custom/etc/opkg"; do
-    if [[ -f "${item}" ]]; then
-        rm -f "${item}"
-    elif [[ -d "${item}" ]]; then
-        rm -fr "${item}"
-    fi
-done
-
-if [[ $(command -v post_ops) ]]; then post_ops; fi
-
-popd

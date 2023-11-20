@@ -44,7 +44,7 @@ else
 fi
 NAME=${NAME:-""}
 TARGET=${TARGET:-""}
-VERSION=${VERSION:-"23.05.0"}
+VERSION=${VERSION:-"23.05.2"}
 CLEAN=0
 
 function _print_help() {
