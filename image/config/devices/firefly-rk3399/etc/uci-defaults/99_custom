@@ -1,0 +1,24 @@
+#!/bin/sh
+
+set -e
+
+uci -q batch <<-EOI >/dev/null
+set system.@system[0].hostname='firefly-rk3399-openwrt'
+commit system
+
+set dhcp.lan.ignore=1
+delete dhcp.lan.dhcpv6
+delete dhcp.lan.ra
+delete dhcp.lan.ra_management
+delete dhcp.lan.ra_default
+commit dhcp
+
+set network.lan.ipaddr='192.168.1.3'
+set network.lan.gateway='192.168.1.1'
+set network.lan.netmask='255.255.255.0'
+set network.lan.dns='192.168.1.1'
+delete network.lan.type
+commit network
+EOI
+
+exit 0

@@ -165,7 +165,7 @@ else
 fi
 docker image pull "${DOCKER_IMAGE}"
 
-DOCKER_OPTS=(--rm -it -u "$(id -u):$(id -g)")
+DOCKER_OPTS=(--rm -it -u "$(id -u):$(id -g)" --hostname "${DISTRIBUTION}-${MAJOR_VERSION_NUMBER}-${TARGET}")
 
 _TEMP_DIR=$(mktemp -d)
 _add_exit_hook "sudo rm -fr ${_TEMP_DIR}"
@@ -231,9 +231,6 @@ if [[ ${NOCUSTOMIZE:-0} -ne 1 ]]; then
     DOCKER_OPTS+=(-v "${CONFIG_TEMP_DIR}:${MOUNT_DIR}/custom")
 
     mkdir -p "${CONFIG_TEMP_DIR}/etc/uci-defaults"
-    if [[ -d "${FILES}" ]]; then
-        cp -p "${FILES}"/* "${CONFIG_TEMP_DIR}"/
-    fi
     if [[ -d "${THIS_DIR}/../config/common" ]]; then
         cp -p "${THIS_DIR}/../config/common"/*common "${CONFIG_TEMP_DIR}/etc/uci-defaults/"
     fi
@@ -245,6 +242,9 @@ if [[ ${NOCUSTOMIZE:-0} -ne 1 ]]; then
     fi
     if [[ -d "${THIS_DIR}/../config/${MAJOR_VERSION}/${TARGET}/${PROFILE}" ]]; then
         cp -pr "${THIS_DIR}/../config/${MAJOR_VERSION}/${TARGET}/${PROFILE}"/* "${CONFIG_TEMP_DIR}"/
+    fi
+    if [[ -d "${FILES}" ]]; then
+        cp -pr "${FILES}"/* "${CONFIG_TEMP_DIR}"/
     fi
     echo -e "#!/bin/sh\n\ncat <<EOF | tee /etc/dropbear/authorized_keys" >>"${CONFIG_TEMP_DIR}/etc/uci-defaults/10_dropbear"
     while IFS= read -r -d '' _id_rsa; do

@@ -32,10 +32,10 @@ perl perlbase-cpan python3 \
 uci uhttpd-mod-ubus wget xray-plugin xz \
 "
 
-bash build.sh -t armvirt-64 -v 21.02.7 -s 512
+bash build.sh -t armvirt-64 -v 21.02.7 -f ../config/devices/firefly-rk3399 -s 512
 
 export OPENWRT_MIRROR_PATH=http://mirror.nju.edu.cn/immortalwrt
-bash build.sh -t armvirt-64 -v 21.02.7 -s 512 --distribution immortalwrt
+bash build.sh -t armvirt-64 -v 21.02.7 -f ../config/devices/firefly-rk3399 -s 512 --distribution immortalwrt
 
 wc -l bin/targets/armvirt/64/immortalwrt-21.02.7-armvirt-64-default.manifest
 
