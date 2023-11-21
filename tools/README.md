@@ -24,6 +24,10 @@ find . -type d -exec chmod 755 {} \;
 
 find . -type f -exec chmod 644 {} \;
 
+mkdir -p /work/openwrt/package/23.05/{ath79-nand,armsr-armv8,ramips-mt7621,x86-64}
+
+mkdir -p /work/openwrt/package/21.02/{ath79-nand,armvirt-64,ramips-mt7621,x86-64}
+
 python3 make-index.py -i /work/openwrt/package
 
 python3 make-index.py -i /work/immortalwrt/package
