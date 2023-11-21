@@ -5,6 +5,7 @@
 ## ImmortalWRT
 
 ```bash
+unset -v OPENWRT_MIRROR_PATH
 export PACKAGES="-dnsmasq -wpad-mini -wpad-basic \
 dnsmasq-full wpad \
 btrfs-progs dosfstools e2fsprogs mkf2fs xfs-mkfs \
@@ -24,6 +25,7 @@ luci-app-uhttpd luci-i18n-uhttpd-zh-cn \
 luci-app-upnp luci-i18n-upnp-zh-cn \
 luci-app-vlmcsd luci-i18n-vlmcsd-zh-cn \
 luci-app-wol luci-i18n-wol-zh-cn \
+luci-app-zerotier luci-i18n-zerotier-zh-cn \
 luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn \
 luci-theme-bootstrap \
 luci-theme-argon luci-app-argon-config luci-i18n-argon-config-zh-cn \
@@ -32,10 +34,12 @@ perl perlbase-cpan python3 \
 uci uhttpd-mod-ubus wget xray-plugin xz \
 "
 
-bash build.sh -t armvirt-64 -v 21.02.7 -f ../config/devices/firefly-rk3399 -s 512
+bash build.sh -t armvirt-64 -v 21.02.7 -f ../config/custom/firefly-rk3399 -s 512
+
+bash build.sh -t armvirt-64 -v 21.02.7 -f ../config/custom/n1 -s 512
 
 export OPENWRT_MIRROR_PATH=http://mirror.nju.edu.cn/immortalwrt
-bash build.sh -t armvirt-64 -v 21.02.7 -f ../config/devices/firefly-rk3399 -s 512 --distribution immortalwrt
+bash build.sh -t armvirt-64 -v 21.02.7 -f ../config/custom/firefly-rk3399 -s 512 --distribution immortalwrt
 
 wc -l bin/targets/armvirt/64/immortalwrt-21.02.7-armvirt-64-default.manifest
 

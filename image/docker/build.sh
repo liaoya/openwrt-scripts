@@ -184,7 +184,7 @@ EOF
     DOCKER_OPTS+=(-v "${_TEMP_DIR}/etc/apt/apt.conf.d/90curtin-aptproxy:/etc/apt/apt.conf.d/90curtin-aptproxy")
 fi
 
-if [[ ${DISTRIBUTION} == openwrt && $(timedatectl show | grep Timezone | cut -d= -f2) == Asia/Shanghai ]]; then
+if [[ ${DISTRIBUTION,,} == openwrt && $(timedatectl show | grep Timezone | cut -d= -f2) == Asia/Shanghai ]]; then
     OPENWRT_MIRROR_PATH=${OPENWRT_MIRROR_PATH:-http://mirrors.ustc.edu.cn/openwrt}
     cmd=${cmd:+${cmd}; }"sed -i -e 's|http://downloads.openwrt.org|${OPENWRT_MIRROR_PATH}|g' -e 's|https://downloads.openwrt.org|${OPENWRT_MIRROR_PATH}|g' repositories.conf"
 fi

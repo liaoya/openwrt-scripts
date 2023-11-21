@@ -14,11 +14,11 @@ SLOW_PACKAGES+=(pcat-manager qBittorrent qBittorrent-Enhanced-Edition qt6base rt
 SLOW_PACKAGES+=(trojan trojan-plus ykdl)
 
 function build_one_dir() {
-    local _build
+    local _build pkg pkg_path
     #shellcheck disable=SC2012
-    while IFS= read -r pkg; do
+    while IFS= read -r pkg_path; do
         _build=1
-        pkg=$(basename "${pkg}")
+        pkg=$(basename "${pkg_path}")
         for item in "${FAILURE_PACKAGES[@]}"; do
             if [[ ${item} == "${pkg}" ]]; then
                 _build=0
@@ -34,23 +34,21 @@ function build_one_dir() {
         if [[ ${_build} -lt 1 ]]; then
             continue
         fi
-        while IFS= read -r -d '' pkg_path; do
-            start=$(date +%s)
-            if ! make -j "${pkg_path}"/compile 2>/dev/null; then
-                echo "make V=sc ${pkg_path}/compile" >>bin/fail.log
-            else
-                echo "${pkg}" >>bin/sucess.log
-            fi
-            end=$(date +%s)
-            echo "It took $((end - start)) seconds to build ${pkg}" >>bin/bench.log
-        done < <(find package -iname "${pkg}" -print0)
+        start=$(date +%s)
+        if ! make -j "${pkg_path}"compile 2>/dev/null; then
+            echo "make V=sc ${pkg_path}compile" >>bin/fail.log
+        else
+            echo "${pkg}" >>bin/sucess.log
+        fi
+        end=$(date +%s)
+        echo "It took $((end - start)) seconds to build ${pkg}" >>bin/bench.log
     done < <(ls -d "${1}"/*/ | sort)
 }
 
 function build() {
     while IFS= read -r feedname; do
-        build_one_dir "feeds/${feedname}"
-    done < <(./scripts/feeds list -n | grep -v -e 'base\|packages\|luci\|routing\|telephony')
+        build_one_dir "package/feeds/${feedname}" || true
+    done < <(./scripts/feeds list -n | grep -v -e 'base\|packages\|luci\|routing\|telephony' | sort)
 }
 
 for _file in bench.log fail.log sucess.log; do
