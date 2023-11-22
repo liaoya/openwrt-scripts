@@ -5,7 +5,9 @@
 ## ImmortalWRT
 
 ```bash
-unset -v OPENWRT_MIRROR_PATH
+set -eg OPENWRT_MIRROR_PATH # fish shell
+unset -v OPENWRT_MIRROR_PATH # bash shell
+
 export PACKAGES="-dnsmasq -wpad-mini -wpad-basic \
 dnsmasq-full wpad \
 btrfs-progs dosfstools e2fsprogs mkf2fs xfs-mkfs \
@@ -19,6 +21,7 @@ luci-app-accesscontrol luci-i18n-accesscontrol-zh-cn \
 luci-app-adbyby-plus luci-i18n-adbyby-plus-zh-cn \
 luci-app-netdata luci-i18n-netdata-zh-cn \
 luci-app-passwall luci-i18n-passwall-zh-cn \
+luci-app-passwall2 luci-i18n-passwall2-zh-cn \
 luci-app-ssr-plus luci-i18n-ssr-plus-zh-cn \
 luci-app-ttyd luci-i18n-ttyd-zh-cn \
 luci-app-uhttpd luci-i18n-uhttpd-zh-cn \

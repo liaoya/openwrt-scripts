@@ -12,6 +12,12 @@
 - `"src-git oaf https://github.com/destan19/OpenAppFilter"`
 
 ```bash
+while IFS= read -r _dir_; do
+    ../../tools/run-rsync.sh -s "${_dir_}"
+done < <(ls -1d $PWD/*-bin/)
+```
+
+```bash
 # The following is time consuming
 function remove_duplicate() {
     while IFS= read -r feedname; do
