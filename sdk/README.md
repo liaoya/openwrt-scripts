@@ -10,6 +10,7 @@
 - `"src-git Lienol https://github.com/Lienol/openwrt-package"`
 - `"src-git ophub https://github.com/ophub/luci-app-amlogic"`
 - `"src-git oaf https://github.com/destan19/OpenAppFilter"`
+- `"src-git istore https://github.com/linkease/istore-ui"`
 
 ```bash
 while IFS= read -r _dir_; do

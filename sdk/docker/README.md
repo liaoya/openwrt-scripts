@@ -71,7 +71,7 @@ done
 bash -x run.sh -t ramips-mt7621 -v 22.03.5 "src-git jell https://github.com/kenzok8/jell;main"
 bash -x run.sh -t ramips-mt7621 -v 22.03.5 "src-git kenzok8 https://github.com/kenzok8/openwrt-packages" "src-git small https://github.com/kenzok8/small" "src-git oaf https://github.com/destan19/OpenAppFilter"
 
-for target in ath79-nand armvirt-64 ramips-mt7621 x86-64; do
+for target in ath79-nand armsr-armv8 ramips-mt7621 x86-64; do
     bash -x run.sh -d ImmortalWrt -v 23.05.1 -t "${target}" "src-git jell https://github.com/kenzok8/jell;main"
     bash -x run.sh -d ImmortalWrt -v 23.05.1 -t "${target}" "src-git kenzok8 https://github.com/kenzok8/openwrt-packages" "src-git small https://github.com/kenzok8/small" "src-git oaf https://github.com/destan19/OpenAppFilter"
 done
