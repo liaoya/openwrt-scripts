@@ -11,8 +11,11 @@ ipkg-make-index.sh . > Packages && gzip -9nc Packages > Packages.gz
 ```
 
 ```bash
-rsync -aq /work/openwrt /mnt/usb/
-rsync -aq /work/immortalwrt /mnt/usb/
+sudo mount -o uid=$(id -u) -o gid=$(id -g) /dev/sdb1 /mnt/usb
+alias ls="ls --color=none"
+
+rsync -aq --no-acls --no-perms --no-xattrs /work/openwrt/ /mnt/usb/openwrt/
+rsync -aq --no-acls --no-perms --no-xattrs /work/immortalwrt/ /mnt/usb/immortalwrt/
 ```
 
 `kmod-oaf`
