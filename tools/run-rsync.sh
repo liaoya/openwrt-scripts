@@ -47,10 +47,12 @@ fi
 done
 
 DISTRIBUTION=$(basename "${SRC}" | cut -d- -f1)
-TARGET=$(basename "${SRC}" | sed -e 's/openwrt-//' -e 's/-bin//' | rev | cut -d- -f2- | rev)
-VERSION=$(basename "${SRC}" | sed -e 's/openwrt-//' -e 's/-bin//' | rev | cut -d- -f1 | rev)
+TARGET=$(basename "${SRC}" | sed -e "s/${DISTRIBUTION}-//" -e 's/-bin//' | rev | cut -d- -f2- | rev)
+VERSION=$(basename "${SRC}" | sed -e "s/${DISTRIBUTION}-//" -e 's/-bin//' | rev | cut -d- -f1 | rev)
 
 DEST=${DEST}/${DISTRIBUTION,,}/package/${VERSION}/${TARGET}
+echo $DEST
+exit 0
 
 if [[ ! -d "${DEST}" ]]; then mkdir -p "${DEST}"; fi
 

@@ -19,6 +19,7 @@ luci luci-compat luci-lib-ipkg \
 luci-app-amlogic luci-i18n-amlogic-zh-cn \
 luci-app-accesscontrol luci-i18n-accesscontrol-zh-cn \
 luci-app-adbyby-plus luci-i18n-adbyby-plus-zh-cn \
+luci-app-ikoolproxy \
 luci-app-netdata luci-i18n-netdata-zh-cn \
 luci-app-passwall luci-i18n-passwall-zh-cn \
 luci-app-passwall2 luci-i18n-passwall2-zh-cn \
@@ -43,6 +44,8 @@ bash build.sh -t armvirt-64 -v 21.02.7 -f ../config/custom/n1 -s 512
 
 export OPENWRT_MIRROR_PATH=http://mirror.nju.edu.cn/immortalwrt
 bash build.sh -t armvirt-64 -v 21.02.7 -f ../config/custom/firefly-rk3399 -s 512 --distribution immortalwrt
+
+bash build.sh -t armvirt-64 -v 21.02.7 -f ../config/custom/n1 -s 512 --distribution immortalwrt
 
 wc -l bin/targets/armvirt/64/immortalwrt-21.02.7-armvirt-64-default.manifest
 
