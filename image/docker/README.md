@@ -100,11 +100,9 @@ bash -x build.sh -t ramips-mt7621 -p phicomm_k2p
 unset -v PACKAGES
 PACKAGES="-dnsmasq dnsmasq-full \
 atop bash bind-dig bzip2 ca-bundle ca-certificates cfdisk coremark coreutils-base64 curl dropbearconvert file fdisk gzip \
-htop ip-full ipset iptables-mod-tproxy \
-libpthread \
+htop ip-full ipset \
 luci luci-compat luci-lib-ipkg \
 luci-app-uhttpd luci-i18n-uhttpd-zh-cn \
-luci-app-upnp luci-i18n-upnp-zh-cn \
 luci-app-wol luci-i18n-wol-zh-cn \
 luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn \
 luci-theme-bootstrap \
@@ -127,9 +125,13 @@ export PACKAGES
 export OPENWRT_MIRROR_PATH=http://mirrors.cloud.tencent.com/openwrt
 export OPENWRT_MIRROR_PATH=http://mirrors.aliyun.com/openwrt
 
-bash -x build.sh -t x86-64 -s 512 -v 21.02.7--dryrun
+bash -x build.sh -t x86-64 -s 512 -f ../config/custom/x86-64
 
-bash -x build.sh -t x86-64 -s 512 --distribution ImmortalWrt -v 21.02.7
+bash -x build.sh -t x86-64 -s 512 -v 21.02.7 -f ../config/custom/x86-64
+
+bash -x build.sh -t x86-64 -s 512 --distribution ImmortalWrt -v 21.02.7 -f ../config/custom/x86-64
+
+bash -x build.sh -t x86-64 -s 512 --distribution ImmortalWrt -v 23.05.1 -f ../config/custom/x86-64
 ```
 
 ## nftable
