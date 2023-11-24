@@ -2,6 +2,8 @@
 
 set -e
 
+THIS_DIR=$(readlink -f "${BASH_SOURCE[0]}")
+THIS_DIR=$(dirname "${THIS_DIR}")
 DEST=${DEST:-/work}
 
 function _print_help() {
@@ -40,19 +42,22 @@ while getopts :hvd:s: OPTION; do
 done
 
 for name in SRC DEST; do
-if [[ -z ${!name} || ! -d ${!name} ]]; then
-    echo "${name} has no value or its value is illegal"
+    if [[ -z ${!name} || ! -d ${!name} ]]; then
+        echo "${name} has no value or its value is illegal"
+        exit 1
+    fi
+done
+
+if [[ ! -d "${SRC}/packages" ]]; then
+    echo "${SRC}/packages does not exists"
     exit 1
 fi
-done
 
 DISTRIBUTION=$(basename "${SRC}" | cut -d- -f1)
 TARGET=$(basename "${SRC}" | sed -e "s/${DISTRIBUTION}-//" -e 's/-bin//' | rev | cut -d- -f2- | rev)
 VERSION=$(basename "${SRC}" | sed -e "s/${DISTRIBUTION}-//" -e 's/-bin//' | rev | cut -d- -f1 | rev)
 
 DEST=${DEST}/${DISTRIBUTION,,}/package/${VERSION}/${TARGET}
-echo $DEST
-exit 0
 
 if [[ ! -d "${DEST}" ]]; then mkdir -p "${DEST}"; fi
 
@@ -64,3 +69,5 @@ while IFS= read -r _folder; do
         rsync -aq "${_folder}"/ "${DEST}"/
     fi
 done < <(find "${SRC}"/packages -type d | sort | tail +3)
+
+python3 "${THIS_DIR}"/make-index.py -i "${DEST}"

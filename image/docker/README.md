@@ -98,8 +98,7 @@ bash -x build.sh -t ramips-mt7621 -p phicomm_k2p
 ```bash
 # The package must be declare external
 unset -v PACKAGES
-PACKAGES="-dnsmasq -wpad-mini -wpad-basic -wpad-basic-mbedtls \
-dnsmasq-full wpad \
+PACKAGES="-dnsmasq dnsmasq-full \
 atop bash bind-dig bzip2 ca-bundle ca-certificates cfdisk coremark coreutils-base64 curl dropbearconvert file fdisk gzip \
 htop ip-full ipset iptables-mod-tproxy \
 libpthread \
@@ -109,7 +108,7 @@ luci-app-upnp luci-i18n-upnp-zh-cn \
 luci-app-wol luci-i18n-wol-zh-cn \
 luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn \
 luci-theme-bootstrap \
-mtr nano tmux \
+mtr nano python3 tmux \
 uci uhttpd-mod-ubus wget xz \
 "
 PACKAGES="${PACKAGES:+$PACKAGES }coremark"
@@ -121,12 +120,16 @@ PACKAGES="${PACKAGES:+$PACKAGES }luci-app-netdata luci-i18n-netdata-zh-cn"
 PACKAGES="${PACKAGES:+$PACKAGES }luci-app-ttyd luci-i18n-ttyd-zh-cn"
 PACKAGES="${PACKAGES:+$PACKAGES }luci-app-ssr-plus luci-i18n-ssr-plus-zh-cn"
 PACKAGES="${PACKAGES:+$PACKAGES }luci-app-passwall luci-i18n-passwall-zh-cn"
+PACKAGES="${PACKAGES:+$PACKAGES }luci-app-zerotier luci-i18n-zerotier-zh-cn"
+PACKAGES="${PACKAGES:+$PACKAGES }kcptun-client xray-plugin"
 export PACKAGES
 
 export OPENWRT_MIRROR_PATH=http://mirrors.cloud.tencent.com/openwrt
 export OPENWRT_MIRROR_PATH=http://mirrors.aliyun.com/openwrt
 
-bash -x build.sh -t x86-64 --dryrun
+bash -x build.sh -t x86-64 -s 512 -v 21.02.7--dryrun
+
+bash -x build.sh -t x86-64 -s 512 --distribution ImmortalWrt -v 21.02.7
 ```
 
 ## nftable

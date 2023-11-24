@@ -29,9 +29,9 @@ OPTIONS
         BIN_DIR="<path>" # alternative output directory for the images. ${BINDIR:+The default is '"${BINDIR}"'}
     --build-dir BUILD_DIR
         the build_dir directory binding for temporary output, cache it for speed build. ${BUILD_DIR:+The default is '"${BUILD_DIR}"'}
-    -d, --disableservice DISABLESERVICE
-        DISABLED_SERVICES="<svc1> [<svc2> [<svc3> ..]]" # Which services in /etc/init.d/ should be disabled. ${DISABLESERVICE:+The default is '"${DISABLESERVICE}"'}
-    --distribution DISTRIBUTION
+    --disabled-services DISABLED_SERVICES
+        DISABLED_SERVICES="<svc1> [<svc2> [<svc3> ..]]" # Which services in /etc/init.d/ should be disabled. ${DISABLED_SERVICES:+The default is '"${DISABLED_SERVICES}"'}
+    -d, --distribution DISTRIBUTION
         OpenWRT or ImmortalWrt. ${DISTRIBUTION:+The default is '"${DISTRIBUTION}"'}
     -f, --files FILES
         FILES="<path>" # include extra FILES from <path>. ${FILES:+The default is '"${FILES}"'}
@@ -43,6 +43,8 @@ OPTIONS
         PROFILE="<profilename>" # override the default target PROFILE. ${PROFILE:+The default is '"${PROFILE}"'}
     -s, --partsize ROOTFS_PARTSIZE
         ROOTFS_PARTSIZE="<size>" # override the default rootfs partition size in MegaBytes. ${ROOTFS_PARTSIZE:+The default is '"${ROOTFS_PARTSIZE}"'}
+    --packages, PACKAGES
+        PACKAGES="<pkg1> [<pkg2> [<pkg3> ...]]" # include extra packages. ${PACKAGES:+The default is '"${PACKAGES}"'}
     -t, --target TARGET
         OpenWRT TARGET(used for image tag), e.g. armsr-armv8(armvirt-64), ath79-nand, ramips-mt7621, x86-64. ${TARGET:+The default is '"${TARGET}"'}
     -T, --thirdparty THIRDPARTY
@@ -56,7 +58,7 @@ OPTIONS
 EOF
 }
 
-TEMP=$(getopt -o b:d:f:n:p:s:t:T:v:hc --long bindir:,build-dir:,disableservice:,distribution:,files:,name:,partsize,profile:,target:,thirdparty:,VERSION:,verbose,help,clean,dryrun,nocustomize -- "$@")
+TEMP=$(getopt -o b:d:f:n:p:s:t:T:v:hc --long bindir:,build-dir:,disabled-services:,distribution:,files:,name:,packages:,partsize,profile:,target:,thirdparty:,VERSION:,verbose,help,clean,dryrun,nocustomize -- "$@")
 eval set -- "${TEMP}"
 while true; do
     shift_step=2
@@ -67,10 +69,10 @@ while true; do
     --build-dir)
         BUILD_DIR=$(readlink -f "$2")
         ;;
-    -d | --disableservice)
-        DISABLESERVICE=$2
+    --disabled-services)
+        DISABLED_SERVICES=$2
         ;;
-    --distribution)
+    -d | --distribution)
         DISTRIBUTION=$2
         ;;
     -f | --files)
@@ -78,6 +80,10 @@ while true; do
         ;;
     -n | --name)
         NAME=$2
+        ;;
+    --packages)
+        #shellcheck disable=SC2086
+        _add_package $2
         ;;
     -p | --profile)
         PROFILE=$2
@@ -292,10 +298,13 @@ if [[ -n ${NAME} ]]; then
     makecmd="${makecmd} EXTRA_IMAGE_NAME=${NAME}"
 fi
 if [[ -n ${PACKAGES} ]]; then
-    makecmd="${makecmd} PACKAGES=\"${PACKAGES}\""
+    makecmd="${makecmd} PACKAGES=\"$(echo "${PACKAGES}" | sed -e '/^$/d' -e 's/ $//g')\""
 fi
 if [[ -n ${PROFILE} ]]; then
     makecmd="${makecmd} PROFILE=${PROFILE}"
+fi
+if [[ -n ${DISABLED_SERVICES} ]]; then
+    makecmd="${makecmd} DISABLED_SERVICES=\"${DISABLED_SERVICES}\""
 fi
 if [[ ${TARGET} == x86-64 || ${TARGET} =~ armvirt ]] && [[ ${ROOTFS_PARTSIZE} -gt 0 ]]; then
     makecmd="${makecmd} ROOTFS_PARTSIZE=${ROOTFS_PARTSIZE}"
@@ -308,7 +317,7 @@ else
 fi
 
 # qemu-img convert to make the image as thin provision, do not compress it any more to make backing file across pool
-if [[ $(command -v qemu-img) && ${TARGET} == "x86-64" && ${DRYRUN:-0} -eq 0 ]]; then
+if command -v qemu-img 1>/dev/null 2>&1 && [[ ${TARGET} == "x86-64" && ${DRYRUN:-0} -eq 0 ]]; then
     while IFS= read -r _gz_image; do
         _prefix=$(dirname "${_gz_image}")
         _img=${_prefix}/$(basename -s .gz "${_gz_image}")
