@@ -49,7 +49,7 @@ There're no image after `18.06.7` for `18.06` series
 
 unset -v OPENWRT_MIRROR_PATH
 unset -v PACKAGES
-export PACKAGES="-dnsmasq -wpad-mini -wpad-basic -wpad-basic-mbedtls \
+export PACKAGES="-dnsmasq -wpad-basic -wpad-basic-mbedtls \
 dnsmasq-full wpad \
 atop bash bind-dig bzip2 ca-bundle ca-certificates cfdisk coremark coreutils-base64 curl dropbearconvert file fdisk gzip \
 htop ip-full ipset iptables-mod-tproxy \
@@ -132,6 +132,15 @@ bash -x build.sh -t x86-64 -s 512 -v 21.02.7 -f ../config/custom/x86-64
 bash -x build.sh -t x86-64 -s 512 --distribution ImmortalWrt -v 21.02.7 -f ../config/custom/x86-64
 
 bash -x build.sh -t x86-64 -s 512 --distribution ImmortalWrt -v 23.05.1 -f ../config/custom/x86-64
+```
+
+## N1
+
+```bash
+uci del dhcp.lan.ra_flags
+uci add_list dhcp.lan.ra_flags='none'
+
+uci set network.lan.device='eth0'
 ```
 
 ## nftable
