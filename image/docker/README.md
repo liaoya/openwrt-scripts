@@ -62,7 +62,7 @@ luci-app-zerotier luci-i18n-zerotier-zh-cn \
 luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn \
 luci-theme-bootstrap \
 mtr nano tmux \
-uci wget xz \
+uci wget-ssl xz \
 "
 
 bash -x build.sh -t ramips-mt7621 -p d-team_newifi-d2
@@ -93,6 +93,30 @@ uci \
 bash -x build.sh -t ramips-mt7621 -p phicomm_k2p
 ```
 
+## WNDR 4300
+
+```bash
+unset -v OPENWRT_MIRROR_PATH
+unset -v PACKAGES
+export PACKAGES="-dnsmasq -wpad-basic -wpad-basic-mbedtls -wpad-openssl \
+dnsmasq-full wpad-mbedtls \
+atop bash bind-dig bzip2 ca-bundle ca-certificates cfdisk coremark coreutils-base64 curl dropbearconvert file fdisk gzip \
+htop ip-full ipset iptables-mod-tproxy \
+libpthread \
+luci luci-compat luci-lib-ipkg \
+luci-app-upnp luci-i18n-upnp-zh-cn \
+luci-app-vlmcsd luci-i18n-vlmcsd-zh-cn \
+luci-app-wol luci-i18n-wol-zh-cn \
+luci-app-zerotier luci-i18n-zerotier-zh-cn \
+luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn \
+luci-theme-bootstrap \
+mtr nano tmux \
+uci wget-ssl xz \
+"
+
+bash build.sh -t ath79-nand -p netgear_wndr4300
+```
+
 ## X86-64
 
 ```bash
@@ -107,7 +131,7 @@ luci-app-wol luci-i18n-wol-zh-cn \
 luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn \
 luci-theme-bootstrap \
 mtr nano python3 tmux \
-uci uhttpd-mod-ubus wget xz \
+uci uhttpd-mod-ubus wget-ssl xz \
 "
 PACKAGES="${PACKAGES:+$PACKAGES }coremark"
 PACKAGES="${PACKAGES:+$PACKAGES }luci-theme-argon luci-app-argon-config luci-i18n-argon-config-zh-cn"

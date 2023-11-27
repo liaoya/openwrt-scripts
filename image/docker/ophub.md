@@ -16,11 +16,11 @@ kcptun-client xray-plugin \
 luci luci-compat luci-lib-ipkg \
 luci-app-amlogic luci-i18n-amlogic-zh-cn \
 luci-app-accesscontrol luci-i18n-accesscontrol-zh-cn \
+luci-app-dockerman luci-i18n-dockerman-zh-cn \
 luci-app-adbyby-plus luci-i18n-adbyby-plus-zh-cn \
 luci-app-ikoolproxy \
 luci-app-netdata luci-i18n-netdata-zh-cn \
 luci-app-passwall luci-i18n-passwall-zh-cn \
-luci-app-passwall2 luci-i18n-passwall2-zh-cn \
 luci-app-ssr-plus luci-i18n-ssr-plus-zh-cn \
 luci-app-ttyd luci-i18n-ttyd-zh-cn \
 luci-app-uhttpd luci-i18n-uhttpd-zh-cn \
@@ -31,7 +31,7 @@ luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn \
 luci-theme-bootstrap \
 luci-theme-argon luci-app-argon-config luci-i18n-argon-config-zh-cn \
 mtr nano perl perlbase-cpan python3 tmux \
-uci uhttpd-mod-ubus wget xray-plugin xz \
+uci uhttpd-mod-ubus wget-ssl xray-plugin xz \
 "
 
 bash build.sh -t armvirt-64 -v 21.02.7 -s 512 -f ../config/custom/firefly-rk3399
@@ -41,7 +41,7 @@ bash build.sh -t armvirt-64 -v 21.02.7  -s 512 -f ../config/custom/n1
 export OPENWRT_MIRROR_PATH=http://mirror.nju.edu.cn/immortalwrt
 bash build.sh -t armvirt-64 -v 21.02.7 -s 512 --distribution immortalwrt -f ../config/custom/firefly-rk3399
 
-bash build.sh -t armvirt-64 -v 21.02.7 -s 512 --distribution immortalwrt -f ../config/custom/n1 --disabled-services "dnsmasq odhcpd"
+bash build.sh -t armvirt-64 -v 21.02.7 -s 512 --distribution immortalwrt -f ../config/custom/n1
 
 wc -l bin/targets/armvirt/64/immortalwrt-21.02.7-armvirt-64-default.manifest
 
