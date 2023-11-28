@@ -12,6 +12,9 @@ commit system
 set firewall.defaults.flow_offloading='1'
 set firewall.defaults.flow_offloading_hw='1'
 commit firewall
+
+set uhttpd.main.redirect_https=1
+commit uhttpd
 EOI
 
 exit 0

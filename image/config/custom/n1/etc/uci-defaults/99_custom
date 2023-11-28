@@ -25,6 +25,9 @@ set network.lan.netmask='255.255.255.0'
 set network.lan.dns='192.168.1.1'
 delete network.lan.type
 commit network
+
+set uhttpd.main.redirect_https=1
+commit uhttpd
 EOI
 
 exit 0

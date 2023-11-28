@@ -5,6 +5,9 @@ set -e
 uci -q batch <<-EOI >/dev/null
 set system.@system[0].hostname='x86-64'
 commit system
+
+set uhttpd.main.redirect_https=1
+commit uhttpd
 EOI
 
 exit 0
