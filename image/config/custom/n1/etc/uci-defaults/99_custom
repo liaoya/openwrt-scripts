@@ -30,8 +30,8 @@ set uhttpd.main.redirect_https=1
 commit uhttpd
 
 set dockerd.globals.data_root='/mnt/mmcblk2p4/docker/'
-add_list dockerd.globals.registry_mirrors='https://mirror.baidubce.com/'
-add_list dockerd.globals.registry_mirrors='https://hub-mirror.c.163.com'
+# add_list dockerd.globals.registry_mirrors='https://mirror.baidubce.com/'
+# add_list dockerd.globals.registry_mirrors='https://hub-mirror.c.163.com'
 commit dockerd
 EOI
 
