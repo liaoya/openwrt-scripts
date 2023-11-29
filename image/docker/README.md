@@ -51,7 +51,7 @@ unset -v OPENWRT_MIRROR_PATH
 unset -v PACKAGES
 export PACKAGES="-dnsmasq -wpad-basic -wpad-basic-mbedtls \
 dnsmasq-full wpad \
-atop bash bind-dig bzip2 ca-bundle ca-certificates cfdisk coremark coreutils-base64 curl dropbearconvert file fdisk gzip \
+atop bash bind-dig bzip2 ca-bundle ca-certificates cfdisk coremark curl dropbearconvert file fdisk gzip \
 htop ip-full ipset iptables-mod-tproxy \
 libpthread \
 luci luci-compat luci-lib-ipkg \
@@ -100,7 +100,7 @@ unset -v OPENWRT_MIRROR_PATH
 unset -v PACKAGES
 export PACKAGES="-dnsmasq -wpad-basic -wpad-basic-mbedtls -wpad-openssl \
 dnsmasq-full wpad-mbedtls \
-atop bash bind-dig bzip2 ca-bundle ca-certificates cfdisk coremark coreutils-base64 curl dropbearconvert file fdisk gzip \
+atop bash bind-dig bzip2 ca-bundle ca-certificates cfdisk coremark curl dropbearconvert file fdisk gzip \
 htop ip-full ipset iptables-mod-tproxy \
 libpthread \
 luci luci-compat luci-lib-ipkg \
@@ -123,7 +123,7 @@ bash build.sh -t ath79-nand -p netgear_wndr4300
 # The package must be declare external
 unset -v PACKAGES
 export PACKAGES="-dnsmasq dnsmasq-full \
-atop bash bind-dig bzip2 ca-bundle ca-certificates cfdisk coremark coreutils-base64 curl dropbearconvert file fdisk gzip \
+atop bash bind-dig bzip2 ca-bundle ca-certificates cfdisk coremark curl dropbearconvert file fdisk gzip \
 htop ip-full ipset \
 luci luci-compat luci-lib-ipkg \
 luci-app-uhttpd luci-i18n-uhttpd-zh-cn \
