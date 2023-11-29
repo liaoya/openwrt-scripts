@@ -55,6 +55,7 @@ atop bash bind-dig bzip2 ca-bundle ca-certificates cfdisk coremark curl dropbear
 htop ip-full ipset iptables-mod-tproxy \
 libpthread \
 luci luci-compat luci-lib-ipkg \
+luci-app-uhttpd luci-i18n-uhttpd-zh-cn \
 luci-app-upnp luci-i18n-upnp-zh-cn \
 luci-app-vlmcsd luci-i18n-vlmcsd-zh-cn \
 luci-app-wol luci-i18n-wol-zh-cn \
