@@ -28,11 +28,15 @@ commit network
 
 set uhttpd.main.redirect_https=1
 commit uhttpd
+EOI
 
+if command -v docker 1>/dev/null 2>&1; then
+    uci -q batch <<-EOI >/dev/null
 set dockerd.globals.data_root='/mnt/mmcblk2p4/docker/'
 # add_list dockerd.globals.registry_mirrors='https://mirror.baidubce.com/'
 # add_list dockerd.globals.registry_mirrors='https://hub-mirror.c.163.com'
 commit dockerd
 EOI
+fi
 
 exit 0

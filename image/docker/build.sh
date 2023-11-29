@@ -272,6 +272,31 @@ sed -e 's|http://downloads.openwrt.org|${OPENWRT_MIRROR_PATH}|g' \
 exit 0
 EOF
     fi
+    if [[ -n ${PPPOE_USER} && -n ${PPPOE_PASSWORD} ]]; then
+        cat <<EOF | tee "${CONFIG_TEMP_DIR}/etc/uci-defaults/99_PPPOE"
+#!/bin/sh
+
+set -e
+
+uci -q batch <<-EOI >/dev/null
+delete network.wan.proto
+set network.wan.proto='pPPPOE'
+set network.wan.username='${PPPOE_USER}'
+set network.wan.password='${PPPOE_PASSWORD}'
+set network.wan.ipv6='auto'
+# set network.wan.ipv6='0'
+
+commit network.wan
+
+delete dhcp.wan.ra_flags
+add_list dhcp.wan.ra_flags='none'
+
+commit dhcp.wan
+EOI
+
+exit 0
+EOF
+    fi
 fi
 
 if [[ -z ${THIRDPARTY} && -d /work/${DISTRIBUTION}/package/"${MAJOR_VERSION}/${TARGET}" ]]; then

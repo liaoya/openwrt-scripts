@@ -65,7 +65,7 @@ mtr nano tmux \
 uci wget-ssl xz \
 "
 
-bash -x build.sh -t ramips-mt7621 -p d-team_newifi-d2
+env PPPOE_USER= PPPOE_PASSWORD= bash -x build.sh -t ramips-mt7621 -p d-team_newifi-d2
 ```
 
 ## K2P
@@ -122,7 +122,7 @@ bash build.sh -t ath79-nand -p netgear_wndr4300
 ```bash
 # The package must be declare external
 unset -v PACKAGES
-PACKAGES="-dnsmasq dnsmasq-full \
+export PACKAGES="-dnsmasq dnsmasq-full \
 atop bash bind-dig bzip2 ca-bundle ca-certificates cfdisk coremark coreutils-base64 curl dropbearconvert file fdisk gzip \
 htop ip-full ipset \
 luci luci-compat luci-lib-ipkg \
@@ -179,7 +179,7 @@ sed -i 's/iptables/iptables-translate/g' /etc/init.d/mia
 build@5d97695460c4:~/openwrt$ make info
 Current Target: "x86/64"
 Current Revision: "r16554-1d4dea6d4f"
-Default Packages: base-files ca-bundle dropbear fstools libc libgcc libustream-wolfssl logd mtd netifd opkg uci uclient-fetch urandom-seed urngd busybox procd partx-utils mkf2fs e2fsprogs kmod-button-hotplug dnsmasq firewall ip6tables iptables kmod-ipt-offload odhcp6c odhcpd-ipv6only ppp ppp-mod-pppoe
+Default Packages: base-files ca-bundle dropbear fstools libc libgcc libustream-wolfssl logd mtd netifd opkg uci uclient-fetch urandom-seed urngd busybox procd partx-utils mkf2fs e2fsprogs kmod-button-hotplug dnsmasq firewall ip6tables iptables kmod-ipt-offload odhcp6c odhcpd-ipv6only ppp ppp-mod-pPPPOE
 Available Profiles:
 
 generic:
