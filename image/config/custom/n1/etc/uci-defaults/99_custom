@@ -19,6 +19,9 @@ delete dhcp.lan.ra_management
 delete dhcp.lan.ra_default
 commit dhcp
 
+delete dropbear.@dropbear[0].Interface
+commit dropbear
+
 set network.lan.ipaddr='192.168.1.2'
 set network.lan.gateway='192.168.1.1'
 set network.lan.netmask='255.255.255.0'

@@ -6,6 +6,9 @@ uci -q batch <<-EOI >/dev/null
 set system.@system[0].hostname='firefly-rk3399-openwrt'
 commit system
 
+set luci.main.lang='zh_cn'
+commit luci
+
 set dhcp.lan.ignore=1
 delete dhcp.lan.dhcpv6
 delete dhcp.lan.ra
@@ -19,6 +22,12 @@ set network.lan.netmask='255.255.255.0'
 set network.lan.dns='192.168.1.1'
 delete network.lan.type
 commit network
+
+delete dropbear.@dropbear[0].Interface
+commit dropbear
+
+set uhttpd.main.redirect_https=1
+commit uhttpd
 EOI
 
 exit 0
