@@ -252,48 +252,13 @@ if [[ ${NOCUSTOMIZE:-0} -ne 1 ]]; then
     if [[ -d "${FILES}" ]]; then
         cp -pr "${FILES}"/* "${CONFIG_TEMP_DIR}"/
     fi
-    echo -e "#!/bin/sh\n\ncat <<EOF | tee /etc/dropbear/authorized_keys" >>"${CONFIG_TEMP_DIR}/etc/uci-defaults/10_dropbear"
-    while IFS= read -r -d '' _id_rsa; do
-        cat <"${_id_rsa}" >>"${CONFIG_TEMP_DIR}/etc/uci-defaults/10_dropbear"
-    done < <(find ~/.ssh \( -iname id_rsa.pub -o -iname id_ed25519.pub \) -print0)
-    echo -e "EOF\n\nexit 0" >>"${CONFIG_TEMP_DIR}/etc/uci-defaults/10_dropbear"
-    if [[ -n ${OPENWRT_MIRROR_PATH} ]]; then
-        cat <<EOF | tee "${CONFIG_TEMP_DIR}/etc/uci-defaults/10_opkg"
-#!/bin/sh
 
-sed -e 's|http://downloads.openwrt.org|${OPENWRT_MIRROR_PATH}|g' \
-    -e 's|https://downloads.openwrt.org|${OPENWRT_MIRROR_PATH}|g' \
-    -e 's|http://downloads.immortalwrt.org|${OPENWRT_MIRROR_PATH}|g' \
-    -e 's|https://downloads.immortalwrt.org|${OPENWRT_MIRROR_PATH}|g' \
-    -e 's|http://mirrors.vsean.net/openwrt|${OPENWRT_MIRROR_PATH}|g' \
-    -e 's|https://mirrors.vsean.net/openwrt|${OPENWRT_MIRROR_PATH}|g' \
-    -i /etc/opkg/distfeeds.conf
+    while IFS= read -r -d '' _shellfile; do
+        #shellcheck disable=SC1090
+        source "${_shellfile}"
+    done < <(find "${THIS_DIR}/../config/uci-defaults" -iname "*.sh" -print0)
 
-exit 0
-EOF
-    fi
-    if [[ -n ${PPPOE_USER} && -n ${PPPOE_PASSWORD} ]]; then
-        cat <<EOF | tee "${CONFIG_TEMP_DIR}/etc/uci-defaults/99_pppoe"
-#!/bin/sh
 
-set -e
-
-uci -q batch <<-EOI >/dev/null
-delete network.wan.proto
-set network.wan.proto='pppoe'
-set network.wan.username='${PPPOE_USER}'
-set network.wan.password='${PPPOE_PASSWORD}'
-# set network.wan.ipv6='0'
-commit network.wan
-
-# delete dhcp.wan.ra_flags
-# add_list dhcp.wan.ra_flags='none'
-# commit dhcp.wan
-EOI
-
-exit 0
-EOF
-    fi
 fi
 
 if [[ -z ${THIRDPARTY} && -d /work/${DISTRIBUTION}/package/"${MAJOR_VERSION}/${TARGET}" ]]; then

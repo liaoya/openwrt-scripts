@@ -84,7 +84,7 @@ uci delete dhcp.lan.dhcp_option
 uci add_list dhcp.lan.dhcp_option="3,$gateway"
 uci add_list dhcp.lan.dhcp_option="6,$dns"
 uci commit dhcp
-/etc/init.d/dnsmasq restart
+/etc/init.d/dnsmasq reload
 EOF
 
 chmod a+x /usr/bin/switch-gw.sh

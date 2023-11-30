@@ -50,7 +50,7 @@ There're no image after `18.06.7` for `18.06` series
 unset -v OPENWRT_MIRROR_PATH
 unset -v PACKAGES
 export PACKAGES="-dnsmasq -wpad-basic -wpad-basic-mbedtls \
-dnsmasq-full wpad \
+dnsmasq-full wpad-openssl \
 atop bash bind-dig bzip2 ca-bundle ca-certificates cfdisk coremark curl dropbearconvert file fdisk gzip \
 htop ip-full ipset iptables-mod-tproxy jq \
 luci luci-compat luci-lib-ipkg \
@@ -65,7 +65,9 @@ mtr nano tmux \
 uci wget-ssl xz \
 "
 
-env PPPOE_USER= PPPOE_PASSWORD= bash -x build.sh -t ramips-mt7621 -p d-team_newifi-d2
+env PPPOE_USERNAME= PPPOE_PASSWORD= bash -x build.sh -t ramips-mt7621 -p d-team_newifi-d2
+
+env PPPOE_USERNAME= PPPOE_PASSWORD= bash -x build.sh -t ramips-mt7621 -p d-team_newifi-d2 -d immortalwrt -v 23.05.1
 ```
 
 ## K2P
