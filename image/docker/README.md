@@ -54,6 +54,7 @@ dnsmasq-full wpad-openssl \
 atop bash bind-dig bzip2 ca-bundle ca-certificates cfdisk coremark curl dropbearconvert file fdisk gzip \
 htop ip-full ipset iptables-mod-tproxy jq \
 luci luci-compat luci-lib-ipkg \
+luci-app-ddns luci-i18n-ddns-zh-cn ddns-scripts-noip \
 luci-app-uhttpd luci-i18n-uhttpd-zh-cn \
 luci-app-upnp luci-i18n-upnp-zh-cn \
 luci-app-vlmcsd luci-i18n-vlmcsd-zh-cn \
