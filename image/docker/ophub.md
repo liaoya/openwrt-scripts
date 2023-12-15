@@ -9,8 +9,8 @@ set -eg OPENWRT_MIRROR_PATH # fish shell
 unset -v OPENWRT_MIRROR_PATH # bash shell
 
 export PACKAGES="btrfs-progs dosfstools e2fsprogs mkf2fs xfs-mkfs \
-atop bash bind-dig bzip2 ca-bundle ca-certificates cfdisk coremark coreutils-base64 curl dropbearconvert file fdisk gzip \
-htop ip-full ipset iptables-mod-tproxy jq \
+atop bash bind-dig bzip2 ca-bundle ca-certificates cfdisk coremark coreutils-base64 curl dropbearconvert fdisk file fish gzip \
+htop ip-full ipset iptables-mod-tproxy jq lscpu \
 kcptun-client xray-plugin \
 luci luci-compat luci-lib-ipkg \
 luci-app-amlogic luci-i18n-amlogic-zh-cn \

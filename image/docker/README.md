@@ -51,8 +51,8 @@ unset -v OPENWRT_MIRROR_PATH
 unset -v PACKAGES
 export PACKAGES="-dnsmasq -wpad-basic -wpad-basic-mbedtls \
 dnsmasq-full wpad-openssl \
-atop bash bind-dig bzip2 ca-bundle ca-certificates cfdisk coremark curl dropbearconvert file fdisk gzip \
-htop ip-full ipset iptables-mod-tproxy jq \
+atop bash bind-dig bzip2 ca-bundle ca-certificates cfdisk coremark curl dropbearconvert fdisk file gzip \
+htop ip-full ipset iptables-mod-tproxy jq lscpu \
 luci luci-compat luci-lib-ipkg \
 luci-app-ddns luci-i18n-ddns-zh-cn ddns-scripts-noip \
 luci-app-uhttpd luci-i18n-uhttpd-zh-cn \
@@ -103,7 +103,7 @@ unset -v PACKAGES
 export PACKAGES="-dnsmasq -wpad-basic -wpad-basic-mbedtls -wpad-openssl \
 dnsmasq-full wpad-mbedtls \
 atop bash bind-dig bzip2 ca-bundle ca-certificates cfdisk coremark curl dropbearconvert file fdisk gzip \
-htop ip-full ipset iptables-mod-tproxy jq \
+htop ip-full ipset iptables-mod-tproxy jq lscpu \
 luci luci-compat luci-lib-ipkg \
 luci-app-upnp luci-i18n-upnp-zh-cn \
 luci-app-vlmcsd luci-i18n-vlmcsd-zh-cn \
@@ -125,7 +125,7 @@ bash build.sh -t ath79-nand -p netgear_wndr4300
 unset -v PACKAGES
 export PACKAGES="-dnsmasq dnsmasq-full \
 atop bash bind-dig bzip2 ca-bundle ca-certificates cfdisk coremark curl dropbearconvert file fdisk gzip \
-htop ip-full ipset jq \
+htop ip-full ipset jq lscpu \
 luci luci-compat luci-lib-ipkg \
 luci-app-uhttpd luci-i18n-uhttpd-zh-cn \
 luci-app-wol luci-i18n-wol-zh-cn \
