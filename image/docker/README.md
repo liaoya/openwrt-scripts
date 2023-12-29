@@ -62,7 +62,7 @@ luci-app-wol luci-i18n-wol-zh-cn \
 luci-app-zerotier luci-i18n-zerotier-zh-cn \
 luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn \
 luci-theme-bootstrap \
-mtr nano tmux \
+mtr nano sshpass tmux \
 uci wget-ssl xz \
 "
 
@@ -89,7 +89,7 @@ luci-app-zerotier luci-i18n-zerotier-zh-cn \
 luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn \
 luci-theme-argon luci-app-argon-config luci-i18n-argon-config-zh-cn \
 luci-theme-bootstrap \
-mtr tmux uci \
+mtr tmux sshpass uci \
 "
 
 bash -x build.sh -t ramips-mt7621 -p phicomm_k2p
@@ -111,7 +111,7 @@ luci-app-wol luci-i18n-wol-zh-cn \
 luci-app-zerotier luci-i18n-zerotier-zh-cn \
 luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn \
 luci-theme-bootstrap \
-mtr nano tmux \
+mtr nano sshpass tmux \
 uci wget-ssl xz \
 "
 
@@ -131,7 +131,7 @@ luci-app-uhttpd luci-i18n-uhttpd-zh-cn \
 luci-app-wol luci-i18n-wol-zh-cn \
 luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn \
 luci-theme-bootstrap \
-mtr nano python3 tmux \
+mtr nano python3 sshpass tmux \
 uci uhttpd-mod-ubus wget-ssl xz \
 "
 PACKAGES="${PACKAGES:+$PACKAGES }coremark"

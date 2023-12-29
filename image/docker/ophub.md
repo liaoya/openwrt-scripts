@@ -24,12 +24,13 @@ luci-app-ssr-plus luci-i18n-ssr-plus-zh-cn \
 luci-app-ttyd luci-i18n-ttyd-zh-cn \
 luci-app-uhttpd luci-i18n-uhttpd-zh-cn \
 luci-app-upnp luci-i18n-upnp-zh-cn \
+luci-app-vlmcsd luci-i18n-vlmcsd-zh-cn \
 luci-app-wol luci-i18n-wol-zh-cn \
 luci-app-zerotier luci-i18n-zerotier-zh-cn \
 luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn luci-i18n-opkg-zh-cn \
 luci-theme-bootstrap \
 luci-theme-argon luci-app-argon-config luci-i18n-argon-config-zh-cn \
-mtr nano perl perlbase-cpan python3 tmux \
+mtr nano perl perlbase-cpan python3 sshpass tmux \
 uci uhttpd-mod-ubus wget-ssl xray-plugin xz \
 "
 
@@ -61,6 +62,6 @@ in ophub
 ```bash
 mkdir -p openwrt-armvirt
 
-sudo ./make -b firefly-rk3399 -k 6.1.60
+sudo ./make -b firefly-rk3399 -k 6.1.62
 sudo ./make -b s905d -k 6.1.62
 ```
