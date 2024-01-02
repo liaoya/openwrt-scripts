@@ -18,11 +18,7 @@ rsync -aq --no-acls --no-perms --no-xattrs /work/openwrt/ /mnt/usb/openwrt/
 rsync -aq --no-acls --no-perms --no-xattrs /work/immortalwrt/ /mnt/usb/immortalwrt/
 ```
 
-`kmod-oaf`
-
 ```bash
-find . -type f -iname "kmod-oaf*.ipk" -exec cp {} /work/immortalwrt/package/21.02/armvirt-64/ \;
-
 find . -type d -exec chmod 755 {} \;
 
 find . -type f -exec chmod 644 {} \;
@@ -34,4 +30,10 @@ mkdir -p /work/openwrt/package/21.02/{ath79-nand,armvirt-64,ramips-mt7621,x86-64
 python3 make-index.py -i /work/openwrt/package
 
 python3 make-index.py -i /work/immortalwrt/package
+```
+
+```bash
+python3 remove-oldpkg.py -r /work/openwrt/package/ -v
+
+python3 remove-oldpkg.py -r /work/immortalwrt/package/ -v
 ```

@@ -9,7 +9,7 @@ import sys
 
 
 def main(top: str):
-    for root, dirs, files in os.walk(top):
+    for root, dirs, _ in os.walk(top):
         if len(dirs) == 0:
             os.chdir(root)
             cmd = "ipkg-make-index.sh . > Packages && gzip -9nc Packages > Packages.gz"
