@@ -187,7 +187,7 @@ if [[ -n ${https_proxy} ]]; then
 http-proxy-host=$(echo "${https_proxy}" | cut -d/ -f3 | cut -d: -f1)
 http-proxy-port=$(echo "${https_proxy}" | cut -d/ -f3 | cut -d: -f2)
 EOF
-    DOCKER_OPTS+=(-v "${_TEMP_DIR}/servers:/${HOME_DIR}/.subversion/servers")
+    DOCKER_OPTS+=(-v "${_TEMP_DIR}/servers:${HOME_DIR}/.subversion/servers")
 fi
 if [[ $(timedatectl show | grep Timezone | cut -d= -f2) == Asia/Shanghai ]]; then
     DOCKER_OPTS+=(--env "GO111MODULE=auto" --env "GOPROXY=https://goproxy.cn,direct")

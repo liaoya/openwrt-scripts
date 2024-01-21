@@ -13,11 +13,11 @@ There're no image after `18.06.7` for `18.06` series
   - `docker.io/openwrt/imagebuilder:ramips-mt7621-23.05.2`
   - `docker.io/openwrt/imagebuilder:x86-64-23.05.2`
 - `22.03`
-  - `docker.io/openwrt/imagebuilder:armvirt-64-22.03.5`
-  - `docker.io/openwrt/imagebuilder:ath79-nand-22.03.5`
-  - `docker.io/openwrt/imagebuilder:ramips-mt7620-22.03.5`
-  - `docker.io/openwrt/imagebuilder:ramips-mt7621-22.03.5`
-  - `docker.io/openwrt/imagebuilder:x86-64-22.03.5`
+  - `docker.io/openwrt/imagebuilder:armvirt-64-22.03.6`
+  - `docker.io/openwrt/imagebuilder:ath79-nand-22.03.6`
+  - `docker.io/openwrt/imagebuilder:ramips-mt7620-22.03.6`
+  - `docker.io/openwrt/imagebuilder:ramips-mt7621-22.03.6`
+  - `docker.io/openwrt/imagebuilder:x86-64-22.03.6`
 - `21.02`
   - `docker.io/openwrt/imagebuilder:armvirt-64-21.02.7`
   - `docker.io/openwrt/imagebuilder:ath79-nand-21.02.7`

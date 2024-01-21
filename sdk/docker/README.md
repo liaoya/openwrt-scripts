@@ -27,21 +27,21 @@ make -j package/feeds/luci/luci-base/compile
 ```
 
 - `docker.io/openwrt/sdk:x86-64-23.05.2`
-- `docker.io/openwrt/sdk:x86-64-22.03.5`
+- `docker.io/openwrt/sdk:x86-64-22.03.6`
 - `docker.io/openwrt/sdk:x86-64-21.02.7`
 - `docker.io/openwrt/sdk:x86-64-19.07.10`
 - `docker.io/openwrt/sdk:x86-64-18.06.7`
 
 - `docker.io/openwrt/sdk:armsr-armv8-23.05.2`
-- `docker.io/openwrt/sdk:armvirt-64-22.03.5`
+- `docker.io/openwrt/sdk:armvirt-64-22.03.6`
 - `docker.io/openwrt/sdk:armvirt-64-21.02.7`
 
 - `docker.io/openwrt/sdk:ath79-nand-23.05.2`
-- `docker.io/openwrt/sdk:ath79-nand-22.03.5`
+- `docker.io/openwrt/sdk:ath79-nand-22.03.6`
 - `docker.io/openwrt/sdk:ath79-nand-21.02.7`
 
 - `docker.io/openwrt/sdk:ramips-mt7621-23.05.2`
-- `docker.io/openwrt/sdk:ramips-mt7621-22.03.5`
+- `docker.io/openwrt/sdk:ramips-mt7621-22.03.6`
 - `docker.io/openwrt/sdk:ramips-mt7621-21.02.7`
 
 - `docker.io/immortalwrt/sdk:armsr-armv8-openwrt-23.05.1`
@@ -59,26 +59,27 @@ make -j package/feeds/luci/luci-base/compile
 export GIT_PROXY=http://10.245.91.190:9080/
 
 for target in ath79-nand armsr-armv8 ramips-mt7621 x86-64; do
-    bash -x run.sh -t "${target}" "src-git jell https://github.com/kenzok8/jell;main"
-    bash -x run.sh -t "${target}" "src-git kenzok8 https://github.com/kenzok8/openwrt-packages" "src-git small https://github.com/kenzok8/small" "src-git oaf https://github.com/destan19/OpenAppFilter"
+    # bash -x run.sh -t "${target}" "src-git jell https://github.com/kenzok8/jell;main"
+    bash -x run.sh -t "${target}" "src-git kenzok8 https://github.com/kenzok8/openwrt-packages" "src-git small https://github.com/kenzok8/small"
+    # bash -x run.sh -t "${target}" "src-git oaf https://github.com/destan19/OpenAppFilter"
 done
 
 for target in ath79-nand armvirt-64 ramips-mt7621 x86-64; do
-    bash -x run.sh -t "${target}" -v 21.02.7 "src-git jell https://github.com/kenzok8/jell;main"
-    bash -x run.sh -t "${target}" -v 21.02.7 "src-git kenzok8 https://github.com/kenzok8/openwrt-packages" "src-git small https://github.com/kenzok8/small" "src-git oaf https://github.com/destan19/OpenAppFilter"
+    # bash -x run.sh -t "${target}" -v 21.02.7 "src-git jell https://github.com/kenzok8/jell;main"
+    bash -x run.sh -t "${target}" -v 21.02.7 "src-git kenzok8 https://github.com/kenzok8/openwrt-packages"
+    # bash -x run.sh -t "${target}" -v 21.02.7 "src-git small https://github.com/kenzok8/small" "src-git oaf https://github.com/destan19/OpenAppFilter"
 done
-
-bash -x run.sh -t ramips-mt7621 -v 22.03.5 "src-git jell https://github.com/kenzok8/jell;main"
-bash -x run.sh -t ramips-mt7621 -v 22.03.5 "src-git kenzok8 https://github.com/kenzok8/openwrt-packages" "src-git small https://github.com/kenzok8/small" "src-git oaf https://github.com/destan19/OpenAppFilter"
 
 for target in ath79-nand armsr-armv8 ramips-mt7621 x86-64; do
-    bash -x run.sh -d ImmortalWrt -v 23.05.1 -t "${target}" "src-git jell https://github.com/kenzok8/jell;main"
-    bash -x run.sh -d ImmortalWrt -v 23.05.1 -t "${target}" "src-git kenzok8 https://github.com/kenzok8/openwrt-packages" "src-git small https://github.com/kenzok8/small" "src-git oaf https://github.com/destan19/OpenAppFilter"
+    # bash -x run.sh -d ImmortalWrt -v 23.05.1 -t "${target}" "src-git jell https://github.com/kenzok8/jell;main"
+    bash -x run.sh -d ImmortalWrt -v 23.05.1 -t "${target}" "src-git kenzok8 https://github.com/kenzok8/openwrt-packages" "src-git small https://github.com/kenzok8/small"
+    # bash -x run.sh -d ImmortalWrt -v 23.05.1 -t "${target}" "src-git oaf https://github.com/destan19/OpenAppFilter"
 done
 
 for target in ath79-nand armvirt-64 ramips-mt7621 x86-64; do
-    bash -x run.sh -d ImmortalWrt -v 21.02.7 -t "${target}" "src-git jell https://github.com/kenzok8/jell;main"
-    bash -x run.sh -d ImmortalWrt -v 21.02.7 -t "${target}" "src-git kenzok8 https://github.com/kenzok8/openwrt-packages" "src-git small https://github.com/kenzok8/small" "src-git oaf https://github.com/destan19/OpenAppFilter"
+    # bash -x run.sh -d ImmortalWrt -v 21.02.7 -t "${target}" "src-git jell https://github.com/kenzok8/jell;main"
+    bash -x run.sh -d ImmortalWrt -v 21.02.7 -t "${target}" "src-git kenzok8 https://github.com/kenzok8/openwrt-packages" "src-git small https://github.com/kenzok8/small"
+    # bash -x run.sh -d ImmortalWrt -v 21.02.7 -t "${target}" "src-git oaf https://github.com/destan19/OpenAppFilter"
 done
 ```
 

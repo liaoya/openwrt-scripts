@@ -25,9 +25,13 @@ sed -e 's|git.openwrt.org/openwrt/openwrt|github.com/openwrt/openwrt|g' \
 scripts/feeds clean || true
 ./scripts/feeds update -a || true
 
+# https://github.com/sbwml/packages_lang_golang and https://github.com/kenzok8/small
 # Even on OpenWrt 23.05, we need use latest golang for xray and xray-plugin build
 rm -rf feeds/packages/lang/golang
-svn co https://github.com/openwrt/packages/branches/openwrt-23.05/lang/golang feeds/packages/lang/golang
+# We need golang 21.x
+git clone https://github.com/sbwml/packages_lang_golang -b 21.x feeds/packages/lang/golang
+# svn does not work any more
+# svn co https://github.com/openwrt/packages/branches/openwrt-23.05/lang/golang feeds/packages/lang/golang
 
 while IFS= read -r feedname; do
     for item in \
